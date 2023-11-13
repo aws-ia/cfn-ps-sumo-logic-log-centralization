@@ -3,7 +3,7 @@ general:
   #   default: sumologic
   s3_regional_buckets: true
 project:
-  name: quickstart-sumo-logic-log-centralization
+  name: cfn-ps-sumo-logic-log-centralization
   regions:
   - us-east-2
 
