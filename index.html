@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.20">
-<meta name="description" content="Full Product Name Deployment Guide on AWS">
-<meta name="keywords" content="Partner Solution, AWS, Full Product Name">
-<title>Full Product Name on AWS</title>
+<meta name="generator" content="Asciidoctor 2.0.15">
+<meta name="description" content="Sumo Logic Security Integrations Deployment Guide on AWS">
+<meta name="keywords" content="Partner Solution, AWS, Sumo Logic Security Integrations">
+<title>Sumo Logic Security Integrations on AWS</title>
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
 /* Uncomment @import statement to use as custom stylesheet */
@@ -855,13 +855,38 @@ p.footer-text a{color:#d7d8d8}
 <div id="toctitle"></div>
 <ul class="sectlevel1">
 <li><a href="#_overview">Overview</a></li>
+<li><a href="#_sumo_logic_security_integrations_on_aws_2">Sumo Logic Security Integrations on AWS</a></li>
 <li><a href="#_costs_and_licenses">Costs and licenses</a></li>
 <li><a href="#_architecture">Architecture</a></li>
-<li><a href="#_deployment_options">Deployment options</a></li>
-<li><a href="#_predeployment_steps">Predeployment steps</a></li>
+<li><a href="#_deployment_options">Deployment options</a>
+<ul class="sectlevel2">
+<li><a href="#_scenarios_supported_by_this_partner_solution">Scenarios supported by this Partner Solution</a></li>
+</ul>
+</li>
+<li><a href="#_predeployment_steps">Predeployment steps</a>
+<ul class="sectlevel2">
+<li><a href="#_specialized_knowledge">Specialized knowledge</a></li>
+<li><a href="#_what_you_need_before_you_deploy_this_partner_solution">What you need before you deploy this Partner Solution</a></li>
+<li><a href="#_prepare_your_sumo_logic_account">Prepare your Sumo Logic account</a></li>
+</ul>
+</li>
 <li><a href="#_deployment_steps">Deployment steps</a></li>
-<li><a href="#_postdeployment_steps">Postdeployment steps</a></li>
+<li><a href="#_test_the_deployment">Test the deployment</a>
+<ul class="sectlevel2">
+<li><a href="#_aws_account">AWS account</a></li>
+<li><a href="#_sumo_logic_account">Sumo Logic account</a></li>
+</ul>
+</li>
+<li><a href="#_postdeployment_steps">Postdeployment steps</a>
+<ul class="sectlevel2">
+<li><a href="#_if_using_an_existing_s3_bucket">If using an existing S3 bucket</a></li>
+<li><a href="#_if_using_aws_waf_logs_for_an_amazon_kinesis_data_firehose_delivery_stream">If using AWS WAF logs for an Amazon Kinesis Data Firehose delivery stream</a></li>
+<li><a href="#_view_the_sumo_logic_dashboards">View the Sumo Logic dashboards</a></li>
+</ul>
+</li>
+<li><a href="#_best_practices_for_using_sumo_logic_security_integrations">Best practices for using Sumo Logic Security Integrations</a></li>
 <li><a href="#_troubleshooting">Troubleshooting</a></li>
+<li><a href="#_resources">Resources</a></li>
 <li><a href="#_customer_responsibility">Customer responsibility</a></li>
 <li><a href="#_feedback">Feedback</a></li>
 <li><a href="#_notices">Notices</a></li>
@@ -871,7 +896,7 @@ p.footer-text a{color:#d7d8d8}
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<h2 id="_full_product_name_on_aws" class="discrete text-center">Full Product Name on AWS</h2>
+<h2 id="_sumo_logic_security_integrations_on_aws" class="discrete text-center">Sumo Logic Security Integrations on AWS</h2>
 <h2 id="_partner_solution_deployment_guide" class="discrete text-left text-center">Partner Solution Deployment Guide</h2>
 <div class="imageblock text-center">
 <div class="content">
@@ -879,14 +904,14 @@ p.footer-text a{color:#d7d8d8}
 </div>
 </div>
 <div class="paragraph text-center">
-<p><strong>January 2023</strong><br>
-<em>John Smith, Example Company Name, Ltd.</em><br>
-<em>Janine Singh, AWS IoT Partner team</em><br>
-<em>Toni Jones, AWS Integration &amp; Automation team</em><br></p>
+<p><strong>November 2021</strong><br>
+<em>Arun Patyal and Himanshu Pal, Sumo Logic</em><br>
+<em>Dilip Rajan and Vinay Maddi, AWS Data &amp; Analytics Partner SA team</em><br>
+<em>Shivansh Singh and Suresh Veeragoni,, AWS Integration &amp; Automation team</em><br></p>
 </div>
 <div class="imageblock text-left image-container">
 <div class="content">
-<img src="https://aws-quickstart.s3.amazonaws.com/partner-solution-repo-name/docs/boilerplate/.images/aws-quickstart-graphic.png" alt="">
+<img src="https://aws-quickstart.s3.amazonaws.com/cfn-ps-sumo-logic-log-centralization/docs/boilerplate/.images/aws-quickstart-graphic.png" alt="">
 </div>
 </div>
 <div class="admonitionblock tip">
@@ -896,13 +921,13 @@ p.footer-text a{color:#d7d8d8}
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Refer to the <a href="https://github.com/aws-ia/partner-solution-repo-name" target="_blank" rel="noopener">GitHub repository</a> to view source files, report bugs, submit feature ideas, and post feedback about this Partner Solution. To comment on the documentation, refer to <a href="#_feedback">Feedback</a>.
+Refer to the <a href="https://github.com/aws-ia/cfn-ps-sumo-logic-log-centralization" target="_blank" rel="noopener">GitHub repository</a> to view source files, report bugs, submit feature ideas, and post feedback about this Partner Solution. To comment on the documentation, refer to <a href="#_feedback">Feedback</a>.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph text-left">
-<p>This Partner Solution was created by Example Company Name, Ltd. in collaboration with Amazon Web Services (AWS). <a href="https://aws.amazon.com/solutions/partners/" target="_blank" rel="noopener">Partner Solutions</a> are automated reference deployments that help people deploy popular technologies on AWS according to AWS best practices. If you&#8217;re unfamiliar with AWS Partner Solutions, refer to the <a href="https://fwd.aws/rA69w?" target="_blank" rel="noopener">AWS Partner Solution General Information Guide</a>.</p>
+<p>This Partner Solution was created by Sumo Logic in collaboration with Amazon Web Services (AWS). <a href="https://aws.amazon.com/solutions/partners/" target="_blank" rel="noopener">Partner Solutions</a> are automated reference deployments that help people deploy popular technologies on AWS according to AWS best practices. If you&#8217;re unfamiliar with AWS Partner Solutions, refer to the <a href="https://fwd.aws/rA69w?" target="_blank" rel="noopener">AWS Partner Solution General Information Guide</a>.</p>
 </div>
 </div>
 </div>
@@ -910,16 +935,51 @@ Refer to the <a href="https://github.com/aws-ia/partner-solution-repo-name" targ
 <h2 id="_overview">Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This guide covers the information you need to deploy the Full Product Name Partner Solution in the AWS Cloud.</p>
+<p>This guide covers the information you need to deploy the Sumo Logic Security Integrations Partner Solution in the AWS Cloud.</p>
 </div>
 <div class="paragraph">
-<p>This Amazon Web Services (AWS) Partner Solution deploys [&lt;product name&gt;](&lt;partner&#8217;s marketing product page&gt;) in the AWS Cloud so that &lt;purpose&gt;. This solution is for &lt;target users&gt; who want to &lt;do what&gt; so that &lt;why&gt;. For more information, refer to the [&lt;product name&gt; documentation](&lt;URL&gt;).</p>
+<p>This Amazon Web Services (AWS) Partner Solution automatically deploys Sumo Logic Security Integrations on the AWS Cloud. It&#8217;s for people who want to configure the Sumo Logic console for 12 AWS services that provide security analytics for a single AWS account. With the default settings, this Partner Solution deploys CloudTrail and GuardDuty apps.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_sumo_logic_security_integrations_on_aws_2">Sumo Logic Security Integrations on AWS</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Sumo Logic is focused on continuous intelligence, a category of software that addresses data challenges presented by digital transformations, modern applications, and cloud computing. The Sumo Logic Continuous Intelligence Platform automates the collection, ingestion, and analysis of applications, infrastructure, security, and Internet of Things (IoT) data to derive actionable insights.</p>
+</div>
+<div class="paragraph">
+<p>This Partner Solution uses Sumo Logic <a href="https://assets-www.sumologic.com/resources/brief/Cloud_SIEM_Powered_by_AWS.pdf" target="_blank" rel="noopener">Cloud SIEM (security information and incident management) powered by AWS</a>. Sumo Logic Cloud SIEM uses apps to collect security events generated by AWS and other security services to provide an aggregate view of overall security and compliance posture.</p>
+</div>
+<div class="paragraph">
+<p>Sumo Logic has apps for each AWS security service (for example, the Sumo Logic app for AWS CloudTrail) and apps that support multiple AWS services (for example, Threat Intel for AWS). Sumo Logic customers can track user activity, monitor threats, and understand how their
+security posture compares with global benchmarks. Sumo Logic also uses apps to audit and help maintain compliance with the
+Payment Card Industry (PCI) Data Security Standard (DSS) and Center for Internet
+Security (CIS).</p>
+</div>
+<div class="paragraph">
+<p>The included template automatically creates resources that use various AWS services to collect logs, which are sent to your preregistered Sumo Logic account.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Deploying this solution does not guarantee an organization’s compliance with any laws, certifications, policies, or other regulations.
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_costs_and_licenses">Costs and licenses</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>Sumo Logic provides a free tier with unlimited queries and 30-day free trials for various licensing options. For details on pricing, visit the <a href="https://sumologic.com/pricing/" target="_blank" rel="noopener">Sumo Logic website</a>.</p>
+</div>
 <div class="paragraph">
 <p>There is no cost to use this Partner Solution, but you will be billed for any AWS services or resources that this Partner Solution deploys. For more information, refer to the <a href="https://fwd.aws/rA69w?" target="_blank" rel="noopener">AWS Partner Solution General Information Guide</a>.</p>
 </div>
@@ -929,14 +989,14 @@ Refer to the <a href="https://github.com/aws-ia/partner-solution-repo-name" targ
 <h2 id="_architecture">Architecture</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Deploying this Partner Solution with default parameters builds the following Product Name environment in the
+<p>Deploying this Partner Solution with default parameters builds the following Sumo Logic environment in the
 AWS Cloud.</p>
 </div>
 <div id="architecture1" class="imageblock">
 <div class="content">
-<img src="docs/deployment_guide/images/architecture_diagram.png" alt="Architecture">
+<img src="docs/deployment_guide/images/sumo-logic-security-integration-architecture-on-aws.png" alt="Architecture">
 </div>
-<div class="title">Figure 1. Partner Solution architecture for Product Name on AWS</div>
+<div class="title">Figure 1. Partner Solution architecture for Sumo Logic on AWS</div>
 </div>
 <div class="paragraph">
 <p>As shown in <a href="#architecture1">Figure 1</a>, this Partner Solution sets up the following:</p>
@@ -944,47 +1004,45 @@ AWS Cloud.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>A highly available architecture that spans two Availability Zones.*</p>
+<p>Amazon GuardDuty to detect malicious activity and behavior to protect AWS accounts and workloads.</p>
 </li>
 <li>
-<p>A virtual private cloud (VPC) configured with public and private subnets, according to AWS
-best practices, to provide you with your own virtual network on AWS.*</p>
+<p>Amazon VPC flow logs to capture information about IP traffic going to and from network interfaces in your VPC.</p>
 </li>
 <li>
-<p>In the public subnets:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Managed network address translation (NAT) gateways to allow outbound
-internet access for resources in the private subnets.*</p>
+<p>Amazon CloudWatch for relaying the Amazon VPC flow logs to the Lambda function.</p>
 </li>
 <li>
-<p>A Linux bastion host in an Auto Scaling group to allow inbound Secure
-Shell (SSH) access to Amazon Elastic Compute Cloud (Amazon EC2) instances in public and private subnets.*</p>
+<p>AWS Security Hub to assess security alerts and security posture across AWS accounts. Security Hub relays security events to Amazon CloudWatch.</p>
+</li>
+<li>
+<p>AWS WAF to protect your web applications from common web exploits.</p>
+</li>
+<li>
+<p>AWS Config to record and evaluate configurations of your AWS resources.</p>
+</li>
+<li>
+<p>AWS CloudTrail to track user activity and API (application programming interface) usage.</p>
+</li>
+<li>
+<p>AWS Network Firewall to deploy essential network protections for all your Amazon virtual private clouds (VPCs).</p>
+</li>
+<li>
+<p>Amazon Kinesis Data Firehose delivery streams to transfer logs from AWS WAF to the Amazon S3 bucket.</p>
+</li>
+<li>
+<p>AWS Lambda functions to create a collector and multiple sources and to install apps on your Sumo Logic account.</p>
+</li>
+<li>
+<p>An Amazon S3 bucket to capture logs from the various AWS services.</p>
+</li>
+<li>
+<p>Amazon Simple Notification Service (Amazon SNS), which is invoked when a new object is saved to an S3 bucket.</p>
+</li>
+<li>
+<p>The Sumo Logic collector and sources to receive logs from the S3 bucket.</p>
 </li>
 </ul>
-</div>
-</li>
-<li>
-<p>In the private subnets:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>&lt;item&gt;.</p>
-</li>
-<li>
-<p>&lt;item&gt;.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>&lt;describe any additional components&gt;.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p><span class="small">* The template that deploys this Partner Solution into an existing VPC skips the components marked by asterisks and prompts you for your existing VPC configuration.</span></p>
 </div>
 </div>
 </div>
@@ -992,27 +1050,321 @@ Shell (SSH) access to Amazon Elastic Compute Cloud (Amazon EC2) instances in pub
 <h2 id="_deployment_options">Deployment options</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This Partner Solution provides the following deployment options:</p>
+<p>This Partner Solution provides one deployment option.</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://qs_launch_permalink" target="_blank" rel="noopener">Deploy Product Name into a new VPC</a>. This option builds a new AWS environment that consists of the VPC, subnets, NAT gateways, security groups, bastion hosts, and other infrastructure components. It then deploys Product Name into this new VPC.</p>
-</li>
-<li>
-<p><a href="https://qs_launch_permalink" target="_blank" rel="noopener">Deploy Product Name into an existing VPC</a>. This option provisions Product Name in your existing AWS infrastructure.</p>
+<p><a href="https://fwd.aws/Nm69g" target="_blank" rel="noopener">Deploy Sumo Logic Security Integrations</a>. You build a new AWS environment that consists of the infrastructure resources required to provision applications to your Sumo Logic account and the necessary resources to your AWS account. During the deployment, you can choose which applications to install.</p>
 </li>
 </ul>
 </div>
+<div class="sect2">
+<h3 id="_scenarios_supported_by_this_partner_solution">Scenarios supported by this Partner Solution</h3>
 <div class="paragraph">
-<p>This Partner Solution provides separate templates for these options. It also lets you configure Classless Inter-Domain Routing (CIDR) blocks, instance types, and Product Name settings.</p>
+<p>This Partner Solution supports the following scenarios:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Scenario 1: You do not use AWS security services or Sumo Logic.</strong> You did not
+configure AWS to use one or more security services listed under <a href="#_specialized_knowledge">Specialized knowledge</a>,
+but you want to collect and analyze data using Sumo Logic apps. For this scenario, use
+this Partner Solution to set up AWS security services and configure Sumo Logic.</p>
+</li>
+<li>
+<p><strong>Scenario 2: You use AWS security services but not Sumo Logic.</strong> You use the AWS security services listed under <a href="#_specialized_knowledge">Specialized knowledge</a> but have not configured Sumo
+Logic to collect data from AWS or installed the corresponding Sumo Logic apps. For this
+scenario, configure the auxiliary AWS services and resources to send data to Sumo
+Logic. This scenario also installs the corresponding Sumo Logic apps.</p>
+</li>
+<li>
+<p><strong>Scenario 3: You use AWS security services and Sumo Logic.</strong> You use the AWS
+security services listed under <a href="#_specialized_knowledge">Specialized knowledge</a> and you collect and analyze data
+from one or more of them in Sumo Logic. For this scenario, configure the auxiliary AWS
+services and resources to send data to Sumo Logic. This scenario is intended only for
+nonconfigured AWS security services and their corresponding Sumo Logic apps.</p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_predeployment_steps">Predeployment steps</h2>
 <div class="sectionbody">
-
+<div class="sect2">
+<h3 id="_specialized_knowledge">Specialized knowledge</h3>
+<div class="paragraph">
+<p>Before you deploy this Partner Solution, be familiar with Sumo Logic. If you are new to Sumo Logic, see <a href="https://help.sumologic.com/01Start-Here/04Getting-Started" target="_blank" rel="noopener">Getting Started with Sumo Logic</a>.</p>
+</div>
+<div class="paragraph">
+<p>Also be familiar with the AWS services listed in <a href="#features_table">Table 1</a>, which shows how various AWS security services map to the corresponding apps in Sumo Logic.</p>
+</div>
+<table id="features_table" class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Mapping of AWS services to Sumo Logic apps</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 66.6667%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AWS security service or feature</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sumo Logic apps for the following AWS services or features</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><a href="https://aws.amazon.com/cloudtrail" target="_blank" rel="noopener">AWS CloudTrail</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<ul>
+<li>
+<p><a href="https://help.sumologic.com/07Sumo-Logic-Apps/01Amazon_and_AWS/AWS_CloudTrail" target="_blank" rel="noopener">AWS CloudTrail</a></p>
+</li>
+<li>
+<p><a href="https://help.sumologic.com/07Sumo-Logic-Apps/01Amazon_and_AWS/PCI_Compliance_for_AWS_CloudTrail_App" target="_blank" rel="noopener">PCI DSS compliance for AWS CloudTrail</a></p>
+</li>
+<li>
+<p><a href="https://help.sumologic.com/07Sumo-Logic-Apps/01Amazon_and_AWS/CIS_AWS_Foundations_Benchmark_App" target="_blank" rel="noopener">CIS AWS Foundations Benchmark</a></p>
+</li>
+<li>
+<p><a href="https://help.sumologic.com/07Sumo-Logic-Apps/Cloud_Security_Monitoring_and_Analytics/Amazon_CloudTrail_-_Cloud_Security_Monitoring_and_Analytics" target="_blank" rel="noopener">Amazon CloudTrail - Cloud Security Monitoring and Analytics</a></p>
+</li>
+<li>
+<p><a href="https://help.sumologic.com/07Sumo-Logic-Apps/01Amazon_and_AWS/Global_Intelligence_for_AWS_CloudTrail" target="_blank" rel="noopener">Global Intelligence for AWS CloudTrail SecOps App</a></p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><a href="https://aws.amazon.com/guardduty" target="_blank" rel="noopener">Amazon GuardDuty</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<ul>
+<li>
+<p><a href="https://help.sumologic.com/07Sumo-Logic-Apps/01Amazon_and_AWS/Amazon_GuardDuty" target="_blank" rel="noopener">Amazon GuardDuty</a></p>
+</li>
+<li>
+<p><a href="https://help.sumologic.com/07Sumo-Logic-Apps/01Amazon_and_AWS/Global_Intelligence_for_Amazon_GuardDuty" target="_blank" rel="noopener">Global Intelligence for Amazon GuardDuty</a></p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><a href="https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html" target="_blank" rel="noopener">Amazon VPC flow logs</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<ul>
+<li>
+<p><a href="https://help.sumologic.com/07Sumo-Logic-Apps/01Amazon_and_AWS/Amazon_VPC_Flow_Logs" target="_blank" rel="noopener">Amazon VPC flow logs</a></p>
+</li>
+<li>
+<p><a href="https://help.sumologic.com/07Sumo-Logic-Apps/01Amazon_and_AWS/PCI_Compliance_for_Amazon_VPC_Flow_Logs" target="_blank" rel="noopener">PCI Compliance for Amazon VPC flow logs</a></p>
+</li>
+<li>
+<p><a href="https://help.sumologic.com/07Sumo-Logic-Apps/01Amazon_and_AWS/Threat_Intel_for_AWS" target="_blank" rel="noopener">Threat Intel for AWS</a></p>
+</li>
+<li>
+<p><a href="https://help.sumologic.com/07Sumo-Logic-Apps/Cloud_Security_Monitoring_and_Analytics/Amazon_VPC_Flow_-_Cloud_Security_Monitoring_and_Analytics" target="_blank" rel="noopener">Amazon VPC Flow - Cloud Security Monitoring and Analytics</a></p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html" target="_blank" rel="noopener">Amazon S3 server access logging</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<ul>
+<li>
+<p><a href="https://help.sumologic.com/07Sumo-Logic-Apps/01Amazon_and_AWS/Amazon_S3_Audit" target="_blank" rel="noopener">Amazon S3 Audit</a></p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><a href="https://aws.amazon.com/security-hub/?aws-security-hub-blogs.sort-by=item.additionalFields.createdDate&amp;aws-security-hub-blogs.sort-order=desc" target="_blank" rel="noopener">AWS Security Hub</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<ul>
+<li>
+<p><a href="https://help.sumologic.com/07Sumo-Logic-Apps/01Amazon_and_AWS/AWS_Security_Hub" target="_blank" rel="noopener">AWS Security Hub</a></p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><a href="https://aws.amazon.com/waf" target="_blank" rel="noopener">AWS WAF</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<ul>
+<li>
+<p><a href="https://help.sumologic.com/07Sumo-Logic-Apps/01Amazon_and_AWS/AWS_WAF" target="_blank" rel="noopener">AWS WAF</a></p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><a href="https://aws.amazon.com/config" target="_blank" rel="noopener">AWS Config</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<ul>
+<li>
+<p><a href="https://help.sumologic.com/07Sumo-Logic-Apps/01Amazon_and_AWS/AWS_Config" target="_blank" rel="noopener">AWS Config</a></p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><a href="https://aws.amazon.com/network-firewall" target="_blank" rel="noopener">AWS Network Firewall</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<ul>
+<li>
+<p><a href="https://help.sumologic.com/07Sumo-Logic-Apps/01Amazon_and_AWS/AWS_Network_Firewall" target="_blank" rel="noopener">AWS Network Firewall</a></p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_what_you_need_before_you_deploy_this_partner_solution">What you need before you deploy this Partner Solution</h3>
+<div class="paragraph">
+<p>To deploy this Partner Solution, you need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A Sumo Logic enterprise account. If you don’t already have one, create one at <a href="https://sumologic.com" class="bare" target="_blank" rel="noopener">https://sumologic.com</a> by following the on-screen instructions.</p>
+</li>
+<li>
+<p>The ability to launch AWS CloudFormation templates that create IAM roles.</p>
+</li>
+<li>
+<p>An understanding of how Sumo Logic resources are created for each scenario (as described earlier under <a href="#_scenarios_supported_by_this_partner_solution">Scenarios supported by this Partner Solution</a>).</p>
+<div class="ulist">
+<ul>
+<li>
+<p>For data collection, scenario 1, a new Sumo Logic <a href="https://help.sumologic.com/03Send-Data/Hosted-Collectors" target="_blank" rel="noopener">Hosted Collector</a> called <code>aws-quickstart-collector</code> is created, and sources for each app are installed under it.</p>
+</li>
+<li>
+<p>For data collection scenarios 2 and 3, all existing sources can be reused. All new sources are installed under a new Sumo Logic–hosted collector called <code>aws-quickstart-collector</code>.</p>
+</li>
+<li>
+<p>All Sumo Logic apps are installed in a personal folder called <code>SumoLogic Amazon QuickStart Apps</code>, followed by the date.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The Threat Intel app can report Elastic Load Balancing (ELB) data if you are already sending that data to Sumo Logic. If you&#8217;ve already configured AWS security services to send logs to S3 buckets or SNS topics, collect the following information before you launch the Partner Solution. If you did not previously configure these services, this Partner Solution automatically configures these AWS services and resources when you install the Sumo Logic apps.
+</td>
+</tr>
+</table>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Sumo Logic apps</th>
+<th class="tableblock halign-left valign-top">If you have done the following</th>
+<th class="tableblock halign-left valign-top">Make a note of:</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CloudTrail, PCI DSS compliance for AWS CloudTrail, CIS AWS foundations,Amazon CloudTrail - Cloud Security Monitoring and Analytics, Global Intelligence for AWS CloudTrail SecOps App</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configured AWS CloudTrail to send its logs to an S3 bucket.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The S3 bucket name.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Amazon VPC flow logs, PCI DSS compliance for Amazon VPC flow logs, Amazon VPC flow - Cloud Security Monitoring and Analytics</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configured Amazon VPC flow logs to send to an S3 bucket.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The S3 bucket name.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Amazon S3 Audit</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configured the access logging of S3 buckets.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The S3 bucket name.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AWS WAF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configured AWS WAF to send a Kinesis Data Firehose delivery stream to an S3 bucket.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The S3 bucket name.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AWS Config</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configured AWS Config to deliver notifications to an SNS topic.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The SNS topic.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Threat Intel</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configured ELB logs to send data to Sumo Logic.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The ELB source category in Sumo Logic.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AWS Network Firewall</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configured Network Firewall firewall and policy.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Network Firewall policy Amazon Resource Name (ARN).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AWS Network Firewall</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Have not configured Network Firewall.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VPC ID, subnet ID.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_prepare_your_sumo_logic_account">Prepare your Sumo Logic account</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>If you don’t already have a Sumo Logic enterprise account, create one at <a href="https://sumologic.com" class="bare" target="_blank" rel="noopener">https://sumologic.com</a> by following the on-screen instructions.</p>
+</li>
+<li>
+<p>Create the <a href="https://help.sumologic.com/Manage/Security/Access-Keys%23manage-your-access-keys-on-preferences-page" target="_blank" rel="noopener">access key and access ID</a> from your Sumo Logic account. These are passed as parameters when you launch the Partner Solution template.</p>
+</li>
+<li>
+<p>Get the organization ID from your Sumo Logic account in the <strong>Administration</strong> section under the <strong>Account</strong> tab. You must pass this ID.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If you want to use the Threat Intel app but have not configured data
+collection, see <a href="https://help.sumologic.com/07Sumo-Logic-Apps/01Amazon_and_AWS/Threat_Intel_for_AWS" target="_blank" rel="noopener">Threat Intel for AWS</a>. If you already configured data collection, note
+the relevant Sumo Logic source category for your data.
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ol>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1051,10 +1403,10 @@ Unless you&#8217;re customizing the Partner Solution templates or are instructed
 <p>On the <strong>Review</strong> page, review and confirm the template settings. Under <strong>Capabilities</strong>, select all of the check boxes to acknowledge that the template creates AWS Identity and Access Management (IAM)  resources that might require the ability to automatically expand macros.</p>
 </li>
 <li>
-<p>Choose <strong>Create stack</strong>. The stack takes about 15 minutes to deploy.</p>
+<p>Choose <strong>Create stack</strong>. The stack takes about 10 minutes to deploy.</p>
 </li>
 <li>
-<p>Monitor the stack&#8217;s status, and when the status is <strong>CREATE_COMPLETE</strong>, the Full Product Name deployment is ready.</p>
+<p>Monitor the stack&#8217;s status, and when the status is <strong>CREATE_COMPLETE</strong>, the Sumo Logic Security Integrations deployment is ready.</p>
 </li>
 <li>
 <p>To view the created resources, choose the <strong>Outputs</strong> tab.</p>
@@ -1064,9 +1416,106 @@ Unless you&#8217;re customizing the Partner Solution templates or are instructed
 </div>
 </div>
 <div class="sect1">
+<h2 id="_test_the_deployment">Test the deployment</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_aws_account">AWS account</h3>
+<div class="paragraph">
+<p>After the deployment completes, you see the main stack, <code>QuickStartApps</code>, in addition to multiple nested stacks.</p>
+</div>
+<div id="output1" class="imageblock">
+<div class="content">
+<img src="docs/deployment_guide/images/output1.png" alt="output1" width="80%">
+</div>
+<div class="title">Figure 2. Example output of created resources</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_sumo_logic_account">Sumo Logic account</h3>
+<div class="paragraph">
+<p>Confirm that the AWS CloudFormation template installed the collectors and sources for your Sumo Logic apps.</p>
+</div>
+<div id="output2" class="imageblock">
+<div class="content">
+<img src="docs/deployment_guide/images/output2.png" alt="output2" width="80%">
+</div>
+<div class="title">Figure 3. Example output of collectors and sources</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_postdeployment_steps">Postdeployment steps</h2>
 <div class="sectionbody">
-
+<div class="sect2">
+<h3 id="_if_using_an_existing_s3_bucket">If using an existing S3 bucket</h3>
+<div class="paragraph">
+<p>If you use an existing S3 bucket with logs, create an SNS topic (<code>SumoSNSTopic-{StackName}</code>) that subscribes to the Sumo Logic sources. After the deployment completes, add that SNS topic to the S3 bucket events. For more information, see <a href="https://docs.aws.amazon.com/AmazonS3/latest/user-guide/enable-event-notifications.html" target="_blank" rel="noopener">How do I enable and configure event notifications for an S3 bucket?</a></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_if_using_aws_waf_logs_for_an_amazon_kinesis_data_firehose_delivery_stream">If using AWS WAF logs for an Amazon Kinesis Data Firehose delivery stream</h3>
+<div class="paragraph">
+<p>If you install AWS WAF, AWS CloudFormation creates a delivery stream (<code>QuickStartDeliveryStream{Region}</code>) in your Kinesis configuration. You must configure Web ACL in AWS WAF to send logs to the delivery stream. For more information, see <a href="https://docs.aws.amazon.com/waf/latest/developerguide/logging.html" target="_blank" rel="noopener">Logging Web ACL traffic information</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_view_the_sumo_logic_dashboards">View the Sumo Logic dashboards</h3>
+<div class="paragraph">
+<p>After the deployment completes, the Sumo Logic apps are added to your Sumo Logic personal-account library in a folder named <code>SumoLogic Amazon QuickStart Apps &lt;date&gt;</code>.</p>
+</div>
+<div id="qsappfolder" class="imageblock">
+<div class="content">
+<img src="docs/deployment_guide/images/qsappfolder.png" alt="qsappfolder" width="80%">
+</div>
+<div class="title">Figure 4. Top-level Partner Solution apps folder</div>
+</div>
+<div class="paragraph">
+<p>Under the <code>SumoLogic Amazon QuickStart Apps &lt;date&gt;</code> folder, there are subfolders that represent each app along with the date and timestamp.</p>
+</div>
+<div id="servicefolder" class="imageblock">
+<div class="content">
+<img src="docs/deployment_guide/images/servicefolder.png" alt="servicefolder" width="80%">
+</div>
+<div class="title">Figure 5. Individual service folders</div>
+</div>
+<div class="paragraph">
+<p>To open the services dashboard, choose its folder in the Sumo Logic console. For instance, under the <strong>Amazon GuardDuty</strong> folder, open the <strong>Amazon GuardDuty – Overview</strong> dashboard to see detected threats.</p>
+</div>
+<div id="dashboard" class="imageblock">
+<div class="content">
+<img src="docs/deployment_guide/images/dashboard.jpg" alt="dashboard^">
+</div>
+<div class="title">Figure 6. Amazon GuardDuty dashboard</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_best_practices_for_using_sumo_logic_security_integrations">Best practices for using Sumo Logic Security Integrations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you want to use this Partner Solution across multiple AWS accounts and Regions, rename the top-level parent folder of your Sumo Logic account (under your personal folder) to reflect the correct account and Region.</p>
+</div>
+<div class="paragraph">
+<p>For each S3 bucket, follow the best practices documented under <a href="https://aws.amazon.com/premiumsupport/knowledge-center/secure-s3-resources/" target="_blank" rel="noopener">How can I secure the files in my Amazon S3 bucket?</a> to secure all of your S3 objects. Sumo Logic Security Integrations can monitor the following security and compliance aspects of your AWS environment:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Threat monitoring and other security findings</p>
+</li>
+<li>
+<p>Configuration and S3 Audit</p>
+</li>
+<li>
+<p>PCI DSS compliance</p>
+</li>
+<li>
+<p>CIS AWS compliance</p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1074,6 +1523,24 @@ Unless you&#8217;re customizing the Partner Solution templates or are instructed
 <div class="sectionbody">
 <div class="paragraph">
 <p>For troubleshooting common Partner Solution issues, refer to the <a href="https://fwd.aws/rA69w?" target="_blank" rel="noopener">AWS Partner Solution General Information Guide</a> and <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/troubleshooting.html" target="_blank" rel="noopener">Troubleshooting CloudFormation</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_resources">Resources</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://help.sumologic.com/07Sumo-Logic-Apps/01Amazon_and_AWS" target="_blank" rel="noopener">Sumo Logic and AWS apps</a></p>
+</li>
+<li>
+<p><a href="https://help.sumologic.com/07Sumo-Logic-Apps/01Amazon_and_AWS" target="_blank" rel="noopener">Sumo Logic Doc Hub</a></p>
+</li>
+<li>
+<p><a href="https://www.sumologic.com/solutions/security-intelligence/" target="_blank" rel="noopener">Sumo Logic Cloud SIEM</a></p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -1089,21 +1556,21 @@ Unless you&#8217;re customizing the Partner Solution templates or are instructed
 <h2 id="_feedback">Feedback</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To submit feature ideas and report bugs, use the <strong>Issues</strong> section of the <a href="https://github.com/aws-ia/partner-solution-repo-name" target="_blank" rel="noopener">GitHub repository</a> for this Partner Solution. To submit code, refer to the <a href="https://fwd.aws/NwqYA?" target="_blank" rel="noopener">Partner Solution Contributor&#8217;s Guide</a>. To submit feedback on this deployment guide, use the following GitHub links:</p>
+<p>To submit feature ideas and report bugs, use the <strong>Issues</strong> section of the <a href="https://github.com/aws-ia/cfn-ps-sumo-logic-log-centralization" target="_blank" rel="noopener">GitHub repository</a> for this Partner Solution. To submit code, refer to the <a href="https://fwd.aws/NwqYA?" target="_blank" rel="noopener">Partner Solution Contributor&#8217;s Guide</a>. To submit feedback on this deployment guide, use the following GitHub links:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://github.com/aws-ia/partner-solution-repo-name/issues/new?labels=documentation,grammar+or+spelling&amp;title=Deployment+guide+feedback&amp;body=Section+heading:%0ADocumentation+issue+description:%0A" target="_blank" rel="noopener">Grammar or spelling</a></p>
+<p><a href="https://github.com/aws-ia/cfn-ps-sumo-logic-log-centralization/issues/new?labels=documentation,grammar+or+spelling&amp;title=Deployment+guide+feedback&amp;body=Section+heading:%0ADocumentation+issue+description:%0A" target="_blank" rel="noopener">Grammar or spelling</a></p>
 </li>
 <li>
-<p><a href="https://github.com/aws-ia/partner-solution-repo-name/issues/new?labels=documentation,broken+link&amp;title=Deployment+guide+feedback&amp;body=Section+heading:%0ADocumentation+issue+description:%0A" target="_blank" rel="noopener">Broken link</a></p>
+<p><a href="https://github.com/aws-ia/cfn-ps-sumo-logic-log-centralization/issues/new?labels=documentation,broken+link&amp;title=Deployment+guide+feedback&amp;body=Section+heading:%0ADocumentation+issue+description:%0A" target="_blank" rel="noopener">Broken link</a></p>
 </li>
 <li>
-<p><a href="https://github.com/aws-ia/partner-solution-repo-name/issues/new?labels=documentation,inaccurate+content&amp;title=Deployment+guide+feedback&amp;body=Section+heading:%0ADocumentation+issue+description:%0A" target="_blank" rel="noopener">Inaccurate content</a></p>
+<p><a href="https://github.com/aws-ia/cfn-ps-sumo-logic-log-centralization/issues/new?labels=documentation,inaccurate+content&amp;title=Deployment+guide+feedback&amp;body=Section+heading:%0ADocumentation+issue+description:%0A" target="_blank" rel="noopener">Inaccurate content</a></p>
 </li>
 <li>
-<p><a href="https://github.com/aws-ia/partner-solution-repo-name/issues/new?labels=documentation,display+and+design&amp;title=Deployment+guide+feedback&amp;body=Section+heading:%0ADocumentation+issue+description:%0A" target="_blank" rel="noopener">Display or design</a></p>
+<p><a href="https://github.com/aws-ia/cfn-ps-sumo-logic-log-centralization/issues/new?labels=documentation,display+and+design&amp;title=Deployment+guide+feedback&amp;body=Section+heading:%0ADocumentation+issue+description:%0A" target="_blank" rel="noopener">Display or design</a></p>
 </li>
 </ul>
 </div>
@@ -1124,9 +1591,9 @@ Unless you&#8217;re customizing the Partner Solution templates or are instructed
 <footer>
     <p class="footer-text">
         <!-- We can use document attributes: -->
-        <!-- Generated with Asciidoctor v2.0.20. -->
+        <!-- Generated with Asciidoctor v2.0.15. -->
         <a href="https://aws.amazon.com/privacy/">Privacy</a> | <a href="https://aws.amazon.com/terms/">Site terms</a> |
-        &copy; {current-year}, Amazon Web Services, Inc. or its affiliates and Example Company Name, Ltd.. All rights reserved.
+        &copy; {current-year}, Amazon Web Services, Inc. or its affiliates and Sumo Logic. All rights reserved.
     </p>
 </footer>
 </body>
