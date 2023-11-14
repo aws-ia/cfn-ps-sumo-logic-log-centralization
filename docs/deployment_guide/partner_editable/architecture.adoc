@@ -7,22 +7,32 @@ AWS Cloud.
 
 [#architecture1]
 .Partner Solution architecture for {partner-product-short-name} on AWS
-image::../docs/deployment_guide/images/architecture_diagram.png[Architecture]
+image::../docs/deployment_guide/images/sumo-logic-security-integration-architecture-on-aws.png[Architecture]
 
 As shown in <<architecture1>>, this Partner Solution sets up the following:
 
-* A highly available architecture that spans two Availability Zones.*
-* A virtual private cloud (VPC) configured with public and private subnets, according to AWS
-best practices, to provide you with your own virtual network on AWS.*
-* In the public subnets:
-** Managed network address translation (NAT) gateways to allow outbound
-internet access for resources in the private subnets.*
-** A Linux bastion host in an Auto Scaling group to allow inbound Secure
-Shell (SSH) access to Amazon Elastic Compute Cloud (Amazon EC2) instances in public and private subnets.*
-* In the private subnets:
-** <item>.
-** <item>.
-// Add bullet points for any additional components that are included in the deployment. Ensure that the additional components are shown in the architecture diagram. End each bullet with a period.
-* <describe any additional components>.
+* Amazon GuardDuty to detect malicious activity and behavior to protect AWS accounts and workloads.
 
-[.small]#* The template that deploys this Partner Solution into an existing VPC skips the components marked by asterisks and prompts you for your existing VPC configuration.#
+* Amazon VPC flow logs to capture information about IP traffic going to and from network interfaces in your VPC.
+
+* Amazon CloudWatch for relaying the Amazon VPC flow logs to the Lambda function.
+
+* AWS Security Hub to assess security alerts and security posture across AWS accounts. Security Hub relays security events to Amazon CloudWatch.
+
+* AWS WAF to protect your web applications from common web exploits.
+
+* AWS Config to record and evaluate configurations of your AWS resources.
+
+* AWS CloudTrail to track user activity and API (application programming interface) usage.
+
+* AWS Network Firewall to deploy essential network protections for all your Amazon virtual private clouds (VPCs).
+
+* Amazon Kinesis Data Firehose delivery streams to transfer logs from AWS WAF to the Amazon S3 bucket.
+
+* AWS Lambda functions to create a collector and multiple sources and to install apps on your Sumo Logic account.
+
+* An Amazon S3 bucket to capture logs from the various AWS services.
+
+* Amazon Simple Notification Service (Amazon SNS), which is invoked when a new object is saved to an S3 bucket.
+
+* The Sumo Logic collector and sources to receive logs from the S3 bucket.
