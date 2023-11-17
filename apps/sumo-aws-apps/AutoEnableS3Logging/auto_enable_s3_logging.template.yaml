@@ -122,7 +122,13 @@ Resources:
                   - network-firewall:ListFirewalls
                   - network-firewall:DescribeFirewall
                   - network-firewall:UpdateLoggingConfiguration
-                Resource: '*'
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*'
+                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*'
+                  - !Sub 'arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:*'
+                  - !Sub 'arn:${AWS::Partition}:ec2:${AWS::Region}::*'
+                  - !Sub 'arn:${AWS::Partition}:s3:::*'
+                  - !Sub 'arn:${AWS::Partition}:network-firewall:${AWS::Region}:${AWS::AccountId}:firewall/*'
 
   AwsS3LogsResourcesLambda:
     Type: AWS::Lambda::Function
@@ -133,7 +139,7 @@ Resources:
           - S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
         S3Key: !Sub "${QSS3KeyPrefix}apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
       Handler: "awsresource.enable_s3_logs"
-      Runtime: python3.7
+      Runtime: python3.11
       Role: !GetAtt SumoLambdaRole.Arn
       Description: "Lambda Function for auto enable s3 logs for Application load balancer."
       MemorySize: 128
@@ -244,7 +250,7 @@ Resources:
     Condition: enable_existing_resources
     Properties:
       Handler: main.handler
-      Runtime: python3.7
+      Runtime: python3.11
       CodeUri:
         Bucket: !Sub
           - "${S3Bucket}"

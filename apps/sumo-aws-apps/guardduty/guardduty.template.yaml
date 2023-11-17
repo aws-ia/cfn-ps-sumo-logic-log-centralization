@@ -203,7 +203,10 @@ Resources:
                   - config:DescribeDeliveryChannels
                   - config:PutDeliveryChannel
                   - config:DeleteDeliveryChannel
-                Resource: '*'
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*'
+                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*'
+                  - !Sub 'arn:${AWS::Partition}:config:${AWS::Region}:${AWS::AccountId}:*'
 
   SumoLogicHelperFunction:
     Type: 'AWS::Serverless::Function'
@@ -211,7 +214,7 @@ Resources:
     Condition: do_not_use_parent_stack
     Properties:
       Handler: main.handler
-      Runtime: python3.7
+      Runtime: python3.11
       CodeUri:
         Bucket: !Sub
           - "${S3Bucket}"
@@ -234,7 +237,7 @@ Resources:
           - S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
         Key: !Sub "${QSS3KeyPrefix}apps/sumo-aws-apps/guardduty/cloudwatchevents.zip"
       Handler: cloudwatchevents.handler
-      Runtime: nodejs14.x
+      Runtime: nodejs18.x
       Environment:
         Variables:
           SUMO_ENDPOINT: !GetAtt SumoHTTPSource.SUMO_ENDPOINT

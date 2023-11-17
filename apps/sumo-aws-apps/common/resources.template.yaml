@@ -207,14 +207,21 @@ Resources:
                   - config:DescribeDeliveryChannels
                   - config:PutDeliveryChannel
                   - config:DeleteDeliveryChannel
-                Resource: '*'
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*'
+                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*'
+                  - !Sub 'arn:${AWS::Partition}:cloudtrail:${{AWS::Region}:${AWS::AccountId}:trail/*'
+                  - !Sub 'arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:*'
+                  - !Sub 'arn:${AWS::Partition}:ec2:${AWS::Region}::*'
+                  - !Sub 'arn:${AWS::Partition}:s3:::*'
+                  - !Sub 'arn:${AWS::Partition}:config:${AWS::Region}:${AWS::AccountId}:*'
 
   SumoLogicLambdaHelper:
     Type: 'AWS::Serverless::Function'
     DependsOn: SumoLogicHelperRole
     Properties:
       Handler: main.handler
-      Runtime: python3.7
+      Runtime: python3.11
       CodeUri:
         Bucket: !Sub
           - "${S3Bucket}"
@@ -253,7 +260,7 @@ Resources:
                   - s3:ListBucketVersions
                   - s3:ListBucket
                 Resource:
-                  "*"
+                  !Sub 'arn:${AWS::Partition}:s3:::*'
 
   SumoHostedCollector:
     Type: Custom::Collector
@@ -290,7 +297,7 @@ Resources:
                 aws:SourceArn: !Sub "arn:aws:s3:*:*:*"
             Effect: Allow
             Principal:
-              AWS: "*"
+              AWS: 'arn:aws:iam::*:*'
             Resource:
               - !Ref SumoSNSTopic
       Topics:

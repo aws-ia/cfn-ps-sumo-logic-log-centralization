@@ -243,7 +243,10 @@ Resources:
                   - config:DescribeDeliveryChannels
                   - config:PutDeliveryChannel
                   - config:DeleteDeliveryChannel
-                Resource: '*'
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*'
+                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*'
+                  - !Sub 'arn:${AWS::Partition}:config:${AWS::Region}:${AWS::AccountId}:*'
 
   SumoLogicHelperFunction:
     Type: 'AWS::Serverless::Function'
@@ -251,7 +254,7 @@ Resources:
     Condition: do_not_use_parent_stack
     Properties:
       Handler: main.handler
-      Runtime: python3.7
+      Runtime: python3.11
       CodeUri:
         Bucket: !Sub
           - "${S3Bucket}"
@@ -300,7 +303,7 @@ Resources:
                     s3:x-amz-acl: bucket-owner-full-control
               - Effect: Allow
                 Action: config:Put*
-                Resource: '*'
+                Resource: !Sub 'arn:${AWS::Partition}:config:${AWS::Region}:${AWS::AccountId}:*'
 
   TargetS3Bucket:
     Type: AWS::S3::Bucket
@@ -327,7 +330,7 @@ Resources:
             Principal:
               Service: config.amazonaws.com
             Action: SNS:Publish
-            Resource: '*'
+            Resource: !Sub 'arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:*'
       Topics: [!Ref 'SumoSNSTopic']
 
   WaitHandle:

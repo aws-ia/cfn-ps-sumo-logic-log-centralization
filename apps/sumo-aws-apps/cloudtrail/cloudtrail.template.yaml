@@ -280,7 +280,10 @@ Resources:
                   - cloudtrail:DeleteTrail
                   - cloudtrail:UpdateTrail
                   - cloudtrail:StartLogging
-                Resource: '*'
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*'
+                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*'
+                  - !Sub 'arn:${AWS::Partition}:cloudtrail:${{AWS::Region}:${AWS::AccountId}:trail/*'
 
   SumoLogicHelperFunction:
     Type: 'AWS::Serverless::Function'
@@ -288,7 +291,7 @@ Resources:
     Condition: do_not_use_parent_stack
     Properties:
       Handler: main.handler
-      Runtime: python3.7
+      Runtime: python3.11
       CodeUri:
         Bucket: !Sub
                 - "${S3Bucket}"
@@ -328,8 +331,8 @@ Resources:
                   - s3:ListBucketVersions
                   - s3:ListBucket
                 Resource:
-                  "*"
-
+                  - !Sub 'arn:${AWS::Partition}:s3:::*'
+                  
   SumoHostedCollector:
     Type: Custom::Collector
     Condition: do_not_use_parent_stack
@@ -497,7 +500,7 @@ Resources:
                 aws:SourceArn: !Sub "arn:aws:s3:::${CloudTrailLogsBucketName}"
             Effect: Allow
             Principal:
-              AWS: "*"
+              AWS: 'arn:aws:iam::*:*'
             Resource:
               - !Ref SumoSNSTopic
       Topics:
