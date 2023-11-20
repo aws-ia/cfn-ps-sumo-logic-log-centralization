@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: "Template to setup the Amazon VPC Flow Logs, PCI Compliance For Amazon VPC Flow and Amazon VPC Flow - Cloud Security Monitoring and Analytics app with AWS and Sumo Logic resources for AWS Quick Start Solution."
+Description: "Template to setup the Amazon VPC Flow Logs, PCI Compliance For Amazon VPC Flow and Amazon VPC Flow - Cloud Security Monitoring and Analytics app with AWS and Sumo Logic resources for AWS Quick Start Solution. (qs-teamplate)"
 
 Metadata:
   AWS::CloudFormation::Interface:
@@ -13,7 +13,7 @@ Metadata:
           - SumoAccessKey
           - SumoOrganizationId
           - RemoveSumoResourcesOnDeleteStack
-
+          - SumoAccountID
       - Label:
           default: "App Details - Collector Configuration"
         Parameters:
@@ -38,7 +38,6 @@ Metadata:
           default: "AWS Quick Start configuration"
         Parameters:
           - QSS3BucketName
-          - QSS3BucketRegion
           - QSS3KeyPrefix
 
       - Label:
@@ -57,6 +56,8 @@ Metadata:
         default: "Sumo Logic Organization Id"
       RemoveSumoResourcesOnDeleteStack:
         default: "Delete Sumo Logic Resources when stack is deleted"
+      SumoAccountID:
+        default: "Sumo Logic AWS Account ID" 
 
       InstallVpcApp:
         default: "Install Sumo Logic Amazon VPC Flow Logs App"
@@ -86,8 +87,6 @@ Metadata:
 
       QSS3BucketName:
         default: "Quick Start S3 bucket name"
-      QSS3BucketRegion:
-        default: "Quick Start S3 bucket region"
       QSS3KeyPrefix:
         default: "Quick Start S3 key prefix"
 
@@ -132,6 +131,13 @@ Parameters:
     Description: "To delete collectors, sources and apps when the stack is deleted, set this parameter to true. Default is true.
                   Deletes the resources created by the stack. Deletion of updated resources will be skipped."
     Type: String
+  SumoAccountID:
+    Type: String
+    Description: "Account belonging to Sumo Logic used for ingestion of logs from customers"
+    AllowedPattern: ".+"
+    ConstraintDescription: "Sumo Logic AWS Account ID can not be empty."
+    Default: "926226587429"
+        
   InstallVpcApp:
     Type: String
     Description: "Yes -> To Install Sumo Logic Amazon VPC Flow Logs in Sumo Logic for AWS Quick Start Solution.
@@ -209,10 +215,7 @@ Parameters:
     Default: "aws-quickstart"
     Description: "S3 bucket name for the Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-)."
     Type: "String"
-  QSS3BucketRegion:
-    Default: "us-east-1"
-    Description: "The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value."
-    Type: String
+
   QSS3KeyPrefix:
     AllowedPattern: "^[0-9a-zA-Z-/]*$"
     ConstraintDescription: "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/)."
@@ -261,22 +264,50 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
+                  - ec2:DescribeFlowLogs
+                  - logs:CreateLogDelivery
+                  - logs:DeleteLogDelivery
+                Resource: '*'
+
+              - Effect: Allow                
+                Action:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
+                Resource:
+                  - !Sub arn:${AWS::Partition}:logs:*:${AWS::AccountId}:log-group:*
+                  - !Sub arn:${AWS::Partition}:logs:*:${AWS::AccountId}:log-group:*:log-stream:*
+
+              - Effect: Allow                
+                Action:
                   - cloudtrail:CreateTrail
                   - cloudtrail:DeleteTrail
                   - cloudtrail:UpdateTrail
                   - cloudtrail:StartLogging
-                  - ec2:Describe*
+                Resource:
+                  - !Sub arn:${AWS::Partition}:cloudtrail:*:${AWS::AccountId}:trail/*
+
+              - Effect: Allow
+                Action:
                   - ec2:DeleteFlowLogs
                   - ec2:CreateFlowLogs
-                  - ec2:DescribeFlowLogs
-                  - logs:CreateLogDelivery
-                  - logs:DeleteLogDelivery
+                Resource:
+                  - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:vpc-flow-log/*
+                  - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:network-interface/*
+                  - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:subnet/*
+                  - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:transit-gateway/*
+                  - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:transit-gateway-attachment/*
+                  - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:vpc/*
+                  - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:elastic-ip/*
+                  - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:client-vpn-endpoint/*
+                  - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:fleet/*
+                  - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:fpga-imag/* 
+              - Effect: Allow
+                Action:
                   - s3:GetBucketPolicy
                   - s3:PutBucketPolicy
-                Resource: '*'
+                Resource:
+                  - !Sub arn:${AWS::Partition}:s3:::*
 
   SumoLogicHelperFunction:
     Type: 'AWS::Serverless::Function'
@@ -306,7 +337,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              AWS: arn:aws:iam::926226587429:root
+              AWS: !Sub arn:aws:iam::${SumoAccountID}:root
             Action: sts:AssumeRole
             Condition:
               StringEquals:
@@ -324,7 +355,7 @@ Resources:
                   - s3:ListBucketVersions
                   - s3:ListBucket
                 Resource:
-                  "*"
+                  - !Sub arn:${AWS::Partition}:s3:::*
 
   SumoSNSTopic:
     Condition: create_sns_topic

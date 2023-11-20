@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
-Description: "Template to setup the AWS Security Hub app with AWS and Sumo Logic resources for AWS Quick Start Solution."
+Description: "Template to setup the AWS Security Hub app with AWS and Sumo Logic resources for AWS Quick Start Solution. (qs-teamplate)"
 
 Metadata:
   AWS::CloudFormation::Interface:
@@ -13,7 +13,7 @@ Metadata:
           - SumoAccessKey
           - SumoOrganizationId
           - RemoveSumoResourcesOnDeleteStack
-
+          - SumoAccountID
       - Label:
           default: "App Details - Collector Configuration"
         Parameters:
@@ -40,7 +40,6 @@ Metadata:
           default: "AWS Quick Start configuration"
         Parameters:
           - QSS3BucketName
-          - QSS3BucketRegion
           - QSS3KeyPrefix
 
       - Label:
@@ -59,6 +58,8 @@ Metadata:
         default: "Sumo Logic Organization Id"
       RemoveSumoResourcesOnDeleteStack:
         default: "Delete Sumo Logic Resources when stack is deleted"
+      SumoAccountID:
+        default: "Sumo Logic AWS Account ID" 
 
       InstallApp:
         default: "Install Sumo Logic App"
@@ -85,8 +86,6 @@ Metadata:
 
       QSS3BucketName:
         default: "Quick Start S3 bucket name"
-      QSS3BucketRegion:
-        default: "Quick Start S3 bucket region"
       QSS3KeyPrefix:
         default: "Quick Start S3 key prefix"
 
@@ -131,6 +130,12 @@ Parameters:
     Description: "To delete collectors, sources and apps when the stack is deleted, set this parameter to true. Default is true.
                   Deletes the resources created by the stack. Deletion of updated resources will be skipped."
     Type: String
+  SumoAccountID:
+    Type: String
+    Description: "Account belonging to Sumo Logic used for ingestion of logs from customers"
+    AllowedPattern: ".+"
+    ConstraintDescription: "Sumo Logic AWS Account ID can not be empty."
+    Default: "926226587429"
 
   InstallApp:
     Type: String
@@ -195,10 +200,6 @@ Parameters:
     Default: "aws-quickstart"
     Description: "S3 bucket name for the Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-)."
     Type: "String"
-  QSS3BucketRegion:
-    Default: "us-east-1"
-    Description: "The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value."
-    Type: String
   QSS3KeyPrefix:
     AllowedPattern: "^[0-9a-zA-Z-/]*$"
     ConstraintDescription: "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/)."
@@ -250,7 +251,9 @@ Resources:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
-                Resource: '*'
+                Resource:
+                  - !Sub arn:${AWS::Partition}:logs:*:${AWS::AccountId}:log-group:*
+                  - !Sub arn:${AWS::Partition}:logs:*:${AWS::AccountId}:log-group:*:log-stream:*                
 
   SumoLogicHelperFunction:
     Type: 'AWS::Serverless::Function'
@@ -280,7 +283,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              AWS: arn:aws:iam::926226587429:root
+              AWS: !Sub arn:aws:iam::${SumoAccountID}:root
             Action: sts:AssumeRole
             Condition:
               StringEquals:
@@ -298,7 +301,7 @@ Resources:
                   - s3:ListBucketVersions
                   - s3:ListBucket
                 Resource:
-                  "*"
+                  - !Sub arn:${AWS::Partition}:s3:::*
 
   SumoSNSTopic:
     Condition: create_sns_topic
@@ -459,7 +462,7 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: execute-api:Invoke
-                Resource: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*/*/POST/findings
+                Resource: !Sub arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:*/*/POST/findings
 
   SecurityHubConfiguration:
     Type: AWS::SecurityHub::Hub

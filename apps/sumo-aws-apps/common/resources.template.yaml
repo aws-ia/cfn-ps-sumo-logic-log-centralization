@@ -229,6 +229,7 @@ Resources:
         Key: !Sub "${QSS3KeyPrefix}apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
       MemorySize: 128
       Timeout: 900
+       ReservedConcurrentExecutions: 4
       Role:
         Fn::GetAtt:
           - SumoLogicHelperRole
