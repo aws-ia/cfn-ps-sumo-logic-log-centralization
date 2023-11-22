@@ -51,10 +51,7 @@ Parameters:
     Default: "aws-quickstart"
     Description: "S3 bucket name for the Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-)."
     Type: "String"
-  QSS3BucketRegion:
-    Default: "us-east-1"
-    Description: "The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value."
-    Type: String
+
   QSS3KeyPrefix:
     AllowedPattern: "^[0-9a-zA-Z-/]*$"
     ConstraintDescription: "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/)."
@@ -162,7 +159,6 @@ Resources:
 
   AutoEnableS3LogEventsRuleTrigger:
     Type: 'AWS::Events::Rule'
-    DependsOn: AwsS3LogsResourcesLambda
     Condition: enable_s3_buckets_logging
     Properties:
       Description: Auto-Enable S3 loggging for S3 Buckets with Lambda from events
@@ -193,7 +189,6 @@ Resources:
 
   AutoEnableVPCEventsRuleTrigger:
     Type: 'AWS::Events::Rule'
-    DependsOn: AwsS3LogsResourcesLambda
     Condition: enable_vpc_flow_logs_logging
     Properties:
       Description: Auto-Enable VPC Flow logs for VPCs with Lambda from events
@@ -224,7 +219,6 @@ Resources:
 
   AutoEnableNetFWEventsRuleTrigger:
     Type: 'AWS::Events::Rule'
-    DependsOn: AwsS3LogsResourcesLambda
     Condition: enable_firewall_logging
     Properties:
       Description: Auto-Enable logging for Network Firewall with Lambda from events
@@ -246,7 +240,6 @@ Resources:
 
   SumoLogicHelperFunction:
     Type: 'AWS::Serverless::Function'
-    DependsOn: SumoLambdaRole
     Condition: enable_existing_resources
     Properties:
       Handler: main.handler
