@@ -494,7 +494,7 @@ Resources:
                 aws:SourceArn: !Sub "arn:aws:s3:::${CloudTrailLogsBucketName}"
             Effect: Allow
             Principal:
-              AWS: 'arn:aws:iam::*:*'
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
             Resource:
               - !Ref SumoSNSTopic
       Topics:

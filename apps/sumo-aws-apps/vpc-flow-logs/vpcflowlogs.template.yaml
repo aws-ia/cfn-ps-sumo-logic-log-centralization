@@ -245,6 +245,7 @@ Conditions:
     - !Condition install_s3_source
 
 Resources:
+
   SumoLogicHelperRole:
     Type: AWS::IAM::Role
     Condition: do_not_use_parent_stack
@@ -399,7 +400,7 @@ Resources:
                 aws:SourceArn: !Sub "arn:aws:s3:::${LogsS3BucketName}"
             Effect: Allow
             Principal:
-              AWS: "*"
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
             Resource:
               - !Ref SumoSNSTopic
       Topics:
@@ -471,7 +472,7 @@ Resources:
         - !ImportValue
           'Fn::Sub': '${ParentStackName}-SumoSourceRoleARN'
       multilineProcessingEnabled: false
-      useAutolineMatching": false
+      useAutolineMatching: false
 
   SumoVPCFlowLogApp:
     Type: Custom::App
@@ -535,12 +536,12 @@ Resources:
       SumoAccessID: !Ref SumoAccessID
       SumoAccessKey: !Ref SumoAccessKey
       SumoDeployment: !Ref SumoDeployment
+      
 Outputs:
   SumoRoleArn:
     Description: ARN of the cretaed Role.
     Condition: do_not_use_parent_stack
     Value: !GetAtt SumoRole.Arn
-
   SumoEndpoint:
     Description: SNS Subscription Endpoint
     Condition: install_s3_source

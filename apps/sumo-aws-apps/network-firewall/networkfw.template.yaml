@@ -554,7 +554,7 @@ Resources:
                 aws:SourceArn: !Sub "arn:aws:s3:::${LogsS3BucketName}"
             Effect: Allow
             Principal:
-              AWS: 'arn:aws:iam::*:*'
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
             Resource:
               - !Ref SumoSNSTopic
       Topics:
@@ -622,7 +622,7 @@ Resources:
         - !ImportValue
           'Fn::Sub': '${ParentStackName}-SumoSourceRoleARN'
       multilineProcessingEnabled: false
-      useAutolineMatching": false
+      useAutolineMatching: false
 
   SumoNFWLogApp:
     Type: Custom::App
