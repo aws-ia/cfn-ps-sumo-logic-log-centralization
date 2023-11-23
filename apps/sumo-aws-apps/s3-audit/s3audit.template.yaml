@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: "Template to setup the Amazon S3 Audit app with AWS and Sumo Logic resources for AWS Quick Start Solution. (qs-teamplate)"
 
@@ -53,7 +53,7 @@ Metadata:
       RemoveSumoResourcesOnDeleteStack:
         default: "Delete Sumo Logic Resources when stack is deleted"
       SumoAccountID:
-        default: "Sumo Logic AWS Account ID" 
+        default: "Sumo Logic AWS Account ID"
 
       InstallApp:
         default: "Install Sumo Logic App"
@@ -116,8 +116,9 @@ Parameters:
       - true
       - false
     Default: true
-    Description: "To delete collectors, sources and apps when the stack is deleted, set this parameter to true. Default is true.
-                  Deletes the resources created by the stack. Deletion of updated resources will be skipped."
+    Description:
+      "To delete collectors, sources and apps when the stack is deleted, set this parameter to true. Default is true.
+      Deletes the resources created by the stack. Deletion of updated resources will be skipped."
     Type: String
   SumoAccountID:
     Type: String
@@ -128,12 +129,13 @@ Parameters:
 
   InstallApp:
     Type: String
-    Description: "Yes -> To Install Sumo Logic App in Sumo Logic for AWS Quick Start Solution.
-                  No -> Skip Installation of the app."
-    Default: 'Yes'
+    Description:
+      "Yes -> To Install Sumo Logic App in Sumo Logic for AWS Quick Start Solution.
+      No -> Skip Installation of the app."
+    Default: "Yes"
     AllowedValues:
-      - 'Yes'
-      - 'No'
+      - "Yes"
+      - "No"
   CollectorName:
     Type: String
     Description: Change the collector name to be created else default name will be used.
@@ -142,23 +144,24 @@ Parameters:
   CreateS3Bucket:
     Type: String
     Description: "Yes - Create a new S3 bucket in AWS S3.
-                  No - Use an existing S3 bucket from AWS S3 which has S3 Audit Logs."
-    Default: 'Yes'
+      No - Use an existing S3 bucket from AWS S3 which has S3 Audit Logs."
+    Default: "Yes"
     AllowedValues:
-      - 'Yes'
-      - 'No'
+      - "Yes"
+      - "No"
   LogsS3BucketName:
     Type: String
     Description: "Existing Bucket Name - Provide value if the Flag is set to No.
-                  New Bucket Name - Provide a unique Bucket Name if the flag is set to Yes."
+      New Bucket Name - Provide a unique Bucket Name if the flag is set to Yes."
   CreateS3AuditSource:
     Type: String
-    Description: "Yes - to create Sumo Logic Amazon S3 Audit Log Source with provided bucket Name.
-                  No - to skip creation of the Sumo Logic Amazon S3 Audit Log Source."
-    Default: 'Yes'
+    Description:
+      "Yes - to create Sumo Logic Amazon S3 Audit Log Source with provided bucket Name.
+      No - to skip creation of the Sumo Logic Amazon S3 Audit Log Source."
+    Default: "Yes"
     AllowedValues:
-      - 'Yes'
-      - 'No'
+      - "Yes"
+      - "No"
   S3BucketLogsPathExpression:
     Type: String
     Description: Path expression to match one or more S3 objects. For example, ABC*.log or ABC.log
@@ -169,8 +172,9 @@ Parameters:
     Default: AWS-S3-Audit-Source
   S3AuditSourceCategoryName:
     Type: String
-    Description: "Existing - Change to an existing Source Category from Sumo Logic if Amazon S3 Source is not created.
-                  New - Default will be used if Amazon S3 Source is Created."
+    Description:
+      "Existing - Change to an existing Source Category from Sumo Logic if Amazon S3 Source is not created.
+      New - Default will be used if Amazon S3 Source is Created."
     Default: AWS/S3/Audit/Logs
 
   QSS3BucketName:
@@ -192,14 +196,14 @@ Parameters:
     Description: Parent Stack Name. Do Not Edit the value.
 
 Conditions:
-  do_not_use_parent_stack: !Equals [ !Ref ParentStackName, "ParentStackName"]
-  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
+  do_not_use_parent_stack: !Equals [!Ref ParentStackName, "ParentStackName"]
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, "aws-quickstart"]
 
-  install_app: !Equals [!Ref InstallApp, 'Yes']
+  install_app: !Equals [!Ref InstallApp, "Yes"]
   create_target_s3_bucket: !And
-    - !Equals [!Ref CreateS3Bucket, 'Yes']
+    - !Equals [!Ref CreateS3Bucket, "Yes"]
     - !Condition create_sns_topic
-  install_s3_audit_source: !Equals [!Ref CreateS3AuditSource, 'Yes']
+  install_s3_audit_source: !Equals [!Ref CreateS3AuditSource, "Yes"]
 
   create_sns_topic: !And
     - !Condition do_not_use_parent_stack
@@ -211,7 +215,7 @@ Resources:
     Condition: do_not_use_parent_stack
     Properties:
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -221,12 +225,12 @@ Resources:
       Policies:
         - PolicyName: SumoPolicy
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
                   - s3:ListAllMyBuckets
-                Resource: '*'
+                Resource: "*"
 
               - Effect: Allow
                 Action:
@@ -245,10 +249,10 @@ Resources:
                   - s3:PutBucketAcl
                   - s3:GetBucketAcl
                 Resource:
-                  - !Sub arn:${AWS::Partition}:s3:::*   
+                  - !Sub arn:${AWS::Partition}:s3:::*
 
   SumoLogicHelperFunction:
-    Type: 'AWS::Serverless::Function'
+    Type: "AWS::Serverless::Function"
     Condition: do_not_use_parent_stack
     Properties:
       Handler: main.handler
@@ -256,10 +260,24 @@ Resources:
       CodeUri:
         Bucket: !Sub
           - "${S3Bucket}"
-          - S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+          - S3Bucket:
+              !If [
+                UsingDefaultBucket,
+                !Sub "${QSS3BucketName}-${AWS::Region}",
+                !Ref QSS3BucketName,
+              ]
         Key: !Sub "${QSS3KeyPrefix}apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
       MemorySize: 128
       Timeout: 900
+      DeadLetterQueue:
+        TargetArn: !Ref AWS::NoValue
+        Type: SQS
+      ReservedConcurrentExecutions: 4
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref AWS::NoValue
+        SubnetIds:
+          - !Ref AWS::NoValue
       Role:
         Fn::GetAtt:
           - SumoLogicHelperRole
@@ -270,7 +288,7 @@ Resources:
     Condition: do_not_use_parent_stack
     Properties:
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -283,7 +301,7 @@ Resources:
       Policies:
         - PolicyName: SumoPolicy
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
@@ -298,6 +316,7 @@ Resources:
     Condition: create_sns_topic
     Type: "AWS::SNS::Topic"
     Properties:
+      KmsMasterKeyId: !Ref AWS::NoValue
       TopicName: !Sub "SumoSNSTopic-${AWS::StackName}"
 
   SumoSNSSubscription:
@@ -308,7 +327,7 @@ Resources:
         - create_sns_topic
         - !Ref SumoSNSTopic
         - !ImportValue
-          'Fn::Sub': '${ParentStackName}-SNSTopicArn'
+          "Fn::Sub": "${ParentStackName}-SNSTopicArn"
       Endpoint: !GetAtt SumoS3AuditSource.SUMO_ENDPOINT
       Protocol: https
       DeliveryPolicy:
@@ -337,7 +356,7 @@ Resources:
                 aws:SourceArn: !Sub "arn:aws:s3:::${LogsS3BucketName}"
             Effect: Allow
             Principal:
-              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
             Resource:
               - !Ref SumoSNSTopic
       Topics:
@@ -354,7 +373,18 @@ Resources:
         TopicConfigurations:
           - Event: s3:ObjectCreated:Put
             Topic: !Ref SumoSNSTopic
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: True
+        BlockPublicPolicy: True
+        IgnorePublicAcls: True
+        RestrictPublicBuckets: True
+      VersioningConfiguration:
+        Status: Enabled
+      LoggingConfiguration:
+        DestinationBucketName: !Ref AWS::NoValue
+        LogFilePrefix: !Ref AWS::NoValue
     DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
 
   SumoHostedCollector:
     Type: Custom::Collector
@@ -366,10 +396,15 @@ Resources:
           - SumoLogicHelperFunction
           - Arn
         - !ImportValue
-          'Fn::Sub': '${ParentStackName}-SumoLogicHelperFunctionARN'
+          "Fn::Sub": "${ParentStackName}-SumoLogicHelperFunctionARN"
       Region: !Ref "AWS::Region"
       CollectorType: Hosted
-      RemoveOnDeleteStack: !If [do_not_use_parent_stack,!Ref RemoveSumoResourcesOnDeleteStack,false]
+      RemoveOnDeleteStack:
+        !If [
+          do_not_use_parent_stack,
+          !Ref RemoveSumoResourcesOnDeleteStack,
+          false,
+        ]
       CollectorName: !Ref CollectorName
       SumoAccessID: !Ref SumoAccessID
       SumoAccessKey: !Ref SumoAccessKey
@@ -385,7 +420,7 @@ Resources:
           - SumoLogicHelperFunction
           - Arn
         - !ImportValue
-          'Fn::Sub': '${ParentStackName}-SumoLogicHelperFunctionARN'
+          "Fn::Sub": "${ParentStackName}-SumoLogicHelperFunctionARN"
       SourceType: AwsS3AuditBucket
       Region: !Ref "AWS::Region"
       SourceName: !Ref S3AuditSourceName
@@ -403,7 +438,7 @@ Resources:
           - SumoRole
           - Arn
         - !ImportValue
-          'Fn::Sub': '${ParentStackName}-SumoSourceRoleARN'
+          "Fn::Sub": "${ParentStackName}-SumoSourceRoleARN"
 
   SumoAmazonS3AuditApp:
     Type: Custom::App
@@ -415,7 +450,7 @@ Resources:
           - SumoLogicHelperFunction
           - Arn
         - !ImportValue
-          'Fn::Sub': '${ParentStackName}-SumoLogicHelperFunctionARN'
+          "Fn::Sub": "${ParentStackName}-SumoLogicHelperFunctionARN"
       Region: !Ref "AWS::Region"
       AppName: "Amazon QuickStart - Amazon S3 Audit"
       AppId: "cf3ba421-d959-4b08-9ae8-5bd4202eea87"

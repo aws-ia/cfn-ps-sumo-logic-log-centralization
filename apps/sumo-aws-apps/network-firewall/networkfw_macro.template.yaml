@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: "Template to setup the Firewal Macro to process multi subnet and multi allowed ports for AWS Network Firewall stack."
 
@@ -17,14 +17,14 @@ Parameters:
     Type: "String"
 
 Conditions:
-  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart'] 
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, "aws-quickstart"]
 
 Resources:
   MacroNFWHelperRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -34,7 +34,7 @@ Resources:
       Policies:
         - PolicyName: SumoPolicy
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
@@ -47,18 +47,32 @@ Resources:
                 Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${AWS::StackName}-MacroNFWHelperFunction:*"
 
   MacroNFWHelperFunction:
-    Type: 'AWS::Serverless::Function'
+    Type: "AWS::Serverless::Function"
     Properties:
       FunctionName: !Sub "${AWS::StackName}-MacroNFWHelperFunction"
       Handler: firewallmacro.handle
       Runtime: python3.11
       CodeUri:
         Bucket: !Sub
-                - "${S3Bucket}"
-                - S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+          - "${S3Bucket}"
+          - S3Bucket:
+              !If [
+                UsingDefaultBucket,
+                !Sub "${QSS3BucketName}-${AWS::Region}",
+                !Ref QSS3BucketName,
+              ]
         Key: !Sub "${QSS3KeyPrefix}apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
       MemorySize: 128
       Timeout: 900
+      DeadLetterQueue:
+        TargetArn: !Ref AWS::NoValue
+        Type: SQS
+      ReservedConcurrentExecutions: 4
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref AWS::NoValue
+        SubnetIds:
+          - !Ref AWS::NoValue
       Role:
         Fn::GetAtt:
           - MacroNFWHelperRole
@@ -67,9 +81,9 @@ Resources:
   NFWMacro:
     Type: AWS::CloudFormation::Macro
     Properties:
-      Name: 'MacroFirewall'
+      Name: "MacroFirewall"
       Description: Macro to process multi subnet and multi allowed ports for Network Firewall.
-      FunctionName: 
+      FunctionName:
         Fn::GetAtt:
           - MacroNFWHelperFunction
           - Arn

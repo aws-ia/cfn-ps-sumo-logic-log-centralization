@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Transform:
   - AWS::Serverless-2016-10-31
   - MacroFirewall
@@ -80,7 +80,7 @@ Metadata:
       NameFirewallPolicy:
         default: "ARN of exists Network Policy"
       StatefulRule:
-       default: "Create a default statefull rule group for Network Policy"
+        default: "Create a default statefull rule group for Network Policy"
       StatelessRule:
         default: " Create a default stateless rule group for Network Policy"
 
@@ -99,7 +99,6 @@ Metadata:
       S3SourceCategoryName:
         default: "Sumo Logic Amazon S3 Logs Source Category Name"
 
-
       QSS3BucketName:
         default: "Quick Start S3 bucket name"
       QSS3KeyPrefix:
@@ -107,7 +106,6 @@ Metadata:
 
       ParentStackName:
         default: "If Any, Name of parent Stack"
-
 
 Parameters:
   SumoDeployment:
@@ -148,26 +146,28 @@ Parameters:
       - true
       - false
     Default: true
-    Description: "To delete collectors, sources and apps when the stack is deleted, set this parameter to true. Default is true.
-                  Deletes the resources created by the stack. Deletion of updated resources will be skipped."
+    Description:
+      "To delete collectors, sources and apps when the stack is deleted, set this parameter to true. Default is true.
+      Deletes the resources created by the stack. Deletion of updated resources will be skipped."
     Type: String
 
   InstallNFWApp:
     Type: String
-    Description: "Yes -> To Install Sumo Logic Amazon Network Firewall Logs in Sumo Logic for AWS Quick Start Solution.
-                  No -> Skip Installation of the app."
-    Default: 'Yes'
+    Description:
+      "Yes -> To Install Sumo Logic Amazon Network Firewall Logs in Sumo Logic for AWS Quick Start Solution.
+      No -> Skip Installation of the app."
+    Default: "Yes"
     AllowedValues:
-      - 'Yes'
-      - 'No'
+      - "Yes"
+      - "No"
   CreateNewFW:
     Type: String
     Description: "Yes - Create a new Network Firewall in AWS.
-                  No - To skip creating a new Network Firewall."
-    Default: 'No'
+      No - To skip creating a new Network Firewall."
+    Default: "No"
     AllowedValues:
-      - 'Yes'
-      - 'No'
+      - "Yes"
+      - "No"
   VPCID:
     Type: String
     Description: "Skip if No is selected. A VPC ID mapping to new Network Firewall"
@@ -179,11 +179,11 @@ Parameters:
   CreateFirewallPolicy:
     Type: String
     Description: "Yes - Create a Policy for new Network Firewall.
-                  No - To skip creating a Policy."
-    Default: 'No'
+      No - To skip creating a Policy."
+    Default: "No"
     AllowedValues:
-      - 'Yes'
-      - 'No'
+      - "Yes"
+      - "No"
   NameFirewallPolicy:
     Type: String
     Description: "Skip if Yes is selected. Enter ARN of exists Firewall Policy"
@@ -191,15 +191,14 @@ Parameters:
 
   StatefulRule:
     Type: String
-    Description: "Skip if use a exists Firewall Policy. Enter a stateful rule
-                  ex: pass tcp 10.20.20.0/24 45400:45500 <> 10.10.10.0/24 5203 (msg:\"test\";sid:1;rev:1;)"
+    Description: 'Skip if use a exists Firewall Policy. Enter a stateful rule
+      ex: pass tcp 10.20.20.0/24 45400:45500 <> 10.10.10.0/24 5203 (msg:"test";sid:1;rev:1;)'
     Default: ""
 
   StatelessRule:
     Type: String
     Description: "Skip if use a exists Firewall Policy. Enter multi allowed ports. Ports separated by comma"
     Default: "80"
-
 
   CollectorName:
     Type: String
@@ -209,15 +208,15 @@ Parameters:
   CreateS3Bucket:
     Type: String
     Description: "Yes - Create a new S3 bucket in AWS S3.
-                  No - Use an existing S3 bucket from AWS S3 which has NFW Logs."
-    Default: 'No'
+      No - Use an existing S3 bucket from AWS S3 which has NFW Logs."
+    Default: "No"
     AllowedValues:
-      - 'Yes'
-      - 'No'
+      - "Yes"
+      - "No"
   LogsS3BucketName:
     Type: String
     Description: "Existing Bucket Name - Provide value if the Flag is set to No.
-                  New Bucket Name - Provide a unique Bucket Name if the flag is set to Yes."
+      New Bucket Name - Provide a unique Bucket Name if the flag is set to Yes."
 
   LogsNFWBucketPrefix:
     AllowedPattern: "^[0-9a-zA-Z-/]*$"
@@ -228,12 +227,13 @@ Parameters:
 
   CreateS3Source:
     Type: String
-    Description: "Yes - to create Sumo Logic Amazon S3 Log Source with provided bucket Name.
-                  No - to skip creation of the Sumo Logic Amazon S3 Log Source."
-    Default: 'Yes'
+    Description:
+      "Yes - to create Sumo Logic Amazon S3 Log Source with provided bucket Name.
+      No - to skip creation of the Sumo Logic Amazon S3 Log Source."
+    Default: "Yes"
     AllowedValues:
-      - 'Yes'
-      - 'No'
+      - "Yes"
+      - "No"
   S3BucketLogsPathExpression:
     Type: String
     Description: Path expression to match one or more S3 objects. For example, ABC*.log or ABC.log
@@ -244,10 +244,10 @@ Parameters:
     Default: AWS-NFW-Flow-Logs-Source
   S3SourceCategoryName:
     Type: String
-    Description: "Existing - Change to an existing Source Category from Sumo Logic if Amazon S3 Source is not created.
-                  New - Default will be used if Amazon S3 Source is Created."
+    Description:
+      "Existing - Change to an existing Source Category from Sumo Logic if Amazon S3 Source is not created.
+      New - Default will be used if Amazon S3 Source is Created."
     Default: AWS/NFW/Logs
-
 
   QSS3BucketName:
     AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
@@ -269,17 +269,17 @@ Parameters:
     Description: Parent Stack Name. Do Not Edit the value.
 
 Conditions:
-  do_not_use_parent_stack: !Equals [ !Ref ParentStackName, "ParentStackName"]
-  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
-  create_new_fw_aws: !Equals [!Ref CreateNewFW, 'Yes']
+  do_not_use_parent_stack: !Equals [!Ref ParentStackName, "ParentStackName"]
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, "aws-quickstart"]
+  create_new_fw_aws: !Equals [!Ref CreateNewFW, "Yes"]
   create_fw_policy: !And
-    - !Equals [!Ref CreateFirewallPolicy, 'Yes']
+    - !Equals [!Ref CreateFirewallPolicy, "Yes"]
     - !Condition create_new_fw_aws
-  install_nfw_app: !Equals [!Ref InstallNFWApp, 'Yes']
+  install_nfw_app: !Equals [!Ref InstallNFWApp, "Yes"]
   create_target_s3_bucket: !And
-    - !Equals [!Ref CreateS3Bucket, 'Yes']
+    - !Equals [!Ref CreateS3Bucket, "Yes"]
     - !Condition create_sns_topic
-  install_s3_source: !Equals [!Ref CreateS3Source, 'Yes']
+  install_s3_source: !Equals [!Ref CreateS3Source, "Yes"]
 
   create_sns_topic: !And
     - !Condition do_not_use_parent_stack
@@ -302,13 +302,18 @@ Resources:
                 - !Split
                   - "/"
                   - !Ref "AWS::StackId"
-      FirewallPolicyArn: !If [create_fw_policy, !Ref QuickstartFirewallPolicy, !Ref NameFirewallPolicy]
+      FirewallPolicyArn:
+        !If [
+          create_fw_policy,
+          !Ref QuickstartFirewallPolicy,
+          !Ref NameFirewallPolicy,
+        ]
       SubnetMappings:
         - SubnetId: !Ref SubnetID
       VpcId: !Ref VPCID
 
   QuickstartFirewallPolicy:
-    Type: 'AWS::NetworkFirewall::FirewallPolicy'
+    Type: "AWS::NetworkFirewall::FirewallPolicy"
     Condition: create_fw_policy
     Properties:
       FirewallPolicyName: !Join
@@ -325,9 +330,9 @@ Resources:
                   - !Ref "AWS::StackId"
       FirewallPolicy:
         StatelessDefaultActions:
-          - 'aws:forward_to_sfe'
+          - "aws:forward_to_sfe"
         StatelessFragmentDefaultActions:
-          - 'aws:forward_to_sfe'
+          - "aws:forward_to_sfe"
         StatefulRuleGroupReferences:
           - ResourceArn: !Ref QuickStartStatefulRuleGroup
         StatelessRuleGroupReferences:
@@ -336,7 +341,7 @@ Resources:
       Description: Firewall Policy for QuickStart
 
   QuickStartStatefulRuleGroup:
-    Type: 'AWS::NetworkFirewall::RuleGroup'
+    Type: "AWS::NetworkFirewall::RuleGroup"
     Condition: create_fw_policy
     Properties:
       Type: STATEFUL
@@ -359,7 +364,7 @@ Resources:
       Description: AWS QuickStart Stateful Rule Group
 
   QuickStartStatelessRuleGroup:
-    Type: 'AWS::NetworkFirewall::RuleGroup'
+    Type: "AWS::NetworkFirewall::RuleGroup"
 
     Condition: create_fw_policy
     Properties:
@@ -395,7 +400,7 @@ Resources:
                     Protocols:
                       - 6
                   Actions:
-                    - 'aws:pass'
+                    - "aws:pass"
                 Priority: 1
               - RuleDefinition:
                   MatchAttributes:
@@ -412,13 +417,13 @@ Resources:
                     Protocols:
                       - 6
                   Actions:
-                    - 'aws:pass'
+                    - "aws:pass"
                 Priority: 2
       Capacity: 100
       Description: Stateless Rule Group for QuickStart
 
   FirewallLoggingConfiguration:
-    Type: 'AWS::NetworkFirewall::LoggingConfiguration'
+    Type: "AWS::NetworkFirewall::LoggingConfiguration"
     Condition: create_new_fw_aws
     Properties:
       FirewallArn: !Ref QuickStartNetworkFirewall
@@ -435,13 +440,12 @@ Resources:
               bucketName: !Ref LogsS3BucketName
               prefix: !Sub "${LogsNFWBucketPrefix}alerts"
 
-
   SumoLogicHelperRole:
     Type: AWS::IAM::Role
     Condition: do_not_use_parent_stack
     Properties:
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -451,7 +455,7 @@ Resources:
       Policies:
         - PolicyName: SumoPolicy
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
@@ -464,7 +468,7 @@ Resources:
                 Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${AWS::StackName}-SumoLogicHelperFunction:*"
 
   SumoLogicHelperFunction:
-    Type: 'AWS::Serverless::Function'
+    Type: "AWS::Serverless::Function"
     Condition: do_not_use_parent_stack
     Properties:
       FunctionName: !Sub "${AWS::StackName}-SumoLogicHelperFunction"
@@ -473,10 +477,24 @@ Resources:
       CodeUri:
         Bucket: !Sub
           - "${S3Bucket}"
-          - S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+          - S3Bucket:
+              !If [
+                UsingDefaultBucket,
+                !Sub "${QSS3BucketName}-${AWS::Region}",
+                !Ref QSS3BucketName,
+              ]
         Key: !Sub "${QSS3KeyPrefix}apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
       MemorySize: 128
       Timeout: 900
+      DeadLetterQueue:
+        TargetArn: !Ref AWS::NoValue
+        Type: SQS
+      ReservedConcurrentExecutions: 4
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref AWS::NoValue
+        SubnetIds:
+          - !Ref AWS::NoValue
       Role:
         Fn::GetAtt:
           - SumoLogicHelperRole
@@ -487,7 +505,7 @@ Resources:
     Condition: do_not_use_parent_stack
     Properties:
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -500,7 +518,7 @@ Resources:
       Policies:
         - PolicyName: SumoPolicy
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
@@ -509,12 +527,13 @@ Resources:
                   - s3:ListBucketVersions
                   - s3:ListBucket
                 Resource:
-                  - !Sub 'arn:${AWS::Partition}:s3:::*'
+                  - !Sub "arn:${AWS::Partition}:s3:::*"
 
   SumoSNSTopic:
     Condition: create_sns_topic
     Type: "AWS::SNS::Topic"
     Properties:
+      KmsMasterKeyId: !Ref AWS::NoValue
       TopicName: !Sub "SumoSNSTopic-${AWS::StackName}"
 
   SumoSNSSubscription:
@@ -525,7 +544,7 @@ Resources:
         - create_sns_topic
         - !Ref SumoSNSTopic
         - !ImportValue
-          'Fn::Sub': '${ParentStackName}-SNSTopicArn'
+          "Fn::Sub": "${ParentStackName}-SNSTopicArn"
       Endpoint: !GetAtt SumoS3Source.SUMO_ENDPOINT
       Protocol: https
       DeliveryPolicy:
@@ -554,7 +573,7 @@ Resources:
                 aws:SourceArn: !Sub "arn:aws:s3:::${LogsS3BucketName}"
             Effect: Allow
             Principal:
-              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
             Resource:
               - !Ref SumoSNSTopic
       Topics:
@@ -571,7 +590,18 @@ Resources:
         TopicConfigurations:
           - Event: s3:ObjectCreated:Put
             Topic: !Ref SumoSNSTopic
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: True
+        BlockPublicPolicy: True
+        IgnorePublicAcls: True
+        RestrictPublicBuckets: True
+      VersioningConfiguration:
+        Status: Enabled
+      LoggingConfiguration:
+        DestinationBucketName: !Ref AWS::NoValue
+        LogFilePrefix: !Ref AWS::NoValue
     DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
 
   SumoHostedCollector:
     Type: Custom::Collector
@@ -583,10 +613,15 @@ Resources:
           - SumoLogicHelperFunction
           - Arn
         - !ImportValue
-          'Fn::Sub': '${ParentStackName}-SumoLogicHelperFunctionARN'
+          "Fn::Sub": "${ParentStackName}-SumoLogicHelperFunctionARN"
       Region: !Ref "AWS::Region"
       CollectorType: Hosted
-      RemoveOnDeleteStack: !If [do_not_use_parent_stack,!Ref RemoveSumoResourcesOnDeleteStack,false]
+      RemoveOnDeleteStack:
+        !If [
+          do_not_use_parent_stack,
+          !Ref RemoveSumoResourcesOnDeleteStack,
+          false,
+        ]
       CollectorName: !Ref CollectorName
       SumoAccessID: !Ref SumoAccessID
       SumoAccessKey: !Ref SumoAccessKey
@@ -602,7 +637,7 @@ Resources:
           - SumoLogicHelperFunction
           - Arn
         - !ImportValue
-          'Fn::Sub': '${ParentStackName}-SumoLogicHelperFunctionARN'
+          "Fn::Sub": "${ParentStackName}-SumoLogicHelperFunctionARN"
       SourceType: AwsS3Bucket
       Region: !Ref "AWS::Region"
       SourceName: !Ref S3SourceName
@@ -620,7 +655,7 @@ Resources:
           - SumoRole
           - Arn
         - !ImportValue
-          'Fn::Sub': '${ParentStackName}-SumoSourceRoleARN'
+          "Fn::Sub": "${ParentStackName}-SumoSourceRoleARN"
       multilineProcessingEnabled: false
       useAutolineMatching: false
 
@@ -634,7 +669,7 @@ Resources:
           - SumoLogicHelperFunction
           - Arn
         - !ImportValue
-          'Fn::Sub': '${ParentStackName}-SumoLogicHelperFunctionARN'
+          "Fn::Sub": "${ParentStackName}-SumoLogicHelperFunctionARN"
       Region: !Ref "AWS::Region"
       AppName: "Amazon QuickStart - AWS Network Firewall"
       AppId: "3735b649-d337-49a5-ad94-d0650ef02db9"
@@ -644,7 +679,6 @@ Resources:
       SumoAccessID: !Ref SumoAccessID
       SumoAccessKey: !Ref SumoAccessKey
       SumoDeployment: !Ref SumoDeployment
-
 
 Outputs:
   SumoRoleArn:

@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: "Template to setup the Amazon GuardDuty, Global Intelligence for Amazon GuardDuty with AWS and Sumo Logic resources for AWS Quick Start Solution."
 
@@ -102,26 +102,29 @@ Parameters:
       - true
       - false
     Default: false
-    Description: "To delete collector, sources and app when stack is deleted, set this parameter to true. Default is false.
-                  Deletes the resources created by the stack. Deletion of updated resources will be skipped."
+    Description:
+      "To delete collector, sources and app when stack is deleted, set this parameter to true. Default is false.
+      Deletes the resources created by the stack. Deletion of updated resources will be skipped."
     Type: String
 
   InstallGuardDutyApp:
     Type: String
-    Description: "Yes -> To Install Amazon GuardDuty App in Sumo Logic for AWS Quick Start Solution.
-                  No -> Skip Installation of the app."
-    Default: 'Yes'
+    Description:
+      "Yes -> To Install Amazon GuardDuty App in Sumo Logic for AWS Quick Start Solution.
+      No -> Skip Installation of the app."
+    Default: "Yes"
     AllowedValues:
-      - 'Yes'
-      - 'No'
+      - "Yes"
+      - "No"
   InstallGlobalGuardDutyApp:
     Type: String
-    Description: "Yes -> To Install Global Intelligence for Amazon GuardDuty in Sumo Logic for AWS Quick Start Solution.
-                  No -> Skip Installation of the app."
-    Default: 'Yes'
+    Description:
+      "Yes -> To Install Global Intelligence for Amazon GuardDuty in Sumo Logic for AWS Quick Start Solution.
+      No -> Skip Installation of the app."
+    Default: "Yes"
     AllowedValues:
-      - 'Yes'
-      - 'No'
+      - "Yes"
+      - "No"
   CollectorName:
     Type: String
     Description: Change the collector name to be created else default name will be used.
@@ -130,18 +133,19 @@ Parameters:
   CreateHttpLogsSource:
     Type: String
     Description: "Choose Yes to create Sumo Logic HTTP logs source. Choose No if HTTP Logs source already exist."
-    Default: 'Yes'
+    Default: "Yes"
     AllowedValues:
-      - 'Yes'
-      - 'No'
+      - "Yes"
+      - "No"
   HttpLogsSourceName:
     Type: String
     Description: Change the HTTP Source name to be created else default name will be used.
     Default: AWS-GuardDuty-Source
   HttpLogsSourceCategoryName:
     Type: String
-    Description: "Existing - Change to an existing Source Category from Sumo Logic if HTTP Source is not created.\n
-                  New - Change the source category else Default will be used if HTTP Source is Created"
+    Description:
+      "Existing - Change to an existing Source Category from Sumo Logic if HTTP Source is not created.\n
+      New - Change the source category else Default will be used if HTTP Source is Created"
     Default: AWS/GuardDuty/logs
 
   QSS3BucketName:
@@ -164,21 +168,20 @@ Parameters:
     Description: Parent Stack Name. Do Not Edit the value.
 
 Conditions:
-  do_not_use_parent_stack: !Equals [ !Ref ParentStackName, "ParentStackName"]
-  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
+  do_not_use_parent_stack: !Equals [!Ref ParentStackName, "ParentStackName"]
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, "aws-quickstart"]
 
-  install_guardduty_app: !Equals [!Ref InstallGuardDutyApp, 'Yes']
-  install_global_guardduty_app: !Equals [!Ref InstallGlobalGuardDutyApp, 'Yes']
-  install_http_logs_source: !Equals [!Ref CreateHttpLogsSource, 'Yes']
+  install_guardduty_app: !Equals [!Ref InstallGuardDutyApp, "Yes"]
+  install_global_guardduty_app: !Equals [!Ref InstallGlobalGuardDutyApp, "Yes"]
+  install_http_logs_source: !Equals [!Ref CreateHttpLogsSource, "Yes"]
 
 Resources:
-
   SumoLogicHelperRole:
     Type: AWS::IAM::Role
     Condition: do_not_use_parent_stack
     Properties:
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -188,7 +191,7 @@ Resources:
       Policies:
         - PolicyName: SumoPolicy
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
@@ -199,12 +202,12 @@ Resources:
                   - config:PutDeliveryChannel
                   - config:DeleteDeliveryChannel
                 Resource:
-                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*'
-                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*'
-                  - !Sub 'arn:${AWS::Partition}:config:${AWS::Region}:${AWS::AccountId}:*'
+                  - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*"
+                  - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*"
+                  - !Sub "arn:${AWS::Partition}:config:${AWS::Region}:${AWS::AccountId}:*"
 
   SumoLogicHelperFunction:
-    Type: 'AWS::Serverless::Function'
+    Type: "AWS::Serverless::Function"
     Condition: do_not_use_parent_stack
     Properties:
       Handler: main.handler
@@ -212,7 +215,12 @@ Resources:
       CodeUri:
         Bucket: !Sub
           - "${S3Bucket}"
-          - S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+          - S3Bucket:
+              !If [
+                UsingDefaultBucket,
+                !Sub "${QSS3BucketName}-${AWS::Region}",
+                !Ref QSS3BucketName,
+              ]
         Key: !Sub "${QSS3KeyPrefix}apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
       MemorySize: 128
       Timeout: 900
@@ -224,7 +232,7 @@ Resources:
         SecurityGroupIds:
           - !Ref AWS::NoValue
         SubnetIds:
-          - !Ref AWS::NoValue  
+          - !Ref AWS::NoValue
       Role:
         Fn::GetAtt:
           - SumoLogicHelperRole
@@ -237,7 +245,12 @@ Resources:
       CodeUri:
         Bucket: !Sub
           - "${S3Bucket}"
-          - S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+          - S3Bucket:
+              !If [
+                UsingDefaultBucket,
+                !Sub "${QSS3BucketName}-${AWS::Region}",
+                !Ref QSS3BucketName,
+              ]
         Key: !Sub "${QSS3KeyPrefix}apps/sumo-aws-apps/guardduty/cloudwatchevents.zip"
       Handler: cloudwatchevents.handler
       Runtime: nodejs18.x
@@ -249,10 +262,9 @@ Resources:
         SecurityGroupIds:
           - !Ref AWS::NoValue
         SubnetIds:
-          - !Ref AWS::NoValue   
+          - !Ref AWS::NoValue
       Environment:
-        Variables:
-          SUMO_ENDPOINT: !GetAtt SumoHTTPSource.SUMO_ENDPOINT
+        SUMO_ENDPOINT: !GetAtt SumoHTTPSource.SUMO_ENDPOINT
       Events:
         CloudWatchEventTrigger:
           Type: CloudWatchEvent
@@ -271,10 +283,15 @@ Resources:
           - SumoLogicHelperFunction
           - Arn
         - !ImportValue
-          'Fn::Sub': '${ParentStackName}-SumoLogicHelperFunctionARN'
+          "Fn::Sub": "${ParentStackName}-SumoLogicHelperFunctionARN"
       Region: !Ref "AWS::Region"
       CollectorType: Hosted
-      RemoveOnDeleteStack: !If [do_not_use_parent_stack,!Ref RemoveSumoResourcesOnDeleteStack,false]
+      RemoveOnDeleteStack:
+        !If [
+          do_not_use_parent_stack,
+          !Ref RemoveSumoResourcesOnDeleteStack,
+          false,
+        ]
       CollectorName: !Ref CollectorName
       SumoAccessID: !Ref SumoAccessID
       SumoAccessKey: !Ref SumoAccessKey
@@ -290,7 +307,7 @@ Resources:
           - SumoLogicHelperFunction
           - Arn
         - !ImportValue
-          'Fn::Sub': '${ParentStackName}-SumoLogicHelperFunctionARN'
+          "Fn::Sub": "${ParentStackName}-SumoLogicHelperFunctionARN"
       Region: !Ref "AWS::Region"
       SourceName: !Ref HttpLogsSourceName
       RemoveOnDeleteStack: !Ref RemoveSumoResourcesOnDeleteStack
@@ -312,7 +329,7 @@ Resources:
           - SumoLogicHelperFunction
           - Arn
         - !ImportValue
-          'Fn::Sub': '${ParentStackName}-SumoLogicHelperFunctionARN'
+          "Fn::Sub": "${ParentStackName}-SumoLogicHelperFunctionARN"
       Region: !Ref "AWS::Region"
       AppName: "Amazon QuickStart - Amazon GuardDuty"
       AppId: "5a58719f-0f8a-4aa7-993f-9cc337a286aa"
@@ -333,7 +350,7 @@ Resources:
           - SumoLogicHelperFunction
           - Arn
         - !ImportValue
-          'Fn::Sub': '${ParentStackName}-SumoLogicHelperFunctionARN'
+          "Fn::Sub": "${ParentStackName}-SumoLogicHelperFunctionARN"
       Region: !Ref "AWS::Region"
       AppName: "Amazon QuickStart - Global Intelligence for Amazon GuardDuty"
       AppId: "8e7efcb3-040a-4a92-9f8d-922fafb24afb"
@@ -345,7 +362,6 @@ Resources:
       SumoDeployment: !Ref SumoDeployment
 
 Outputs:
-
   CloudWatchEventFunction:
     Description: "CloudWatchEvent Processor Function ARN"
     Condition: install_http_logs_source
