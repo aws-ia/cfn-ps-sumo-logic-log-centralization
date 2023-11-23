@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: "Template to setup the AWS WAF app with AWS and Sumo Logic resources for AWS Quick Start Solution."
+Description: "Template to setup the AWS WAF app with AWS and Sumo Logic resources for AWS Quick Start Solution. (qs-teamplate)"
 
 Metadata:
   AWS::CloudFormation::Interface:
@@ -13,7 +13,7 @@ Metadata:
           - SumoAccessKey
           - SumoOrganizationId
           - RemoveSumoResourcesOnDeleteStack
-
+          - SumoAccountID
       - Label:
           default: "App Details - Collector Configuration"
         Parameters:
@@ -42,7 +42,6 @@ Metadata:
           default: "AWS Quick Start configuration"
         Parameters:
           - QSS3BucketName
-          - QSS3BucketRegion
           - QSS3KeyPrefix
 
       - Label:
@@ -59,6 +58,8 @@ Metadata:
         default: "Sumo Logic Access Key"
       SumoOrganizationId:
         default: "Sumo Logic Organization Id"
+      SumoAccountID:
+        default: "Sumo Logic AWS Account ID"        
       RemoveSumoResourcesOnDeleteStack:
         default: "Delete Sumo Logic Resources when stack is deleted"
 
@@ -91,8 +92,7 @@ Metadata:
 
       QSS3BucketName:
         default: "Quick Start S3 bucket name"
-      QSS3BucketRegion:
-        default: "Quick Start S3 bucket region"
+
       QSS3KeyPrefix:
         default: "Quick Start S3 key prefix"
 
@@ -124,11 +124,20 @@ Parameters:
     AllowedPattern: ".+"
     ConstraintDescription: "Sumo Logic Access Key can not be empty."
     NoEcho: true
+
+  SumoAccountID:
+    Type: String
+    Description: "Account belonging to Sumo Logic used for ingestion of logs from customers"
+    AllowedPattern: ".+"
+    ConstraintDescription: "Sumo Logic AWS Account ID can not be empty."
+    Default: "926226587429"
+
   SumoOrganizationId:
     Description: "The Account Overview page displays information about your Sumo Logic organization. Used for IAM Role in Sumo Logic AWS Sources."
     Type: String
     AllowedPattern: ".+"
     ConstraintDescription: "Sumo Logic Organization Id can not be empty."
+
   RemoveSumoResourcesOnDeleteStack:
     AllowedValues:
       - true
@@ -213,10 +222,8 @@ Parameters:
     Default: "aws-quickstart"
     Description: "S3 bucket name for the Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-)."
     Type: "String"
-  QSS3BucketRegion:
-    Default: "us-east-1"
-    Description: "The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value."
-    Type: String
+
+
   QSS3KeyPrefix:
     AllowedPattern: "^[0-9a-zA-Z-/]*$"
     ConstraintDescription: "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/)."
@@ -268,15 +275,16 @@ Resources:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
-                Resource: '*'
+                Resource:
+                  - !Sub arn:${AWS::Partition}:logs:*:${AWS::AccountId}:log-group:*
+                  - !Sub arn:${AWS::Partition}:logs:*:${AWS::AccountId}:log-group:*:log-stream:*
 
   SumoLogicHelperFunction:
     Type: 'AWS::Serverless::Function'
-    DependsOn: SumoLogicHelperRole
     Condition: do_not_use_parent_stack
     Properties:
       Handler: main.handler
-      Runtime: python3.7
+      Runtime: python3.11
       CodeUri:
         Bucket: !Sub
           - "${S3Bucket}"
@@ -298,7 +306,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              AWS: arn:aws:iam::926226587429:root
+              AWS: !Sub arn:aws:iam::${SumoAccountID}:root
             Action: sts:AssumeRole
             Condition:
               StringEquals:
@@ -316,8 +324,8 @@ Resources:
                   - s3:ListBucketVersions
                   - s3:ListBucket
                 Resource:
-                  "*"
-
+                  - !Sub arn:${AWS::Partition}:s3:::*
+           
   SumoSNSTopic:
     Condition: create_sns_topic
     Type: "AWS::SNS::Topic"
@@ -361,7 +369,7 @@ Resources:
                 aws:SourceArn: !Sub "arn:aws:s3:::${LogsS3BucketName}"
             Effect: Allow
             Principal:
-              AWS: "*"
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
             Resource:
               - !Ref SumoSNSTopic
       Topics:
@@ -445,10 +453,10 @@ Resources:
                   - s3:GetBucketLocation
                 Resource:
                   - !Sub
-                    - arn:aws:s3:::${S3bucketName}
+                    - arn:${AWS::Partition}:s3:::${S3bucketName}
                     - { S3bucketName: !Ref LogsS3BucketName }
                   - !Sub
-                    - arn:aws:s3:::${S3bucketName}/*
+                    - arn:${AWS::Partition}:s3:::${S3bucketName}/*
                     - { S3bucketName: !Ref LogsS3BucketName  }
 
   KinesisFirehoseDeliveryStream:

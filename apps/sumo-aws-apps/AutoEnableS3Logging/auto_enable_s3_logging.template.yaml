@@ -51,10 +51,7 @@ Parameters:
     Default: "aws-quickstart"
     Description: "S3 bucket name for the Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-)."
     Type: "String"
-  QSS3BucketRegion:
-    Default: "us-east-1"
-    Description: "The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value."
-    Type: String
+
   QSS3KeyPrefix:
     AllowedPattern: "^[0-9a-zA-Z-/]*$"
     ConstraintDescription: "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/)."
@@ -122,7 +119,13 @@ Resources:
                   - network-firewall:ListFirewalls
                   - network-firewall:DescribeFirewall
                   - network-firewall:UpdateLoggingConfiguration
-                Resource: '*'
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*'
+                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*'
+                  - !Sub 'arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:*'
+                  - !Sub 'arn:${AWS::Partition}:ec2:${AWS::Region}::*'
+                  - !Sub 'arn:${AWS::Partition}:s3:::*'
+                  - !Sub 'arn:${AWS::Partition}:network-firewall:${AWS::Region}:${AWS::AccountId}:firewall/*'
 
   AwsS3LogsResourcesLambda:
     Type: AWS::Lambda::Function
@@ -133,7 +136,7 @@ Resources:
           - S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
         S3Key: !Sub "${QSS3KeyPrefix}apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
       Handler: "awsresource.enable_s3_logs"
-      Runtime: python3.7
+      Runtime: python3.11
       Role: !GetAtt SumoLambdaRole.Arn
       Description: "Lambda Function for auto enable s3 logs for Application load balancer."
       MemorySize: 128
@@ -156,7 +159,6 @@ Resources:
 
   AutoEnableS3LogEventsRuleTrigger:
     Type: 'AWS::Events::Rule'
-    DependsOn: AwsS3LogsResourcesLambda
     Condition: enable_s3_buckets_logging
     Properties:
       Description: Auto-Enable S3 loggging for S3 Buckets with Lambda from events
@@ -187,7 +189,6 @@ Resources:
 
   AutoEnableVPCEventsRuleTrigger:
     Type: 'AWS::Events::Rule'
-    DependsOn: AwsS3LogsResourcesLambda
     Condition: enable_vpc_flow_logs_logging
     Properties:
       Description: Auto-Enable VPC Flow logs for VPCs with Lambda from events
@@ -218,7 +219,6 @@ Resources:
 
   AutoEnableNetFWEventsRuleTrigger:
     Type: 'AWS::Events::Rule'
-    DependsOn: AwsS3LogsResourcesLambda
     Condition: enable_firewall_logging
     Properties:
       Description: Auto-Enable logging for Network Firewall with Lambda from events
@@ -240,11 +240,10 @@ Resources:
 
   SumoLogicHelperFunction:
     Type: 'AWS::Serverless::Function'
-    DependsOn: SumoLambdaRole
     Condition: enable_existing_resources
     Properties:
       Handler: main.handler
-      Runtime: python3.7
+      Runtime: python3.11
       CodeUri:
         Bucket: !Sub
           - "${S3Bucket}"

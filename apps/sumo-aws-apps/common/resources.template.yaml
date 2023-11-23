@@ -31,7 +31,6 @@ Metadata:
           default: "AWS Quick Start configuration"
         Parameters:
           - QSS3BucketName
-          - QSS3BucketRegion
           - QSS3KeyPrefix
 
     ParameterLabels:
@@ -60,8 +59,7 @@ Metadata:
 
       QSS3BucketName:
         default: "Quick Start S3 bucket name"
-      QSS3BucketRegion:
-        default: "Quick Start S3 bucket region"
+
       QSS3KeyPrefix:
         default: "Quick Start S3 key prefix"
 
@@ -141,10 +139,7 @@ Parameters:
     Default: "aws-quickstart"
     Description: "S3 bucket name for the Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-)."
     Type: "String"
-  QSS3BucketRegion:
-    Default: "us-east-1"
-    Description: "The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value."
-    Type: String
+
   QSS3KeyPrefix:
     AllowedPattern: "^[0-9a-zA-Z-/]*$"
     ConstraintDescription: "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/)."
@@ -207,14 +202,20 @@ Resources:
                   - config:DescribeDeliveryChannels
                   - config:PutDeliveryChannel
                   - config:DeleteDeliveryChannel
-                Resource: '*'
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*'
+                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*'
+                  - !Sub 'arn:${AWS::Partition}:cloudtrail:${{AWS::Region}:${AWS::AccountId}:trail/*'
+                  - !Sub 'arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:*'
+                  - !Sub 'arn:${AWS::Partition}:ec2:${AWS::Region}::*'
+                  - !Sub 'arn:${AWS::Partition}:s3:::*'
+                  - !Sub 'arn:${AWS::Partition}:config:${AWS::Region}:${AWS::AccountId}:*'
 
   SumoLogicLambdaHelper:
     Type: 'AWS::Serverless::Function'
-    DependsOn: SumoLogicHelperRole
     Properties:
       Handler: main.handler
-      Runtime: python3.7
+      Runtime: python3.11
       CodeUri:
         Bucket: !Sub
           - "${S3Bucket}"
@@ -222,6 +223,7 @@ Resources:
         Key: !Sub "${QSS3KeyPrefix}apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
       MemorySize: 128
       Timeout: 900
+      ReservedConcurrentExecutions: 4
       Role:
         Fn::GetAtt:
           - SumoLogicHelperRole
@@ -253,7 +255,7 @@ Resources:
                   - s3:ListBucketVersions
                   - s3:ListBucket
                 Resource:
-                  "*"
+                  !Sub 'arn:${AWS::Partition}:s3:::*'
 
   SumoHostedCollector:
     Type: Custom::Collector
@@ -290,7 +292,7 @@ Resources:
                 aws:SourceArn: !Sub "arn:aws:s3:*:*:*"
             Effect: Allow
             Principal:
-              AWS: "*"
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
             Resource:
               - !Ref SumoSNSTopic
       Topics:
