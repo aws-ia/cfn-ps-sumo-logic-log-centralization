@@ -216,6 +216,15 @@ Resources:
         Key: !Sub "${QSS3KeyPrefix}apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
       MemorySize: 128
       Timeout: 900
+      DeadLetterQueue:
+        TargetArn: !Ref AWS::NoValue
+        Type: SQS
+      ReservedConcurrentExecutions: 4
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref AWS::NoValue
+        SubnetIds:
+          - !Ref AWS::NoValue  
       Role:
         Fn::GetAtt:
           - SumoLogicHelperRole
@@ -232,6 +241,15 @@ Resources:
         Key: !Sub "${QSS3KeyPrefix}apps/sumo-aws-apps/guardduty/cloudwatchevents.zip"
       Handler: cloudwatchevents.handler
       Runtime: nodejs18.x
+      DeadLetterQueue:
+        TargetArn: !Ref AWS::NoValue
+        Type: SQS
+      ReservedConcurrentExecutions: 4
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref AWS::NoValue
+        SubnetIds:
+          - !Ref AWS::NoValue   
       Environment:
         Variables:
           SUMO_ENDPOINT: !GetAtt SumoHTTPSource.SUMO_ENDPOINT

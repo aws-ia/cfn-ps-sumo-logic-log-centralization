@@ -256,6 +256,15 @@ Resources:
         Key: !Sub "${QSS3KeyPrefix}apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
       MemorySize: 128
       Timeout: 900
+      DeadLetterQueue:
+        TargetArn: !Ref AWS::NoValue
+        Type: SQS
+      ReservedConcurrentExecutions: 4
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref AWS::NoValue
+        SubnetIds:
+          - !Ref AWS::NoValue      
       Role:
         Fn::GetAtt:
           - SumoLogicHelperRole
@@ -304,12 +313,24 @@ Resources:
     Condition: create_bukcet
     Properties:
       BucketName: !Ref BucketName
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: True
+        BlockPublicPolicy: True
+        IgnorePublicAcls: True
+        RestrictPublicBuckets: True
+      VersioningConfiguration:
+        Status: Enabled
+      LoggingConfiguration: 
+        DestinationBucketName: !Ref AWS::NoValue
+        LogFilePrefix: !Ref AWS::NoValue  
     DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
 
   SumoSNSTopic:
     Type: "AWS::SNS::Topic"
     Condition: create_sns_topic
     Properties:
+      KmsMasterKeyId: !Ref AWS::NoValue
       TopicName: !Sub "SumoSNSTopic-${AWS::StackName}"
 
   ConfigTopicPolicy:
