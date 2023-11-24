@@ -141,6 +141,15 @@ Resources:
       Description: "Lambda Function for auto enable s3 logs for Application load balancer."
       MemorySize: 128
       Timeout: 600
+      DeadLetterConfig:
+        TargetArn: !Ref AWS::NoValue
+      ReservedConcurrentExecutions: 4
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref AWS::NoValue
+        SubnetIds:
+          - !Ref AWS::NoValue           
+      KmsKeyArn: !Ref "AWS::NoValue"
       Environment:
         Variables:
           BucketName: !Ref BucketName
@@ -251,6 +260,15 @@ Resources:
         Key: !Sub "${QSS3KeyPrefix}apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
       MemorySize: 128
       Timeout: 900
+      DeadLetterQueue:
+        TargetArn: !Ref AWS::NoValue
+        Type: SQS
+      ReservedConcurrentExecutions: 4
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref AWS::NoValue
+        SubnetIds:
+          - !Ref AWS::NoValue    
       Role:
         Fn::GetAtt:
           - SumoLambdaRole

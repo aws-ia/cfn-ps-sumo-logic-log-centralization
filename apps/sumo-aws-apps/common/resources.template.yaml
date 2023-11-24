@@ -205,7 +205,7 @@ Resources:
                 Resource:
                   - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*'
                   - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*'
-                  - !Sub 'arn:${AWS::Partition}:cloudtrail:${{AWS::Region}:${AWS::AccountId}:trail/*'
+                  - !Sub 'arn:${AWS::Partition}:cloudtrail:${AWS::Region}:${AWS::AccountId}:trail/*'
                   - !Sub 'arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:*'
                   - !Sub 'arn:${AWS::Partition}:ec2:${AWS::Region}::*'
                   - !Sub 'arn:${AWS::Partition}:s3:::*'
@@ -328,7 +328,7 @@ Resources:
       LoggingConfiguration: 
         DestinationBucketName: !Ref AWS::NoValue
         LogFilePrefix: !Ref AWS::NoValue  
-    DeletionPolicy: Retain
+    DeletionPolicy: Delete
     UpdateReplacePolicy: Retain
 
   SumoCloudTrailExportPolicy:

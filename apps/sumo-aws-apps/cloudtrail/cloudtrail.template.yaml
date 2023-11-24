@@ -568,6 +568,7 @@ Resources:
     DependsOn:
       - TargetS3Bucket
     DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
 
   SumoCloudTrail:
     Condition: create_target_s3_bucket

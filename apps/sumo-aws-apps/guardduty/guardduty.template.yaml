@@ -206,6 +206,7 @@ Resources:
                   - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*"
                   - !Sub "arn:${AWS::Partition}:config:${AWS::Region}:${AWS::AccountId}:*"
 
+
   SumoLogicHelperFunction:
     Type: "AWS::Serverless::Function"
     Condition: do_not_use_parent_stack
@@ -238,40 +239,15 @@ Resources:
           - SumoLogicHelperRole
           - Arn
 
-  CloudWatchEventFunction:
-    Type: AWS::Serverless::Function
+  SumoLogicGuarddutyEventsProcessor:
+    Type: AWS::Serverless::Application
     Condition: install_http_logs_source
     Properties:
-      CodeUri:
-        Bucket: !Sub
-          - "${S3Bucket}"
-          - S3Bucket:
-              !If [
-                UsingDefaultBucket,
-                !Sub "${QSS3BucketName}-${AWS::Region}",
-                !Ref QSS3BucketName,
-              ]
-        Key: !Sub "${QSS3KeyPrefix}apps/sumo-aws-apps/guardduty/cloudwatchevents.zip"
-      Handler: cloudwatchevents.handler
-      Runtime: nodejs18.x
-      DeadLetterQueue:
-        TargetArn: !Ref AWS::NoValue
-        Type: SQS
-      ReservedConcurrentExecutions: 4
-      VpcConfig:
-        SecurityGroupIds:
-          - !Ref AWS::NoValue
-        SubnetIds:
-          - !Ref AWS::NoValue
-      Environment:
-        SUMO_ENDPOINT: !GetAtt SumoHTTPSource.SUMO_ENDPOINT
-      Events:
-        CloudWatchEventTrigger:
-          Type: CloudWatchEvent
-          Properties:
-            Pattern:
-              source:
-                - aws.guardduty
+      Location:
+        ApplicationId: arn:aws:serverlessrepo:us-east-1:956882708938:applications/sumologic-guardduty-events-processor
+        SemanticVersion: 1.0.4
+      Parameters:
+        SumoEndpointUrl: !GetAtt SumoHTTPSource.SUMO_ENDPOINT
 
   SumoHostedCollector:
     Type: Custom::Collector
@@ -365,7 +341,7 @@ Outputs:
   CloudWatchEventFunction:
     Description: "CloudWatchEvent Processor Function ARN"
     Condition: install_http_logs_source
-    Value: !GetAtt CloudWatchEventFunction.Arn
+    Value: !GetAtt SumoLogicGuarddutyEventsProcessor.Outputs.CloudWatchEventFunction
   GlobalGuardDutyAppFolder:
     Description: "Folder Name"
     Condition: install_global_guardduty_app
