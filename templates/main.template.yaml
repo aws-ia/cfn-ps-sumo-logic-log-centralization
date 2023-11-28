@@ -186,6 +186,7 @@ Metadata:
           - QSS3BucketName
           - QSS3BucketRegion
           - QSS3KeyPrefix
+          - QSVersion
 
     ParameterLabels:
       Section1aSumoLogicDeployment:
@@ -362,6 +363,8 @@ Metadata:
         default: "Quick Start S3 bucket Region"
       QSS3KeyPrefix:
         default: "Quick Start S3 key prefix"
+      QSVersion:
+        default: "Quick Start Version"
 
 Parameters:
   Section1aSumoLogicDeployment:
@@ -845,17 +848,17 @@ Parameters:
   QSS3BucketRegion:
     Default: "us-east-1"
     Description: "AWS Region where the Quick Start S3 bucket (QSS3BucketName) is 
-    hosted. Keep the default Region unless you are customizing the template. 
-    Changing this Region updates code references to point to a new Quick Start location. 
-    When using your own bucket, specify the Region. 
-    See https://aws-quickstart.github.io/option1.html."
+      hosted. Keep the default Region unless you are customizing the template. 
+      Changing this Region updates code references to point to a new Quick Start location. 
+      When using your own bucket, specify the Region. 
+      See https://aws-quickstart.github.io/option1.html."
     Type: String
   QSS3KeyPrefix:
     AllowedPattern: "^[0-9a-zA-Z-/]*$"
     ConstraintDescription: "The Quick Start S3 key prefix can include numbers, lowercase letters,
       uppercase letters, hyphens (-), and forward slashes (/). The prefix should
       end with a forward slash (/)."
-    Default: "quickstart-sumo-logic-log-centralization/"
+    Default: "cfn-ps-sumo-logic-log-centralization/"
     Description: "S3 key prefix that is used to simulate a directory for your copy of the 
       Quick Start assets. Keep the default prefix unless you are customizing 
       the template. Changing this prefix updates code references to point to 
@@ -864,6 +867,11 @@ Parameters:
       a forward slash. See https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html 
       and https://aws-quickstart.github.io/option1.html."
     Type: "String"
+  QSVersion:
+    Type: String
+    Description: "Version of the Quick Start. Do not change."
+    Default: "1.0"
+
 
 Conditions:
   # Conditions for CloudTrail apps
@@ -1011,6 +1019,9 @@ Resources:
   CreateCommonResources:
     Type: AWS::CloudFormation::Stack
     Properties:
+      Tags:
+        - Key: "version"
+          Value: !Ref QSVersion
       TemplateURL: !Sub
         - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}apps/sumo-aws-apps/common/resources.template.yaml'
         - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
@@ -1038,12 +1049,16 @@ Resources:
         QSS3BucketName: !Ref QSS3BucketName
         QSS3BucketRegion: !Ref QSS3BucketRegion
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        QSVersion: !Ref QSVersion
 
   SumoCloudTrailAppsStack:
     Type: AWS::CloudFormation::Stack
     Condition: call_cloudtrail_stack
     # DependsOn: CreateCommonResources
     Properties:
+      Tags:
+        - Key: "version"
+          Value: !Ref QSVersion
       TemplateURL: !Sub
         - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}apps/sumo-aws-apps/cloudtrail/cloudtrail.template.yaml'
         - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
@@ -1069,6 +1084,7 @@ Resources:
         QSS3BucketName: !Ref QSS3BucketName
         QSS3BucketRegion: !Ref QSS3BucketRegion
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
   SumoGuardDutyStackWaitHandle:
@@ -1088,6 +1104,9 @@ Resources:
     Condition: call_guardduty_stack
     DependsOn: SumoGuardDutyStackWaitCondition
     Properties:
+      Tags:
+        - Key: "version"
+          Value: !Ref QSVersion
       TemplateURL: !Sub
         - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}apps/sumo-aws-apps/guardduty/guardduty.template.yaml'
         - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
@@ -1106,6 +1125,7 @@ Resources:
         QSS3BucketName: !Ref QSS3BucketName
         QSS3BucketRegion: !Ref QSS3BucketRegion
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
   SumoVpcStackWaitHandle:
@@ -1125,6 +1145,9 @@ Resources:
     Condition: call_vpc_stack
     DependsOn: SumoVpcStackWaitCondition
     Properties:
+      Tags:
+        - Key: "version"
+          Value: !Ref QSVersion
       TemplateURL: !Sub
         - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}apps/sumo-aws-apps/vpc-flow-logs/vpcflowlogs.template.yaml'
         - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
@@ -1148,6 +1171,7 @@ Resources:
         QSS3BucketName: !Ref QSS3BucketName
         QSS3BucketRegion: !Ref QSS3BucketRegion
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
   SumoThreatIntelStackWaitHandle:
@@ -1167,6 +1191,9 @@ Resources:
     Condition: call_threat_intel_stack
     DependsOn: SumoThreatIntelStackWaitCondition
     Properties:
+      Tags:
+        - Key: "version"
+          Value: !Ref QSVersion
       TemplateURL: !Sub
         - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}apps/sumo-aws-apps/threat-intel-for-aws/threatintel.template.yaml'
         - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
@@ -1182,6 +1209,7 @@ Resources:
         QSS3BucketName: !Ref QSS3BucketName
         QSS3BucketRegion: !Ref QSS3BucketRegion
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
   SumoS3AuditStackWaitHandle:
@@ -1201,6 +1229,9 @@ Resources:
     Condition: call_s3_audit_stack
     DependsOn: SumoS3AuditStackWaitCondition
     Properties:
+      Tags:
+        - Key: "version"
+          Value: !Ref QSVersion
       TemplateURL: !Sub
         - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}apps/sumo-aws-apps/s3-audit/s3audit.template.yaml'
         - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
@@ -1222,6 +1253,7 @@ Resources:
         QSS3BucketName: !Ref QSS3BucketName
         QSS3BucketRegion: !Ref QSS3BucketRegion
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
   SumoSecurityHubStackWaitHandle:
@@ -1241,6 +1273,9 @@ Resources:
     Condition: call_security_hub_stack
     DependsOn: SumoSecurityHubStackWaitCondition
     Properties:
+      Tags:
+        - Key: "version"
+          Value: !Ref QSVersion
       TemplateURL: !Sub
         - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}apps/sumo-aws-apps/security-hub/securityhub.template.yaml'
         - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
@@ -1264,6 +1299,7 @@ Resources:
         QSS3BucketName: !Ref QSS3BucketName
         QSS3BucketRegion: !Ref QSS3BucketRegion
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
   SumoWafStackWaitHandle:
@@ -1283,6 +1319,9 @@ Resources:
     Condition: call_waf_stack
     DependsOn: SumoWafStackWaitCondition
     Properties:
+      Tags:
+        - Key: "version"
+          Value: !Ref QSVersion
       TemplateURL: !Sub
         - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}apps/sumo-aws-apps/WAF/waf.template.yaml'
         - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
@@ -1308,6 +1347,7 @@ Resources:
         QSS3BucketName: !Ref QSS3BucketName
         QSS3BucketRegion: !Ref QSS3BucketRegion
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
   SumoConfigStackWaitHandle:
@@ -1327,6 +1367,9 @@ Resources:
     Condition: call_config_stack
     DependsOn: SumoConfigStackWaitCondition
     Properties:
+      Tags:
+        - Key: "version"
+          Value: !Ref QSVersion
       TemplateURL: !Sub
         - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}apps/sumo-aws-apps/config/config.template.yaml'
         - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
@@ -1348,6 +1391,7 @@ Resources:
         QSS3BucketName: !Ref QSS3BucketName
         QSS3BucketRegion: !Ref QSS3BucketRegion
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
   #Stack for Network Firewall app
@@ -1368,6 +1412,9 @@ Resources:
     Condition: call_nfw_stack
     DependsOn: CreateCommonResources
     Properties:
+      Tags:
+        - Key: "version"
+          Value: !Ref QSVersion
       TemplateURL: !Sub
         - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}apps/sumo-aws-apps/network-firewall/networkfw_macro.template.yaml'
         - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
@@ -1375,12 +1422,16 @@ Resources:
       Parameters:
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        QSVersion: !Ref QSVersion
 
   SumoFireWallAppsStack:
     Type: AWS::CloudFormation::Stack
     Condition: call_nfw_stack
     DependsOn: SumoFireWallMacroStack
     Properties:
+      Tags:
+        - Key: "version"
+          Value: !Ref QSVersion
       TemplateURL: !Sub
         - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}apps/sumo-aws-apps/network-firewall/networkfw.template.yaml'
         - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
@@ -1409,6 +1460,7 @@ Resources:
         S3SourceCategoryName: !If [create_nfw_source, "aws/quickstart/nfw/logs", !Ref Section11NFWS3SourceCategoryName]
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
   SumoAutoEnableS3AuditLogs:
@@ -1416,6 +1468,9 @@ Resources:
     Condition: auto_enable_s3_audit
     # DependsOn: CreateCommonResources
     Properties:
+      Tags:
+        - Key: "version"
+          Value: !Ref QSVersion
       TemplateURL: !Sub
         - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}apps/sumo-aws-apps/AutoEnableS3Logging/auto_enable_s3_logging.template.yaml'
         - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
@@ -1429,12 +1484,16 @@ Resources:
         QSS3BucketName: !Ref QSS3BucketName
         QSS3BucketRegion: !Ref QSS3BucketRegion
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        QSVersion: !Ref QSVersion
 
   SumoAutoEnableVpcAuditLogs:
     Type: AWS::CloudFormation::Stack
     Condition: auto_enable_vpc_logs
     # DependsOn: CreateCommonResources
     Properties:
+      Tags:
+        - Key: "version"
+          Value: !Ref QSVersion
       TemplateURL: !Sub
         - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}apps/sumo-aws-apps/AutoEnableS3Logging/auto_enable_s3_logging.template.yaml'
         - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
@@ -1448,11 +1507,15 @@ Resources:
         QSS3BucketName: !Ref QSS3BucketName
         QSS3BucketRegion: !Ref QSS3BucketRegion
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        QSVersion: !Ref QSVersion
 
   SumoAutoEnableFirewallAuditLogs:
     Type: AWS::CloudFormation::Stack
     Condition: auto_enable_firewall_logs
     Properties:
+      Tags:
+        - Key: "version"
+          Value: !Ref QSVersion
       TemplateURL: !Sub
         - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}apps/sumo-aws-apps/AutoEnableS3Logging/auto_enable_s3_logging.template.yaml'
         - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
@@ -1466,3 +1529,4 @@ Resources:
         QSS3BucketName: !Ref QSS3BucketName
         QSS3BucketRegion: !Ref QSS3BucketRegion
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        QSVersion: !Ref QSVersion
