@@ -352,7 +352,7 @@ Resources:
       LoggingConfiguration:
         DestinationBucketName: !Ref AWS::NoValue
         LogFilePrefix: !Ref AWS::NoValue
-    DeletionPolicy: Delete
+    DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
 
   SumoCloudTrailExportPolicy:
