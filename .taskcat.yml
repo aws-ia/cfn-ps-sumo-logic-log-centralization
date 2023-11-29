@@ -3,19 +3,21 @@ general:
     default: sumologic
   s3_regional_buckets: true
 project:
-  name: cfn-ps-sumo-logic-log-centralization
+  name: cfn-ps-sumo-logic-log-centralization/2
+  shorten_stack_name: true
   regions:
-  - us-west-1
+    - us-west-1
 
 tests:
   default:
     template: ./templates/main.template.yaml
     regions:
-    - us-west-1
+      - us-west-1
     parameters:
       QSS3KeyPrefix: "cfn-ps-sumo-logic-log-centralization/"
       QSS3BucketName: "$[taskcat_autobucket]"
       QSS3BucketRegion: "$[taskcat_current_region]"
+      QSVersion: "2"
       Section2CloudTrailCreateBucket: "Yes"
       Section4bVpcCreateBucket: "Yes"
       Section6bS3AuditCreateBucket: "Yes"

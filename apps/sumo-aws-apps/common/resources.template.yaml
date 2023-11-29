@@ -1,9 +1,9 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Transform: 'AWS::Serverless-2016-10-31'
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: "AWS::Serverless-2016-10-31"
 Description: "Template to setup the common AWS and Sumo Logic resources for AWS Quick Start Solution."
 
 Metadata:
-  'AWS::CloudFormation::Interface':
+  "AWS::CloudFormation::Interface":
     ParameterGroups:
       - Label:
           default: "Sumo Logic Access Configuration (Required)"
@@ -14,6 +14,7 @@ Metadata:
           - SumoOrganizationId
           - RemoveSumoResourcesOnDeleteStack
           - SumoAccountID
+          - QSVersion
 
       - Label:
           default: "App Details - Collector Configuration"
@@ -66,6 +67,9 @@ Metadata:
       QSS3KeyPrefix:
         default: "Quick Start S3 key prefix"
 
+      QSVersion:
+        default: "Quick Start Version"
+
 Parameters:
   SumoDeployment:
     Type: String
@@ -101,8 +105,9 @@ Parameters:
       - true
       - false
     Default: true
-    Description: "To delete collectors, sources and apps when the stack is deleted, set this parameter to true. Default is true.
-                  Deletes the resources created by the stack. Deletion of updated resources will be skipped."
+    Description:
+      "To delete collectors, sources and apps when the stack is deleted, set this parameter to true. Default is true.
+      Deletes the resources created by the stack. Deletion of updated resources will be skipped."
     Type: String
   SumoAccountID:
     Type: String
@@ -113,12 +118,13 @@ Parameters:
 
   CreateCollector:
     Type: String
-    Description: "Yes -> To Create Sumo Logic Collector in Sumo Logic for AWS Quick Start Solution.
-                  No -> Skip Installation of the collector."
-    Default: 'Yes'
+    Description:
+      "Yes -> To Create Sumo Logic Collector in Sumo Logic for AWS Quick Start Solution.
+      No -> Skip Installation of the collector."
+    Default: "Yes"
     AllowedValues:
-      - 'Yes'
-      - 'No'
+      - "Yes"
+      - "No"
   CollectorName:
     Type: String
     Description: Change the collector name to be created else default name will be used.
@@ -127,20 +133,20 @@ Parameters:
   CreateBucket:
     Type: String
     Description: "Yes - Create a new bucket in AWS S3."
-    Default: 'Yes'
+    Default: "Yes"
     AllowedValues:
-      - 'Yes'
-      - 'No'
+      - "Yes"
+      - "No"
   BucketName:
     Type: String
     Description: "New Bucket Name - Provide a unique Bucket Name if the flag is set to Yes."
   CreateTrail:
     Type: String
     Description: "Yes - Create a trail for the provided S3 Bucket"
-    Default: 'Yes'
+    Default: "Yes"
     AllowedValues:
-      - 'Yes'
-      - 'No'
+      - "Yes"
+      - "No"
 
   QSS3BucketName:
     AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
@@ -162,14 +168,14 @@ Parameters:
     Default: "1.0"
 
 Conditions:
-  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, "aws-quickstart"]
 
-  install_collector: !Equals [!Ref CreateCollector, 'Yes']
-  create_target_s3_bucket: !Equals [!Ref CreateBucket, 'Yes']
+  install_collector: !Equals [!Ref CreateCollector, "Yes"]
+  create_target_s3_bucket: !Equals [!Ref CreateBucket, "Yes"]
 
   create_cloudtrail: !And
     - !Condition create_target_s3_bucket
-    - !Equals [!Ref CreateTrail, 'Yes']
+    - !Equals [!Ref CreateTrail, "Yes"]
   create_sns_topic: !Or
     - !Condition create_target_s3_bucket
     - !Condition install_collector
@@ -179,7 +185,7 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -189,7 +195,7 @@ Resources:
       Policies:
         - PolicyName: SumoPolicy
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
@@ -217,23 +223,28 @@ Resources:
                   - config:PutDeliveryChannel
                   - config:DeleteDeliveryChannel
                 Resource:
-                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*'
-                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*'
-                  - !Sub 'arn:${AWS::Partition}:cloudtrail:${AWS::Region}:${AWS::AccountId}:trail/*'
-                  - !Sub 'arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:*'
-                  - !Sub 'arn:${AWS::Partition}:ec2:${AWS::Region}::*'
-                  - !Sub 'arn:${AWS::Partition}:s3:::*'
-                  - !Sub 'arn:${AWS::Partition}:config:${AWS::Region}:${AWS::AccountId}:*'
+                  - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*"
+                  - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*"
+                  - !Sub "arn:${AWS::Partition}:cloudtrail:${AWS::Region}:${AWS::AccountId}:trail/*"
+                  - !Sub "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:*"
+                  - !Sub "arn:${AWS::Partition}:ec2:${AWS::Region}::*"
+                  - !Sub "arn:${AWS::Partition}:s3:::*"
+                  - !Sub "arn:${AWS::Partition}:config:${AWS::Region}:${AWS::AccountId}:*"
 
   SumoLogicLambdaHelper:
-    Type: 'AWS::Serverless::Function'
+    Type: "AWS::Serverless::Function"
     Properties:
       Handler: main.handler
       Runtime: python3.11
       CodeUri:
         Bucket: !Sub
           - "${S3Bucket}"
-          - S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+          - S3Bucket:
+              !If [
+                UsingDefaultBucket,
+                !Sub "${QSS3BucketName}-${AWS::Region}",
+                !Ref QSS3BucketName,
+              ]
         Key: !Sub "${QSS3KeyPrefix}${QSVersion}/apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
       MemorySize: 128
       Timeout: 900
@@ -245,7 +256,7 @@ Resources:
         SecurityGroupIds:
           - !Ref AWS::NoValue
         SubnetIds:
-          - !Ref AWS::NoValue            
+          - !Ref AWS::NoValue
       Role:
         Fn::GetAtt:
           - SumoLogicHelperRole
@@ -255,7 +266,7 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -268,7 +279,7 @@ Resources:
       Policies:
         - PolicyName: SumoPolicy
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
@@ -276,8 +287,7 @@ Resources:
                   - s3:GetObjectVersion
                   - s3:ListBucketVersions
                   - s3:ListBucket
-                Resource:
-                  !Sub 'arn:${AWS::Partition}:s3:::*'
+                Resource: !Sub "arn:${AWS::Partition}:s3:::*"
 
   SumoHostedCollector:
     Type: Custom::Collector
@@ -296,7 +306,7 @@ Resources:
     Condition: create_sns_topic
     Type: "AWS::SNS::Topic"
     Properties:
-      KmsMasterKeyId: !Ref AWS::NoValue 
+      KmsMasterKeyId: !Ref AWS::NoValue
       TopicName: !Sub "SumoSNSTopic-${AWS::StackName}"
 
   SumoSNSpolicy:
@@ -339,9 +349,9 @@ Resources:
         RestrictPublicBuckets: True
       VersioningConfiguration:
         Status: Enabled
-      LoggingConfiguration: 
+      LoggingConfiguration:
         DestinationBucketName: !Ref AWS::NoValue
-        LogFilePrefix: !Ref AWS::NoValue  
+        LogFilePrefix: !Ref AWS::NoValue
     DeletionPolicy: Delete
     UpdateReplacePolicy: Retain
 
