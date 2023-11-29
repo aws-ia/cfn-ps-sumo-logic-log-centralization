@@ -53,7 +53,6 @@ Resources:
   MacroNFWHelperFunction:
     Type: "AWS::Serverless::Function"
     Properties:
-      FunctionName: !Sub "${AWS::StackName}-MacroNFWHelperFunction"
       Handler: firewallmacro.handle
       Runtime: python3.11
       CodeUri:
