@@ -1,6 +1,6 @@
 general:
-  auth:
-    default: sumologic
+  # auth:
+  #   default: sumologic
   s3_regional_buckets: true
 project:
   name: cfn-ps-sumo-logic-log-centralization/2
