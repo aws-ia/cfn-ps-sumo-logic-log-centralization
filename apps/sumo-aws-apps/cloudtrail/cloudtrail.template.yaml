@@ -13,6 +13,7 @@ Metadata:
           - SumoAccessKey
           - SumoOrganizationId
           - RemoveSumoResourcesOnDeleteStack
+          - SumoAccountID
 
       - Label:
           default: "App Details - Collector Configuration"
@@ -56,6 +57,8 @@ Metadata:
         default: "Sumo Logic Organization Id"
       RemoveSumoResourcesOnDeleteStack:
         default: "Delete Sumo Logic Resources when stack is deleted"
+      SumoAccountID:
+        default: "Sumo Logic AWS Account ID"
 
       InstallCloudTrailApp:
         default: "Install Sumo Logic AWS CloudTrail App"
@@ -130,6 +133,12 @@ Parameters:
     Description: "To delete collectors, sources and apps when the stack is deleted, set this parameter to true. Default is true.
                   Deletes the resources created by the stack. Deletion of updated resources will be skipped."
     Type: String
+  SumoAccountID:
+    Type: String
+    Description: "Account belonging to Sumo Logic used for ingestion of logs from customers"
+    AllowedPattern: ".+"
+    ConstraintDescription: "Sumo Logic AWS Account ID can not be empty."
+    Default: "926226587429"
 
   InstallCloudTrailApp:
     Type: String
@@ -220,9 +229,14 @@ Parameters:
   QSS3KeyPrefix:
     AllowedPattern: "^[0-9a-zA-Z-/]*$"
     ConstraintDescription: "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/)."
-    Default: "quickstart-sumo-logic-log-centralization/"
+    Default: "cfn-ps-sumo-logic-log-centralization/"
     Description: "S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/)."
     Type: "String"
+
+  QSVersion:
+    Type: String
+    Description: "Version of Quick Start"
+    Default: "1.0"
 
   ParentStackName:
     Type: String
@@ -290,9 +304,18 @@ Resources:
         Bucket: !Sub
                 - "${S3Bucket}"
                 - S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
-        Key: !Sub "${QSS3KeyPrefix}apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
+        Key: !Sub "${QSS3KeyPrefix}${QSVersion}/apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
       MemorySize: 128
       Timeout: 900
+      DeadLetterQueue:
+        TargetArn: !Ref AWS::NoValue
+        Type: SQS
+      ReservedConcurrentExecutions: !Ref AWS::NoValue
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref AWS::NoValue
+        SubnetIds:
+          - !Ref AWS::NoValue           
       Role:
         Fn::GetAtt:
           - SumoLogicHelperRole
@@ -307,7 +330,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              AWS: arn:aws:iam::926226587429:root
+              AWS: !Sub arn:aws:iam::${SumoAccountID}:root
             Action: sts:AssumeRole
             Condition:
               StringEquals:
@@ -455,6 +478,7 @@ Resources:
     Condition: create_sns_topic
     Type: "AWS::SNS::Topic"
     Properties:
+      KmsMasterKeyId: !Ref AWS::NoValue
       TopicName: !Sub "SumoSNSTopic-${AWS::StackName}"
 
   SumoSNSSubscription:
@@ -494,7 +518,7 @@ Resources:
                 aws:SourceArn: !Sub "arn:aws:s3:::${CloudTrailLogsBucketName}"
             Effect: Allow
             Principal:
-              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+              Service: "s3.amazonaws.com"
             Resource:
               - !Ref SumoSNSTopic
       Topics:
@@ -511,7 +535,18 @@ Resources:
         TopicConfigurations:
           - Event: s3:ObjectCreated:Put
             Topic: !Ref SumoSNSTopic
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LoggingConfiguration:
+        DestinationBucketName: !Ref AWS::NoValue
+        LogFilePrefix: !Ref AWS::NoValue       
     DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
 
   SumoCloudTrailExportPolicy:
     Condition: create_target_s3_bucket
@@ -547,6 +582,7 @@ Resources:
     DependsOn:
       - TargetS3Bucket
     DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
 
   SumoCloudTrail:
     Condition: create_target_s3_bucket
