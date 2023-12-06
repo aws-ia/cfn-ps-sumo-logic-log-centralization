@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
-Description: "Template to setup the Amazon S3 Audit app with AWS and Sumo Logic resources for AWS Quick Start Solution. (qs-teamplate)"
+Description: "Template to setup the Amazon VPC Flow Logs, PCI Compliance For Amazon VPC Flow and Amazon VPC Flow - Cloud Security Monitoring and Analytics app with AWS and Sumo Logic resources for AWS Quick Start Solution. (qs-teamplate)"
 
 Metadata:
   AWS::CloudFormation::Interface:
@@ -17,18 +17,22 @@ Metadata:
       - Label:
           default: "App Details - Collector Configuration"
         Parameters:
-          - InstallApp
+          - InstallVpcApp
+          - InstallPCIVpcApp
+          - InstallCSMAVpcApp
           - CollectorName
 
       - Label:
-          default: "App Details - S3 Audit Source Configuration"
+          default: "App Details - VPC Logs S3 Source Configuration"
         Parameters:
           - CreateS3Bucket
           - LogsS3BucketName
-          - CreateS3AuditSource
+          - CreateS3Source
           - S3BucketLogsPathExpression
-          - S3AuditSourceName
-          - S3AuditSourceCategoryName
+          - S3SourceName
+          - S3SourceCategoryName
+          - ExcludeRuleName
+          - ExcludeRuleRegex
 
       - Label:
           default: "AWS Quick Start configuration"
@@ -55,8 +59,12 @@ Metadata:
       SumoAccountID:
         default: "Sumo Logic AWS Account ID"
 
-      InstallApp:
-        default: "Install Sumo Logic App"
+      InstallVpcApp:
+        default: "Install Sumo Logic Amazon VPC Flow Logs App"
+      InstallPCIVpcApp:
+        default: "Install Sumo Logic PCI Compliance For Amazon VPC Flow App"
+      InstallCSMAVpcApp:
+        default: "Install Sumo Logic Amazon VPC Flow - Cloud Security Monitoring and Analytics"
       CollectorName:
         default: "Collector Name"
 
@@ -64,14 +72,18 @@ Metadata:
         default: "Create AWS S3 Bucket"
       LogsS3BucketName:
         default: "AWS S3 Bucket Name"
-      CreateS3AuditSource:
-        default: "Create Sumo Logic Amazon S3 Audit Logs Source"
+      CreateS3Source:
+        default: "Create Sumo Logic Amazon S3 Logs Source"
       S3BucketLogsPathExpression:
         default: "Path Expression for the logs"
-      S3AuditSourceName:
-        default: "Sumo Logic Amazon S3 Audit Logs Source Name"
-      S3AuditSourceCategoryName:
-        default: "Sumo Logic Amazon S3 Audit Logs Source Category Name"
+      S3SourceName:
+        default: "Sumo Logic Amazon S3 Logs Source Name"
+      S3SourceCategoryName:
+        default: "Sumo Logic Amazon S3 Logs Source Category Name"
+      ExcludeRuleName:
+        default: "S3 Logs processing rule name"
+      ExcludeRuleRegex:
+        default: "Regex to filter logs"
 
       QSS3BucketName:
         default: "Quick Start S3 bucket name"
@@ -113,9 +125,9 @@ Parameters:
     ConstraintDescription: "Sumo Logic Organization Id can not be empty."
   RemoveSumoResourcesOnDeleteStack:
     AllowedValues:
-      - true
-      - false
-    Default: true
+      - "true"
+      - "false"
+    Default: "true"
     Description:
       "To delete collectors, sources and apps when the stack is deleted, set this parameter to true. Default is true.
       Deletes the resources created by the stack. Deletion of updated resources will be skipped."
@@ -127,10 +139,28 @@ Parameters:
     ConstraintDescription: "Sumo Logic AWS Account ID can not be empty."
     Default: "926226587429"
 
-  InstallApp:
+  InstallVpcApp:
     Type: String
     Description:
-      "Yes -> To Install Sumo Logic App in Sumo Logic for AWS Quick Start Solution.
+      "Yes -> To Install Sumo Logic Amazon VPC Flow Logs in Sumo Logic for AWS Quick Start Solution.
+      No -> Skip Installation of the app."
+    Default: "Yes"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  InstallCSMAVpcApp:
+    Type: String
+    Description:
+      "Yes -> To Install Sumo Logic Amazon VPC Flow - Cloud Security Monitoring and Analytics in Sumo Logic for AWS Quick Start Solution.
+      No -> Skip Installation of the app."
+    Default: "Yes"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  InstallPCIVpcApp:
+    Type: String
+    Description:
+      "Yes -> To Install PCI Compliance For Amazon VPC Flow App in Sumo Logic for AWS Quick Start Solution.
       No -> Skip Installation of the app."
     Default: "Yes"
     AllowedValues:
@@ -139,13 +169,13 @@ Parameters:
   CollectorName:
     Type: String
     Description: Change the collector name to be created else default name will be used.
-    Default: AWS-S3-Audit-Collector
+    Default: AWS-Vpc-Flow-Logs-Collector
 
   CreateS3Bucket:
     Type: String
     Description: "Yes - Create a new S3 bucket in AWS S3.
-      No - Use an existing S3 bucket from AWS S3 which has S3 Audit Logs."
-    Default: "Yes"
+      No - Use an existing S3 bucket from AWS S3 which has VPC Logs."
+    Default: "No"
     AllowedValues:
       - "Yes"
       - "No"
@@ -153,12 +183,12 @@ Parameters:
     Type: String
     Description: "Existing Bucket Name - Provide value if the Flag is set to No.
       New Bucket Name - Provide a unique Bucket Name if the flag is set to Yes."
-  CreateS3AuditSource:
+  CreateS3Source:
     Type: String
     Description:
-      "Yes - to create Sumo Logic Amazon S3 Audit Log Source with provided bucket Name.
-      No - to skip creation of the Sumo Logic Amazon S3 Audit Log Source."
-    Default: "Yes"
+      "Yes - to create Sumo Logic Amazon S3 Log Source with provided bucket Name.
+      No - to skip creation of the Sumo Logic Amazon S3 Log Source."
+    Default: "No"
     AllowedValues:
       - "Yes"
       - "No"
@@ -166,16 +196,24 @@ Parameters:
     Type: String
     Description: Path expression to match one or more S3 objects. For example, ABC*.log or ABC.log
     Default: "*"
-  S3AuditSourceName:
+  S3SourceName:
     Type: String
-    Description: Change the Sumo Logic Amazon S3 Audit Source name to be created else default name will be used.
-    Default: AWS-S3-Audit-Source
-  S3AuditSourceCategoryName:
+    Description: Change the Sumo Logic Amazon S3 Source name to be created else default name will be used.
+    Default: AWS-Vpc-Flow-Logs-Source
+  S3SourceCategoryName:
     Type: String
     Description:
       "Existing - Change to an existing Source Category from Sumo Logic if Amazon S3 Source is not created.
       New - Default will be used if Amazon S3 Source is Created."
-    Default: AWS/S3/Audit/Logs
+    Default: AWS/Vpc/Flow/Logs
+  ExcludeRuleName:
+    Type: String
+    Description: "Provide a Processing rule name for Amazon S3 Source."
+    Default: "Exclude VPC File Flow headers"
+  ExcludeRuleRegex:
+    Type: String
+    Description: "Enter a regex to match the log format to filter the logs."
+    Default: version account-id interface-id srcaddr dstaddr srcport dstport protocol packets bytes start end action log-status
 
   QSS3BucketName:
     AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
@@ -183,6 +221,7 @@ Parameters:
     Default: "aws-quickstart"
     Description: "S3 bucket name for the Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-)."
     Type: "String"
+
   QSS3KeyPrefix:
     AllowedPattern: "^[0-9a-zA-Z-/]*$"
     ConstraintDescription: "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/)."
@@ -204,15 +243,17 @@ Conditions:
   do_not_use_parent_stack: !Equals [!Ref ParentStackName, "ParentStackName"]
   UsingDefaultBucket: !Equals [!Ref QSS3BucketName, "aws-quickstart"]
 
-  install_app: !Equals [!Ref InstallApp, "Yes"]
+  install_vpc_app: !Equals [!Ref InstallVpcApp, "Yes"]
+  install_pci_vpc_app: !Equals [!Ref InstallPCIVpcApp, "Yes"]
+  install_csma_vpc_app: !Equals [!Ref InstallCSMAVpcApp, "Yes"]
   create_target_s3_bucket: !And
     - !Equals [!Ref CreateS3Bucket, "Yes"]
     - !Condition create_sns_topic
-  install_s3_audit_source: !Equals [!Ref CreateS3AuditSource, "Yes"]
+  install_s3_source: !Equals [!Ref CreateS3Source, "Yes"]
 
   create_sns_topic: !And
     - !Condition do_not_use_parent_stack
-    - !Condition install_s3_audit_source
+    - !Condition install_s3_source
 
 Resources:
   SumoLogicHelperRole:
@@ -234,7 +275,9 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - s3:ListAllMyBuckets
+                  - ec2:DescribeFlowLogs
+                  - logs:CreateLogDelivery
+                  - logs:DeleteLogDelivery
                 Resource: "*"
 
               - Effect: Allow
@@ -248,11 +291,32 @@ Resources:
 
               - Effect: Allow
                 Action:
-                  - s3:GetBucketLocation
-                  - s3:GetBucketLogging
-                  - s3:PutBucketLogging
-                  - s3:PutBucketAcl
-                  - s3:GetBucketAcl
+                  - cloudtrail:CreateTrail
+                  - cloudtrail:DeleteTrail
+                  - cloudtrail:UpdateTrail
+                  - cloudtrail:StartLogging
+                Resource:
+                  - !Sub arn:${AWS::Partition}:cloudtrail:*:${AWS::AccountId}:trail/*
+
+              - Effect: Allow
+                Action:
+                  - ec2:DeleteFlowLogs
+                  - ec2:CreateFlowLogs
+                Resource:
+                  - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:vpc-flow-log/*
+                  - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:network-interface/*
+                  - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:subnet/*
+                  - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:transit-gateway/*
+                  - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:transit-gateway-attachment/*
+                  - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:vpc/*
+                  - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:elastic-ip/*
+                  - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:client-vpn-endpoint/*
+                  - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:fleet/*
+                  - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:fpga-imag/*
+              - Effect: Allow
+                Action:
+                  - s3:GetBucketPolicy
+                  - s3:PutBucketPolicy
                 Resource:
                   - !Sub arn:${AWS::Partition}:s3:::*
 
@@ -271,7 +335,7 @@ Resources:
                 !Sub "${QSS3BucketName}-${AWS::Region}",
                 !Ref QSS3BucketName,
               ]
-        Key: !Sub "${QSS3KeyPrefix}${QSVersion}/apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
+        Key: !Sub "${QSS3KeyPrefix}${QSVersion}/templates/apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
       MemorySize: 128
       Timeout: 900
       DeadLetterQueue:
@@ -325,7 +389,7 @@ Resources:
       TopicName: !Sub "SumoSNSTopic-${AWS::StackName}"
 
   SumoSNSSubscription:
-    Condition: install_s3_audit_source
+    Condition: install_s3_source
     Type: "AWS::SNS::Subscription"
     Properties:
       TopicArn: !If
@@ -333,7 +397,7 @@ Resources:
         - !Ref SumoSNSTopic
         - !ImportValue
           "Fn::Sub": "${ParentStackName}-SNSTopicArn"
-      Endpoint: !GetAtt SumoS3AuditSource.SUMO_ENDPOINT
+      Endpoint: !GetAtt SumoS3Source.SUMO_ENDPOINT
       Protocol: https
       DeliveryPolicy:
         healthyRetryPolicy:
@@ -393,7 +457,7 @@ Resources:
 
   SumoHostedCollector:
     Type: Custom::Collector
-    Condition: install_s3_audit_source
+    Condition: install_s3_source
     Properties:
       ServiceToken: !If
         - do_not_use_parent_stack
@@ -415,9 +479,9 @@ Resources:
       SumoAccessKey: !Ref SumoAccessKey
       SumoDeployment: !Ref SumoDeployment
 
-  SumoS3AuditSource:
+  SumoS3Source:
     Type: Custom::AWSSource
-    Condition: install_s3_audit_source
+    Condition: install_s3_source
     Properties:
       ServiceToken: !If
         - do_not_use_parent_stack
@@ -426,17 +490,21 @@ Resources:
           - Arn
         - !ImportValue
           "Fn::Sub": "${ParentStackName}-SumoLogicHelperFunctionARN"
-      SourceType: AwsS3AuditBucket
+      SourceType: AwsS3Bucket
       Region: !Ref "AWS::Region"
-      SourceName: !Ref S3AuditSourceName
+      SourceName: !Ref S3SourceName
       RemoveOnDeleteStack: !Ref RemoveSumoResourcesOnDeleteStack
-      SourceCategory: !Ref S3AuditSourceCategoryName
+      SourceCategory: !Ref S3SourceCategoryName
       CollectorId: !GetAtt SumoHostedCollector.COLLECTOR_ID
       SumoAccessID: !Ref SumoAccessID
       SumoAccessKey: !Ref SumoAccessKey
       SumoDeployment: !Ref SumoDeployment
       TargetBucketName: !Ref LogsS3BucketName
       PathExpression: !Ref S3BucketLogsPathExpression
+      filters:
+        - filterType: "Exclude"
+          name: !Ref ExcludeRuleName
+          regexp: !Ref ExcludeRuleRegex
       RoleArn: !If
         - do_not_use_parent_stack
         - !GetAtt
@@ -444,10 +512,12 @@ Resources:
           - Arn
         - !ImportValue
           "Fn::Sub": "${ParentStackName}-SumoSourceRoleARN"
+      multilineProcessingEnabled: false
+      useAutolineMatching: false
 
-  SumoAmazonS3AuditApp:
+  SumoVPCFlowLogApp:
     Type: Custom::App
-    Condition: install_app
+    Condition: install_vpc_app
     Properties:
       ServiceToken: !If
         - do_not_use_parent_stack
@@ -457,11 +527,53 @@ Resources:
         - !ImportValue
           "Fn::Sub": "${ParentStackName}-SumoLogicHelperFunctionARN"
       Region: !Ref "AWS::Region"
-      AppName: "Amazon QuickStart - Amazon S3 Audit"
-      AppId: "cf3ba421-d959-4b08-9ae8-5bd4202eea87"
+      AppName: "Amazon QuickStart - Amazon VPC Flow Logs"
+      AppId: "3546d789-3a45-48df-ac85-6838044d988d"
       RemoveOnDeleteStack: !Ref RemoveSumoResourcesOnDeleteStack
       AppSources:
-        paramId123: !Sub "_sourceCategory=${S3AuditSourceCategoryName}"
+        vpcFlowLogs: !Sub "_sourceCategory=${S3SourceCategoryName}"
+      SumoAccessID: !Ref SumoAccessID
+      SumoAccessKey: !Ref SumoAccessKey
+      SumoDeployment: !Ref SumoDeployment
+
+  SumoPCIVPCFlowLogApp:
+    Type: Custom::App
+    Condition: install_pci_vpc_app
+    Properties:
+      ServiceToken: !If
+        - do_not_use_parent_stack
+        - !GetAtt
+          - SumoLogicHelperFunction
+          - Arn
+        - !ImportValue
+          "Fn::Sub": "${ParentStackName}-SumoLogicHelperFunctionARN"
+      Region: !Ref "AWS::Region"
+      AppName: "Amazon QuickStart - PCI Compliance For Amazon VPC Flow"
+      AppId: "afc4bae8-59af-41c0-b07d-c972400423e7"
+      RemoveOnDeleteStack: !Ref RemoveSumoResourcesOnDeleteStack
+      AppSources:
+        AppLogSource: !Sub "_sourceCategory=${S3SourceCategoryName}"
+      SumoAccessID: !Ref SumoAccessID
+      SumoAccessKey: !Ref SumoAccessKey
+      SumoDeployment: !Ref SumoDeployment
+
+  SumoVPCFlowCSMAApp:
+    Type: Custom::App
+    Condition: install_csma_vpc_app
+    Properties:
+      ServiceToken: !If
+        - do_not_use_parent_stack
+        - !GetAtt
+          - SumoLogicHelperFunction
+          - Arn
+        - !ImportValue
+          "Fn::Sub": "${ParentStackName}-SumoLogicHelperFunctionARN"
+      Region: !Ref "AWS::Region"
+      AppName: "Amazon QuickStart - Cloud Security Monitoring and Analytics For Amazon VPC Flow"
+      AppId: "1febce90-de1e-43b3-a1c2-d5dbdae40a3a"
+      RemoveOnDeleteStack: !Ref RemoveSumoResourcesOnDeleteStack
+      AppSources:
+        logsrc: !Sub "_sourceCategory=${S3SourceCategoryName}"
       SumoAccessID: !Ref SumoAccessID
       SumoAccessKey: !Ref SumoAccessKey
       SumoDeployment: !Ref SumoDeployment
@@ -471,8 +583,7 @@ Outputs:
     Description: ARN of the cretaed Role.
     Condition: do_not_use_parent_stack
     Value: !GetAtt SumoRole.Arn
-
   SumoEndpoint:
     Description: SNS Subscription Endpoint
-    Condition: install_s3_audit_source
-    Value: !GetAtt SumoS3AuditSource.SUMO_ENDPOINT
+    Condition: install_s3_source
+    Value: !GetAtt SumoS3Source.SUMO_ENDPOINT
