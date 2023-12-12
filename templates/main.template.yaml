@@ -1037,7 +1037,7 @@ Resources:
         - Key: "version"
           Value: !Ref QSVersion
       TemplateURL: !Sub
-        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/apps/sumo-aws-apps/common/resources.template.yaml"
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/templates/apps/sumo-aws-apps/common/resources.template.yaml"
         - S3Region:
             !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
           S3Bucket:
@@ -1079,7 +1079,7 @@ Resources:
         - Key: "version"
           Value: !Ref QSVersion
       TemplateURL: !Sub
-        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/apps/sumo-aws-apps/cloudtrail/cloudtrail.template.yaml"
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/templates/apps/sumo-aws-apps/cloudtrail/cloudtrail.template.yaml"
         - S3Region:
             !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
           S3Bucket:
@@ -1152,7 +1152,7 @@ Resources:
         - Key: "version"
           Value: !Ref QSVersion
       TemplateURL: !Sub
-        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/apps/sumo-aws-apps/guardduty/guardduty.template.yaml"
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/templates/apps/sumo-aws-apps/guardduty/guardduty.template.yaml"
         - S3Region:
             !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
           S3Bucket:
@@ -1205,7 +1205,7 @@ Resources:
         - Key: "version"
           Value: !Ref QSVersion
       TemplateURL: !Sub
-        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/apps/sumo-aws-apps/vpc-flow-logs/vpcflowlogs.template.yaml"
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/templates/apps/sumo-aws-apps/vpc-flow-logs/vpcflowlogs.template.yaml"
         - S3Region:
             !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
           S3Bucket:
@@ -1276,7 +1276,7 @@ Resources:
         - Key: "version"
           Value: !Ref QSVersion
       TemplateURL: !Sub
-        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/apps/sumo-aws-apps/threat-intel-for-aws/threatintel.template.yaml"
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/templates/apps/sumo-aws-apps/threat-intel-for-aws/threatintel.template.yaml"
         - S3Region:
             !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
           S3Bucket:
@@ -1334,7 +1334,7 @@ Resources:
         - Key: "version"
           Value: !Ref QSVersion
       TemplateURL: !Sub
-        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/apps/sumo-aws-apps/s3-audit/s3audit.template.yaml"
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/templates/apps/sumo-aws-apps/s3-audit/s3audit.template.yaml"
         - S3Region:
             !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
           S3Bucket:
@@ -1403,7 +1403,7 @@ Resources:
         - Key: "version"
           Value: !Ref QSVersion
       TemplateURL: !Sub
-        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/apps/sumo-aws-apps/security-hub/securityhub.template.yaml"
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/templates/apps/sumo-aws-apps/security-hub/securityhub.template.yaml"
         - S3Region:
             !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
           S3Bucket:
@@ -1474,7 +1474,7 @@ Resources:
         - Key: "version"
           Value: !Ref QSVersion
       TemplateURL: !Sub
-        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/apps/sumo-aws-apps/WAF/waf.template.yaml"
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/templates/apps/sumo-aws-apps/WAF/waf.template.yaml"
         - S3Region:
             !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
           S3Bucket:
@@ -1539,7 +1539,7 @@ Resources:
         - Key: "version"
           Value: !Ref QSVersion
       TemplateURL: !Sub
-        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/apps/sumo-aws-apps/config/config.template.yaml"
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/templates/apps/sumo-aws-apps/config/config.template.yaml"
         - S3Region:
             !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
           S3Bucket:
@@ -1595,7 +1595,7 @@ Resources:
         - Key: "version"
           Value: !Ref QSVersion
       TemplateURL: !Sub
-        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/apps/sumo-aws-apps/network-firewall/networkfw_macro.template.yaml"
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/templates/apps/sumo-aws-apps/network-firewall/networkfw_macro.template.yaml"
         - S3Region:
             !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
           S3Bucket:
@@ -1618,7 +1618,7 @@ Resources:
         - Key: "version"
           Value: !Ref QSVersion
       TemplateURL: !Sub
-        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/apps/sumo-aws-apps/network-firewall/networkfw.template.yaml"
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/templates/apps/sumo-aws-apps/network-firewall/networkfw.template.yaml"
         - S3Region:
             !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
           S3Bucket:
@@ -1678,7 +1678,7 @@ Resources:
         - Key: "version"
           Value: !Ref QSVersion
       TemplateURL: !Sub
-        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/apps/sumo-aws-apps/AutoEnableS3Logging/auto_enable_s3_logging.template.yaml"
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/templates/apps/sumo-aws-apps/AutoEnableS3Logging/auto_enable_s3_logging.template.yaml"
         - S3Region:
             !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
           S3Bucket:
@@ -1711,7 +1711,7 @@ Resources:
         - Key: "version"
           Value: !Ref QSVersion
       TemplateURL: !Sub
-        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/apps/sumo-aws-apps/AutoEnableS3Logging/auto_enable_s3_logging.template.yaml"
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/templates/apps/sumo-aws-apps/AutoEnableS3Logging/auto_enable_s3_logging.template.yaml"
         - S3Region:
             !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
           S3Bucket:
@@ -1743,7 +1743,7 @@ Resources:
         - Key: "version"
           Value: !Ref QSVersion
       TemplateURL: !Sub
-        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/apps/sumo-aws-apps/AutoEnableS3Logging/auto_enable_s3_logging.template.yaml"
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}${QSVersion}/templates/apps/sumo-aws-apps/AutoEnableS3Logging/auto_enable_s3_logging.template.yaml"
         - S3Region:
             !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
           S3Bucket:

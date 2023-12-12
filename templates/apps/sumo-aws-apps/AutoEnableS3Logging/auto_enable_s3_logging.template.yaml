@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: "Lambda Function for auto enable s3 logging for S3 Buckets, Network Firewall, VPCs, Subnets and Network Interfaces."
 
@@ -8,26 +8,25 @@ Globals:
     MemorySize: 128
 
 Parameters:
-
   EnableLogging:
     Type: String
     Description: "S3 - To Enable S3 Audit Logging for new S3 buckets.
-                  VPC - To Enable VPC flow logs for new VPC, Subnets and Network Interfaces.
-                  Firewall - To Enable Firewall logs for new Firewall"
+      VPC - To Enable VPC flow logs for new VPC, Subnets and Network Interfaces.
+      Firewall - To Enable Firewall logs for new Firewall"
     AllowedPattern: ".+"
     AllowedValues:
-      - 'S3'
-      - 'VPC'
-      - 'Firewall'
+      - "S3"
+      - "VPC"
+      - "Firewall"
 
   ExistingResource:
     Type: String
     Description: "Yes - Enable Logging for existing resources.
-                  No - Skip Existing resources."
+      No - Skip Existing resources."
     Default: "Yes"
     AllowedValues:
-      - 'Yes'
-      - 'No'
+      - "Yes"
+      - "No"
 
   BucketName:
     Type: String
@@ -65,29 +64,28 @@ Parameters:
     Default: "1.0"
 
 Conditions:
-  enable_s3_buckets_logging: !Equals [!Ref EnableLogging, 'S3']
-  enable_vpc_flow_logs_logging: !Equals [!Ref EnableLogging, 'VPC']
-  enable_firewall_logging: !Equals [!Ref EnableLogging,'Firewall']
-  enable_existing_resources: !Equals [!Ref ExistingResource, 'Yes']
+  enable_s3_buckets_logging: !Equals [!Ref EnableLogging, "S3"]
+  enable_vpc_flow_logs_logging: !Equals [!Ref EnableLogging, "VPC"]
+  enable_firewall_logging: !Equals [!Ref EnableLogging, "Firewall"]
+  enable_existing_resources: !Equals [!Ref ExistingResource, "Yes"]
   enable_logging_existing_s3_resources: !And
-    - !Equals [!Ref ExistingResource, 'Yes']
-    - !Equals [!Ref EnableLogging, 'S3']
+    - !Equals [!Ref ExistingResource, "Yes"]
+    - !Equals [!Ref EnableLogging, "S3"]
   enable_logging_existing_vpc_resources: !And
-    - !Equals [!Ref ExistingResource, 'Yes']
-    - !Equals [!Ref EnableLogging, 'VPC']
+    - !Equals [!Ref ExistingResource, "Yes"]
+    - !Equals [!Ref EnableLogging, "VPC"]
   enable_logging_existing_firewall_resources: !And
-    - !Equals [!Ref ExistingResource, 'Yes']
-    - !Equals [!Ref EnableLogging, 'Firewall']
+    - !Equals [!Ref ExistingResource, "Yes"]
+    - !Equals [!Ref EnableLogging, "Firewall"]
 
-  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, "aws-quickstart"]
 
 Resources:
-
   SumoLambdaRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -97,7 +95,7 @@ Resources:
       Policies:
         - PolicyName: SumoPolicy
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
@@ -125,12 +123,12 @@ Resources:
                   - network-firewall:DescribeFirewall
                   - network-firewall:UpdateLoggingConfiguration
                 Resource:
-                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*'
-                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*'
-                  - !Sub 'arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:*'
-                  - !Sub 'arn:${AWS::Partition}:ec2:${AWS::Region}::*'
-                  - !Sub 'arn:${AWS::Partition}:s3:::*'
-                  - !Sub 'arn:${AWS::Partition}:network-firewall:${AWS::Region}:${AWS::AccountId}:firewall/*'
+                  - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*"
+                  - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*"
+                  - !Sub "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:*"
+                  - !Sub "arn:${AWS::Partition}:ec2:${AWS::Region}::*"
+                  - !Sub "arn:${AWS::Partition}:s3:::*"
+                  - !Sub "arn:${AWS::Partition}:network-firewall:${AWS::Region}:${AWS::AccountId}:firewall/*"
 
   AwsS3LogsResourcesLambda:
     Type: AWS::Lambda::Function
@@ -138,8 +136,13 @@ Resources:
       Code:
         S3Bucket: !Sub
           - "${S3Bucket}"
-          - S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
-        S3Key: !Sub "${QSS3KeyPrefix}${QSVersion}/apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
+          - S3Bucket:
+              !If [
+                UsingDefaultBucket,
+                !Sub "${QSS3BucketName}-${AWS::Region}",
+                !Ref QSS3BucketName,
+              ]
+        S3Key: !Sub "${QSS3KeyPrefix}${QSVersion}/templates/apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
       Handler: "awsresource.enable_s3_logs"
       Runtime: python3.11
       Role: !GetAtt SumoLambdaRole.Arn
@@ -153,7 +156,7 @@ Resources:
         SecurityGroupIds:
           - !Ref AWS::NoValue
         SubnetIds:
-          - !Ref AWS::NoValue           
+          - !Ref AWS::NoValue
       KmsKeyArn: !Ref "AWS::NoValue"
       Environment:
         Variables:
@@ -172,7 +175,7 @@ Resources:
       SourceArn: !GetAtt AutoEnableS3LogEventsRuleTrigger.Arn
 
   AutoEnableS3LogEventsRuleTrigger:
-    Type: 'AWS::Events::Rule'
+    Type: "AWS::Events::Rule"
     Condition: enable_s3_buckets_logging
     Properties:
       Description: Auto-Enable S3 loggging for S3 Buckets with Lambda from events
@@ -202,7 +205,7 @@ Resources:
       SourceArn: !GetAtt AutoEnableVPCEventsRuleTrigger.Arn
 
   AutoEnableVPCEventsRuleTrigger:
-    Type: 'AWS::Events::Rule'
+    Type: "AWS::Events::Rule"
     Condition: enable_vpc_flow_logs_logging
     Properties:
       Description: Auto-Enable VPC Flow logs for VPCs with Lambda from events
@@ -221,7 +224,7 @@ Resources:
       Targets:
         - Arn: !GetAtt AwsS3LogsResourcesLambda.Arn
           Id: Main
-#Section for network firewall
+  #Section for network firewall
   AutoEnableNetFWEventsInvokePermission:
     Type: AWS::Lambda::Permission
     Condition: enable_firewall_logging
@@ -232,7 +235,7 @@ Resources:
       SourceArn: !GetAtt AutoEnableNetFWEventsRuleTrigger.Arn
 
   AutoEnableNetFWEventsRuleTrigger:
-    Type: 'AWS::Events::Rule'
+    Type: "AWS::Events::Rule"
     Condition: enable_firewall_logging
     Properties:
       Description: Auto-Enable logging for Network Firewall with Lambda from events
@@ -253,7 +256,7 @@ Resources:
           Id: Main
 
   SumoLogicHelperFunction:
-    Type: 'AWS::Serverless::Function'
+    Type: "AWS::Serverless::Function"
     Condition: enable_existing_resources
     Properties:
       Handler: main.handler
@@ -261,8 +264,13 @@ Resources:
       CodeUri:
         Bucket: !Sub
           - "${S3Bucket}"
-          - S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
-        Key: !Sub "${QSS3KeyPrefix}${QSVersion}/apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
+          - S3Bucket:
+              !If [
+                UsingDefaultBucket,
+                !Sub "${QSS3BucketName}-${AWS::Region}",
+                !Ref QSS3BucketName,
+              ]
+        Key: !Sub "${QSS3KeyPrefix}${QSVersion}/templates/apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
       MemorySize: 128
       Timeout: 900
       DeadLetterQueue:
@@ -273,7 +281,7 @@ Resources:
         SecurityGroupIds:
           - !Ref AWS::NoValue
         SubnetIds:
-          - !Ref AWS::NoValue    
+          - !Ref AWS::NoValue
       Role:
         Fn::GetAtt:
           - SumoLambdaRole
@@ -314,7 +322,6 @@ Resources:
       AccountID: !Ref "AWS::AccountId"
 
 Outputs:
-
   AwsS3LogsResourcesLambda:
     Description: "AwsS3LogsResourcesLambda Function ARN"
     Value: !GetAtt AwsS3LogsResourcesLambda.Arn
