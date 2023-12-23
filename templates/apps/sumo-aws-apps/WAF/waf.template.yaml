@@ -389,7 +389,7 @@ Resources:
               StringEquals:
                 aws:SourceAccount: !Ref "AWS::AccountId"
               ArnLike:
-                aws:SourceArn: !Sub "arn:aws:s3:::${LogsS3BucketName}"
+                aws:SourceArn: !Sub "arn:${AWS::Partition}:s3:::${LogsS3BucketName}"
             Effect: Allow
             Principal:
               Service: "s3.amazonaws.com"
@@ -516,7 +516,7 @@ Resources:
       DeliveryStreamName: !Ref DeliveryStreamName
       DeliveryStreamType: "DirectPut"
       ExtendedS3DestinationConfiguration:
-        BucketARN: !Sub "arn:aws:s3:::${LogsS3BucketName}"
+        BucketARN: !Sub "arn:${AWS::Partition}:s3:::${LogsS3BucketName}"
         Prefix: "WAF_LOGS/"
         ErrorOutputPrefix: "WAF_LOGS/"
         RoleARN: !GetAtt KinesisS3Role.Arn

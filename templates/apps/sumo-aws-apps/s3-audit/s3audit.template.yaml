@@ -358,7 +358,7 @@ Resources:
               StringEquals:
                 aws:SourceAccount: !Ref "AWS::AccountId"
               ArnLike:
-                aws:SourceArn: !Sub "arn:aws:s3:::${LogsS3BucketName}"
+                aws:SourceArn: !Sub "arn:${AWS::Partition}:s3:::${LogsS3BucketName}"
             Effect: Allow
             Principal:
               Service: "s3.amazonaws.com"

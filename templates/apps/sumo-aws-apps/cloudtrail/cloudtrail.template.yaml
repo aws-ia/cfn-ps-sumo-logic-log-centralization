@@ -535,7 +535,7 @@ Resources:
               StringEquals:
                 aws:SourceAccount: !Ref "AWS::AccountId"
               ArnLike:
-                aws:SourceArn: !Sub "arn:aws:s3:::${CloudTrailLogsBucketName}"
+                aws:SourceArn: !Sub "arn:${AWS::Partition}:s3:::${CloudTrailLogsBucketName}"
             Effect: Allow
             Principal:
               Service: "s3.amazonaws.com"
@@ -581,14 +581,14 @@ Resources:
               Service: cloudtrail.amazonaws.com
             Action: s3:GetBucketAcl
             Resource:
-              - !Sub "arn:aws:s3:::${CloudTrailLogsBucketName}"
+              - !Sub "arn:${AWS::Partition}:s3:::${CloudTrailLogsBucketName}"
           - Sid: AWSCloudTrailWrite
             Effect: Allow
             Principal:
               Service: cloudtrail.amazonaws.com
             Action: s3:PutObject
             Resource:
-              - !Sub "arn:aws:s3:::${CloudTrailLogsBucketName}/*"
+              - !Sub "arn:${AWS::Partition}:s3:::${CloudTrailLogsBucketName}/*"
             Condition:
               StringEquals:
                 s3:x-amz-acl: bucket-owner-full-control
@@ -598,7 +598,7 @@ Resources:
               Service: cloudtrail.amazonaws.com
             Action: s3:ListBucket
             Resource:
-              - !Sub "arn:aws:s3:::${CloudTrailLogsBucketName}"
+              - !Sub "arn:${AWS::Partition}:s3:::${CloudTrailLogsBucketName}"
     DependsOn:
       - TargetS3Bucket
     DeletionPolicy: Retain
