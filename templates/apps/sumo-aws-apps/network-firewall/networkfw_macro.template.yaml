@@ -43,15 +43,20 @@ Resources:
               - Effect: Allow
                 Action:
                   - logs:CreateLogGroup
-                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+                Resource: !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:*"
               - Effect: Allow
                 Action:
                   - logs:CreateLogStream
                   - logs:PutLogEvents
-                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${AWS::StackName}-MacroNFWHelperFunction:*"
+                Resource: !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${AWS::StackName}-MacroNFWHelperFunction:*"
 
   MacroNFWHelperFunction:
     Type: "AWS::Serverless::Function"
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks:
+            - E3030 # Valid value for Runtime (python3.11)
     Properties:
       Handler: firewallmacro.handle
       Runtime: python3.11

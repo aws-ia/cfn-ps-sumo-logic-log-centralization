@@ -307,6 +307,11 @@ Resources:
   SumoLogicHelperFunction:
     Type: "AWS::Serverless::Function"
     Condition: do_not_use_parent_stack
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks:
+            - E3030 # Valid value for Runtime (python3.11)
     Properties:
       Handler: main.handler
       Runtime: python3.11

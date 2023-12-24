@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: "2010-09-09"
 Transform: "AWS::Serverless-2016-10-31"
 Description: "Template to setup the common AWS and Sumo Logic resources for AWS Quick Start Solution."
 
-Metadata:
+Metadata:  
   "AWS::CloudFormation::Interface":
     ParameterGroups:
       - Label:
@@ -233,6 +233,11 @@ Resources:
 
   SumoLogicLambdaHelper:
     Type: "AWS::Serverless::Function"
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks:
+            - E3030 # Valid value for Runtime (python3.11)
     Properties:
       Handler: main.handler
       Runtime: python3.11
