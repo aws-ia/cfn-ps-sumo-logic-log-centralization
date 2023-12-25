@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
-Description: "Lambda Function for auto enable s3 logging for S3 Buckets, Network Firewall, VPCs, Subnets and Network Interfaces."
+Description: "Lambda Function for auto enable s3 logging for S3 Buckets, Network Firewall, VPCs, Subnets and Network Interfaces. (qs-1use1n7jh)"
 
 Globals:
   Function:

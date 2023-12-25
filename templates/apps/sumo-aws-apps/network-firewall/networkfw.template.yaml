@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: "2010-09-09"
 Transform:
   - AWS::Serverless-2016-10-31
   - MacroFirewall
-Description: "Template to setup the  AWS Network Firewall app with AWS and Sumo Logic resources for AWS Quick Start Solution."
+Description: "Template to setup the  AWS Network Firewall app with AWS and Sumo Logic resources for AWS Quick Start Solution. (qs-1use2129d)"
 
 Metadata:
   AWS::CloudFormation::Interface:

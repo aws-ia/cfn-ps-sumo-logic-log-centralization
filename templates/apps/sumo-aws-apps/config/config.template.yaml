@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: "AWS::Serverless-2016-10-31"
-Description: "Template to setup the AWS Config app with AWS and Sumo Logic resources for AWS Quick Start Solution."
+Description: "Template to setup the AWS Config app with AWS and Sumo Logic resources for AWS Quick Start Solution. (qs-1use1sj3q)"
 
 Metadata:
   AWS::CloudFormation::Interface:
@@ -306,7 +306,10 @@ Resources:
             Principal:
               Service: [config.amazonaws.com]
             Action: ["sts:AssumeRole"]
-      ManagedPolicyArns: [!Sub "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSConfigRole"]
+      ManagedPolicyArns:
+        [
+          !Sub "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSConfigRole",
+        ]
       Policies:
         - PolicyName: root
           PolicyDocument:
@@ -314,7 +317,11 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: s3:GetBucketAcl
-                Resource: !Join ["", ["arn:",!Ref AWS::Partition,":s3:::", !Ref BucketName]]
+                Resource:
+                  !Join [
+                    "",
+                    ["arn:", !Ref AWS::Partition, ":s3:::", !Ref BucketName],
+                  ]
               - Effect: Allow
                 Action: s3:PutObject
                 Resource:

@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
-Description: "Template to setup the Amazon GuardDuty, Global Intelligence for Amazon GuardDuty with AWS and Sumo Logic resources for AWS Quick Start Solution."
+Description: "Template to setup the Amazon GuardDuty, Global Intelligence for Amazon GuardDuty with AWS and Sumo Logic resources for AWS Quick Start Solution. (qs-1use1ukii)"
 
 Metadata:
   AWS::CloudFormation::Interface:
@@ -218,7 +218,7 @@ Resources:
       cfn-lint:
         config:
           ignore_checks:
-            - E3030 # Valid value for Runtime (python3.11) 
+            - E3030 # Valid value for Runtime (python3.11)
     Properties:
       Handler: main.handler
       Runtime: python3.11
