@@ -341,7 +341,7 @@ Resources:
                   StringEquals:
                     s3:x-amz-acl: bucket-owner-full-control
               - Effect: Allow
-                Action: config:Put*
+                Action: config:PutDeliveryChannel
                 Resource: !Sub "arn:${AWS::Partition}:config:${AWS::Region}:${AWS::AccountId}:*"
 
   TargetS3Bucket:

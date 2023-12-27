@@ -212,7 +212,7 @@ Resources:
                   - s3:PutBucketLogging
                   - s3:PutBucketAcl
                   - s3:GetBucketAcl
-                  - ec2:Describe*
+                  - ec2:DescribeVpcs
                   - ec2:DeleteFlowLogs
                   - ec2:CreateFlowLogs
                   - logs:CreateLogDelivery

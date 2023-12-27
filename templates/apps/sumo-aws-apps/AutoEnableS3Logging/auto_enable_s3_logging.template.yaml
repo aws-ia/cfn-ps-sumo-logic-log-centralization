@@ -102,7 +102,7 @@ Resources:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
-                  - ec2:Describe*
+                  - ec2:DescribeVpcs
                   - ec2:DeleteFlowLogs
                   - ec2:CreateFlowLogs
                   - ec2:DescribeFlowLogs

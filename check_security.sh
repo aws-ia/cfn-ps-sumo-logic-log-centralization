@@ -19,11 +19,13 @@ if [ $option -eq "2" ] || [ $option -eq "4" ]
 then
 echo "CHECK WITH CFN-LINT"
 output_cfn_lint=output-checksecurity/cfn_lint_${current_date}.txt
+git clone https://github.com/aws-quickstart/qs-cfn-lint-rules.git
+pip install -e qs-cfn-lint-rules
 for dir in templates/apps/sumo-aws-apps/*/     # list directories in the form "/tmp/dirname/"
 do
     dir=${dir%*/}      # remove the trailing "/"
     echo $dir
-    cfn-lint --ignore-checks W,E1019,E2521,E3002,E3005,E9101  -t $dir/*.yaml  -a ~/qs-cfn-lint-rules/qs_cfn_lint_rules/ >> ${output_cfn_lint}
+    cfn-lint --ignore-checks W,E1019,E2521,E3002,E3005,E9101  -t $dir/*.yaml  -a qs-cfn-lint-rules/qs_cfn_lint_rules/ >> ${output_cfn_lint}
 done
 fi
 if [ $option -eq "3" ] || [ $option -eq "4" ]
