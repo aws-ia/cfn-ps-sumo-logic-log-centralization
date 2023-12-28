@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: "AWS::Serverless-2016-10-31"
-Description: "Template to setup the AWS Config app with AWS and Sumo Logic resources for AWS Quick Start Solution."
+Description: "Template to setup the AWS Config app with AWS and Sumo Logic resources for AWS Quick Start Solution. (qs-1use1sj3q)"
 
 Metadata:
   AWS::CloudFormation::Interface:
@@ -254,6 +254,11 @@ Resources:
   SumoLogicHelperFunction:
     Type: "AWS::Serverless::Function"
     Condition: do_not_use_parent_stack
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks:
+            - E3030 # Valid value for Runtime (python3.11)
     Properties:
       Handler: main.handler
       Runtime: python3.11
@@ -301,7 +306,10 @@ Resources:
             Principal:
               Service: [config.amazonaws.com]
             Action: ["sts:AssumeRole"]
-      ManagedPolicyArns: ["arn:aws:iam::aws:policy/service-role/AWSConfigRole"]
+      ManagedPolicyArns:
+        [
+          !Sub "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSConfigRole",
+        ]
       Policies:
         - PolicyName: root
           PolicyDocument:
@@ -309,14 +317,20 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: s3:GetBucketAcl
-                Resource: !Join ["", ["arn:aws:s3:::", !Ref BucketName]]
+                Resource:
+                  !Join [
+                    "",
+                    ["arn:", !Ref AWS::Partition, ":s3:::", !Ref BucketName],
+                  ]
               - Effect: Allow
                 Action: s3:PutObject
                 Resource:
                   !Join [
                     "",
                     [
-                      "arn:aws:s3:::",
+                      "arn:",
+                      !Ref AWS::Partition,
+                      ":s3:::",
                       !Ref BucketName,
                       /AWSLogs/,
                       !Ref "AWS::AccountId",
@@ -327,7 +341,7 @@ Resources:
                   StringEquals:
                     s3:x-amz-acl: bucket-owner-full-control
               - Effect: Allow
-                Action: config:Put*
+                Action: config:PutDeliveryChannel
                 Resource: !Sub "arn:${AWS::Partition}:config:${AWS::Region}:${AWS::AccountId}:*"
 
   TargetS3Bucket:

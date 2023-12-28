@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: "AWS::Serverless-2016-10-31"
-Description: "Template to setup the AWS Security Hub app with AWS and Sumo Logic resources for AWS Quick Start Solution. (qs-teamplate)"
+Description: "Template to setup the AWS Security Hub app with AWS and Sumo Logic resources for AWS Quick Start Solution. (qs-1use22qe3)"
 
 Metadata:
   AWS::CloudFormation::Interface:
@@ -265,6 +265,11 @@ Resources:
   SumoLogicHelperFunction:
     Type: "AWS::Serverless::Function"
     Condition: do_not_use_parent_stack
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks:
+            - E3030 # Valid value for Runtime (python3.11)
     Properties:
       Handler: main.handler
       Runtime: python3.11
@@ -364,7 +369,7 @@ Resources:
               StringEquals:
                 aws:SourceAccount: !Ref "AWS::AccountId"
               ArnLike:
-                aws:SourceArn: !Sub "arn:aws:s3:::${LogsS3BucketName}"
+                aws:SourceArn: !Sub "arn:${AWS::Partition}:s3:::${LogsS3BucketName}"
             Effect: Allow
             Principal:
               Service: "s3.amazonaws.com"

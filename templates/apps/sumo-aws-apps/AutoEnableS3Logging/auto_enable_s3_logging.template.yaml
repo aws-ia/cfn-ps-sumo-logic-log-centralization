@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
-Description: "Lambda Function for auto enable s3 logging for S3 Buckets, Network Firewall, VPCs, Subnets and Network Interfaces."
+Description: "Lambda Function for auto enable s3 logging for S3 Buckets, Network Firewall, VPCs, Subnets and Network Interfaces. (qs-1use1n7jh)"
 
 Globals:
   Function:
@@ -102,7 +102,7 @@ Resources:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
-                  - ec2:Describe*
+                  - ec2:DescribeVpcs
                   - ec2:DeleteFlowLogs
                   - ec2:CreateFlowLogs
                   - ec2:DescribeFlowLogs
@@ -131,6 +131,11 @@ Resources:
                   - !Sub "arn:${AWS::Partition}:network-firewall:${AWS::Region}:${AWS::AccountId}:firewall/*"
 
   AwsS3LogsResourcesLambda:
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks:
+            - E3030 # Valid value for Runtime (python3.11)
     Type: AWS::Lambda::Function
     Properties:
       Code:
@@ -258,6 +263,11 @@ Resources:
   SumoLogicHelperFunction:
     Type: "AWS::Serverless::Function"
     Condition: enable_existing_resources
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks:
+            - E3030 # Valid value for Runtime (python3.11)
     Properties:
       Handler: main.handler
       Runtime: python3.11
