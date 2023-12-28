@@ -461,11 +461,11 @@ Parameters:
   Section2CloudTrailBucketPathExpression:
     Type: String
     Description: "Path expression must match the folder structure for CloudTrail logs (e.g., AWSLogs/*/CloudTrail/*)."
-    Default: "AWSLogs/*/CloudTrail/*"
+    Default: "AWSLogs/*"
   Section2CloudTrailLogsSourceCategoryName:
     Type: String
     Description: "Required when flag is set to No. Provide an existing source category name from Sumo Logic collecting CloudTrail logs. This is used for Threat Intel for AWS app installation also."
-    Default: "AWS/Cloudtrail/Logs"
+    Default: "aws/quickstart/cloudtrail/logs"
 
   # GuardDuty apps parameters
   Section3aInstallGuardDutyApps:
@@ -532,7 +532,7 @@ Parameters:
   Section4fVpcLogsSourceCategoryName:
     Type: String
     Description: "Required when flag is set to No. Provide an existing source category name from Sumo Logic collecting VPC flow logs. This is used for Threat Intel as well."
-    Default: "AWS/Vpc/Flow/Logs"
+    Default: "aws/quickstart/vpc/flow/logs"
 
   # Threat Intel for AWS Parameters
   Section5aInstallThreatIntelApp:
@@ -593,7 +593,7 @@ Parameters:
   Section7bEnableSecurityHub:
     Type: String
     Description: "Choose Yes if Security Hub must be enabled for the Region."
-    Default: "No"
+    Default: "Yes"
     AllowedValues: ["Yes", "No"]
   Section7cSecurityHubCreateBucket:
     Type: String
@@ -832,7 +832,7 @@ Parameters:
     Description:
       "Existing - Change to an existing source category from Sumo Logic if Amazon S3 source is not created.
       New - Default will be used if Amazon S3 source is created."
-    Default: AWS/NFW/Flow/Logs
+    Default: "aws/quickstart/nfw/logs"
 
   QSS3BucketName:
     AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
@@ -875,7 +875,7 @@ Parameters:
   QSVersion:
     Type: String
     Description: "Version of the Quick Start. Do not change."
-    Default: "1.0"
+    Default: "2"
 
 Conditions:
   # Conditions for CloudTrail apps
@@ -1024,7 +1024,7 @@ Conditions:
     - !Condition install_nfw_app
     - !Condition create_nfw_source
 
-  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, "aws-ia"]
+  UsingDefaultBucket: !Or [ !Equals [!Ref QSS3BucketName, 'aws-ia'], !Equals [!Ref QSS3BucketName, 'sumologic-aws-security-solutions'] ]
 
 Resources:
   WaitHandle:
@@ -1242,7 +1242,7 @@ Resources:
         S3SourceCategoryName:
           !If [
             create_vpc_source,
-            "aws/quickstart/vpc/logs",
+            "aws/quickstart/vpc/flow/logs",
             !Ref Section4fVpcLogsSourceCategoryName,
           ]
         QSS3BucketName: !Ref QSS3BucketName
@@ -1299,7 +1299,7 @@ Resources:
         VPCFlowLogsSourceCategory:
           !If [
             create_vpc_source,
-            "aws/quickstart/vpc/logs",
+            "aws/quickstart/vpc/flow/logs",
             !Ref Section4fVpcLogsSourceCategoryName,
           ]
         ElasticLoadBalancerSourceCategory: !Ref Section5bElasticLoadBalancerSourceCategory
