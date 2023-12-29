@@ -17,7 +17,7 @@ export CollectorName="AWS-anpn-Collector-${AppName}-${InstallType}"
 
 # AWS Quick Start configuration
 #export QSS3BucketName="sumologiclambdahelper"
-export QSS3BucketName="aws-quickstart"
+export QSS3BucketName="aws-ia"
 export QSS3BucketRegion="us-east-1"
 
 if [[ "${InstallType}" == "all" ]]

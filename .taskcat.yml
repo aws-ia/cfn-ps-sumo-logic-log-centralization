@@ -1,6 +1,4 @@
 general:
-  # auth:
-  #   default: sumologic
   s3_regional_buckets: true
 project:
   name: cfn-ps-sumo-logic-log-centralization/2
@@ -18,12 +16,105 @@ tests:
       QSS3BucketName: "$[taskcat_autobucket]"
       QSS3BucketRegion: "$[taskcat_current_region]"
       QSVersion: "2"
+
+      ## Sumo Logic configuration
+      Section1aSumoLogicDeployment: "us1"
+      Section1bSumoLogicAccessID: "" #required
+      Section1cSumoLogicAccessKey: "" #required
+      Section1dSumoLogicOrganizationId: "" #required
+      Section1eSumoLogicResourceRemoveOnDeleteStack: "true"
+
+      #cloudtrail configuration
+
       Section2CloudTrailCreateBucket: "Yes"
+      # Section2CloudTrailLogsBucketName: "" Required if Section2CloudTrailCreateBucket is set to No
+      Section2CloudTrailCreateLogSource: "Yes"
+      Section2CloudTrailBucketPathExpression: "AWSLogs/*"
+      Section2CloudTrailLogsSourceCategoryName: "aws/quickstart/cloudtrail/logs"
+      Section2InstallCloudTrailApp: "Yes"
+      Section2InstallPCICloudTrailApp: "Yes"
+      Section2InstallCISFoundationApp: "Yes"
+      Section2InstallCloudTrailMonitoringAnalyticsApp: "Yes"
+      Section2InstallCloudTrailSecOpsApp: "Yes"
+
+      # guarddduty configuration
+
+      Section3aInstallGuardDutyApps: "Both"
+      Section3bGuardDutyCreateHttpLogsSource: "Yes"
+      Section3cGuardDutyHttpLogsSourceCategoryName: "aws/quickstart/guardduty/logs"
+
+      # vpc configuration
+
+      Section4aInstallVpcApps: "All"
       Section4bVpcCreateBucket: "Yes"
+      # Section4cVpcLogsBucketName: "" Required when Section4bVpcCreateBucket is set to No
+      Section4dVpcCreateS3Source: "Yes"
+      Section4eVpcBucketPathExpression: "VPC-FLOW-LOGS/*"
+      Section4fVpcLogsSourceCategoryName: "aws/quickstart/vpc/flow/logs"
+
+      Section5aInstallThreatIntelApp: "Yes"
+      Section5bElasticLoadBalancerSourceCategory: "*elb*"
+
+      # s3 audit configuration
+
+      Section6aInstallS3AuditApp: "Yes"
       Section6bS3AuditCreateBucket: "Yes"
+      # Section6cS3AuditLogsBucketName: "" Required if Section6bS3AuditCreateBucket is set to No
+      Section6dS3AuditCreateS3Source: "Yes"
+      Section6eS3AuditBucketPathExpression: "S3-AUDIT-LOGS/*"
+      Section6fS3AuditLogsSourceCategoryName: "aws/quickstart/s3/audit/logs"
+
+      # security hub configuration
+
+      Section7aInstallSecurityHubAuditApp: "Yes"
+      Section7bEnableSecurityHub: "No"
       Section7cSecurityHubCreateBucket: "Yes"
+      # Section7dSecurityHubLogsBucketName: "" Required if Section7cSecurityHubCreateBucket is set to No
+      Section7eSecurityHubCreateS3Source: "Yes"
+      Section7fSecurityHubBucketPathExpression: "*securityhub*/*"
+      Section7gSecurityHubLogsSourceCategoryName: "aws/quickstart/securityhub/logs"
+
+      # WAF configuration
+
+      Section8aInstallWafApp: "Yes"
+      Section8bCreateDeliveryStream: "No" # why delivery stream is same as enabling waf?
       Section8cWafCreateBucket: "Yes"
-      Section11NFWCreateS3Bucket: "Yes"
+      # Section8dWafLogsBucketName: "" Required if Section8cWafCreateBucket is set to No
+      Section8eWafCreateS3Source: "Yes"
+      Section8fWafBucketPathExpression: "WAF_LOGS/*"
+      Section8gWafLogsSourceCategoryName: "aws/quickstart/waf/logs"
+
+      # config configuration
+
+      Section9aInstallConfigApp: "Yes"
+      Section9bConfigEnableConfig: "Yes"
       Section9cConfigCreateSNSTopic: "Yes"
-      Section11NFWCreateS3Source: "No"
-      Section11InstallNFWApp: "No"
+      # Section9dConfigExistingTopicName: "" Required when Section9cConfigCreateSNSTopic is set to No
+      Section9eConfigCreateHttpLogsSource: "Yes"
+      Section9fConfigHttpLogsSourceCategoryName: "aws/quickstart/config/logs"
+
+      # enable auto logging configuration
+      Section91aEnableAutoLogging: "Skip"
+      Section91bEnableLoggingForExistingResources: "No"
+      Section91cS3LoggingBucketPrefix: "S3_AUDIT_LOGS/"
+      Section91eVPCLoggingBucketPrefix: "VPC_LOGS/"
+      Section11NFWLogsNFWBucketPrefix: "NFW/"
+      Section91dS3LoggingFilterExpression: ""
+      Section91fVPCLoggingFilterExpression: ""
+      Section91FireWallLoggingFilterExpression: ""
+
+      # network firewall configuration
+
+      Section11NFWCreateS3Bucket: "Yes"
+      Section11NFWCreateS3Source: "Yes"
+      Section11InstallNFWApp: "Yes"
+      Section11CreateNewFW: "No"
+      # Section11VPCID: "" Required when Section11CreateNewFW is set to Yes
+      # Section11SubnetID: "" Required when Section11CreateNewFW is set to Yes
+      Section11CreateFirewallPolicy: "Yes"
+      # Section11FirewallPolicyArn: "" Required when Section11CreateFirewallPolicy is set to No
+      Section11StatefulRule: 'pass tcp 10.20.20.0/24 45400:45500 <> 10.10.10.0/24 5203 (msg:"test";sid:1;rev:1;)'
+      Section11StatelessRule: "80"
+      # Section11NFWLogsS3BucketName: "" Required when Section11NFWCreateS3Bucket is set to No
+      Section11NFWS3BucketLogsPathExpression: "*AWSLogs/*/network-firewall/*"
+      Section11NFWS3SourceCategoryName: "aws/quickstart/nfw/logs"

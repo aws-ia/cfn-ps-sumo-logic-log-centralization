@@ -461,11 +461,11 @@ Parameters:
   Section2CloudTrailBucketPathExpression:
     Type: String
     Description: "Path expression must match the folder structure for CloudTrail logs (e.g., AWSLogs/*/CloudTrail/*)."
-    Default: "AWSLogs/*/CloudTrail/*"
+    Default: "AWSLogs/*"
   Section2CloudTrailLogsSourceCategoryName:
     Type: String
     Description: "Required when flag is set to No. Provide an existing source category name from Sumo Logic collecting CloudTrail logs. This is used for Threat Intel for AWS app installation also."
-    Default: "AWS/Cloudtrail/Logs"
+    Default: "aws/quickstart/cloudtrail/logs"
 
   # GuardDuty apps parameters
   Section3aInstallGuardDutyApps:
@@ -532,7 +532,7 @@ Parameters:
   Section4fVpcLogsSourceCategoryName:
     Type: String
     Description: "Required when flag is set to No. Provide an existing source category name from Sumo Logic collecting VPC flow logs. This is used for Threat Intel as well."
-    Default: "AWS/Vpc/Flow/Logs"
+    Default: "aws/quickstart/vpc/flow/logs"
 
   # Threat Intel for AWS Parameters
   Section5aInstallThreatIntelApp:
@@ -593,7 +593,7 @@ Parameters:
   Section7bEnableSecurityHub:
     Type: String
     Description: "Choose Yes if Security Hub must be enabled for the Region."
-    Default: "No"
+    Default: "Yes"
     AllowedValues: ["Yes", "No"]
   Section7cSecurityHubCreateBucket:
     Type: String
@@ -646,7 +646,7 @@ Parameters:
       - "No"
   Section8dWafLogsBucketName:
     Type: String
-    Description: "Required when flag is set to No. Provide an existing bucket name that has AWS WAF logs."
+    Description: "Required when flag is set to No. Provide an existing bucket name that has AWS WAF logs in your account that begins with 'aws-waf-logs-'"
     Default: ""
   Section8eWafCreateS3Source:
     Type: String
@@ -657,8 +657,8 @@ Parameters:
       - "No"
   Section8fWafBucketPathExpression:
     Type: String
-    Description: "Path expression must match the folder structure for WAF logs (e.g., WAF_LOGS/*)."
-    Default: "WAF_LOGS/*"
+    Description: "Path expression must match the folder structure for WAF logs (e.g., AWSLogs/*/WAFLogs/*)."
+    Default: "AWSLogs/*/WAFLogs/*"
   Section8gWafLogsSourceCategoryName:
     Type: String
     Description: "Required when flag is set to No. Provide an existing source category name from Sumo Logic collecting WAF logs. This is used for app installation."
@@ -826,13 +826,13 @@ Parameters:
   Section11NFWS3BucketLogsPathExpression:
     Type: String
     Description: Path expression must match one or more S3 objects. For example, ABC*.log or ABC.log
-    Default: "*AWSLogs/*/network-firewall/*"
+    Default: "NFW/*"
   Section11NFWS3SourceCategoryName:
     Type: String
     Description:
       "Existing - Change to an existing source category from Sumo Logic if Amazon S3 source is not created.
       New - Default will be used if Amazon S3 source is created."
-    Default: AWS/NFW/Flow/Logs
+    Default: "aws/quickstart/nfw/logs"
 
   QSS3BucketName:
     AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
@@ -875,7 +875,7 @@ Parameters:
   QSVersion:
     Type: String
     Description: "Version of the Quick Start. Do not change."
-    Default: "1.0"
+    Default: "2"
 
 Conditions:
   # Conditions for CloudTrail apps
@@ -1024,7 +1024,7 @@ Conditions:
     - !Condition install_nfw_app
     - !Condition create_nfw_source
 
-  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, "aws-ia"]
+  UsingDefaultBucket: !Or [ !Equals [!Ref QSS3BucketName, 'aws-ia'], !Equals [!Ref QSS3BucketName, 'sumologic-aws-security-solutions'] ]
 
 Resources:
   WaitHandle:
@@ -1242,7 +1242,7 @@ Resources:
         S3SourceCategoryName:
           !If [
             create_vpc_source,
-            "aws/quickstart/vpc/logs",
+            "aws/quickstart/vpc/flow/logs",
             !Ref Section4fVpcLogsSourceCategoryName,
           ]
         QSS3BucketName: !Ref QSS3BucketName
@@ -1299,7 +1299,7 @@ Resources:
         VPCFlowLogsSourceCategory:
           !If [
             create_vpc_source,
-            "aws/quickstart/vpc/logs",
+            "aws/quickstart/vpc/flow/logs",
             !Ref Section4fVpcLogsSourceCategoryName,
           ]
         ElasticLoadBalancerSourceCategory: !Ref Section5bElasticLoadBalancerSourceCategory
@@ -1500,7 +1500,7 @@ Resources:
           ]
         CreateS3Source: !If [create_waf_source, "Yes", "No"]
         S3BucketLogsPathExpression:
-          !If [enable_waf, "WAF_LOGS/*", !Ref Section8fWafBucketPathExpression]
+          !If [enable_waf, "AWSLogs/*/WAFLogs/*", !Ref Section8fWafBucketPathExpression]
         S3SourceName: !Sub "aws-quickstart-waf-${AWS::Region}"
         S3SourceCategoryName:
           !If [
@@ -1654,7 +1654,7 @@ Resources:
         S3BucketLogsPathExpression:
           !If [
             create_nfw_bucket,
-            !Sub "*AWSLogs/${AWS::AccountId}/network-firewall/*",
+            !Sub "NFW/*",
             !Ref Section11NFWS3BucketLogsPathExpression,
           ]
         S3SourceName: !Sub "aws-quickstart-nfw-${AWS::Region}"
