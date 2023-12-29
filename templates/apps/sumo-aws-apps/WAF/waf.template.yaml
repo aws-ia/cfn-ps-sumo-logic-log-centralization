@@ -579,7 +579,7 @@ Resources:
       AppId: "87c2e6ca-a526-4745-af48-0c7225127b22"
       RemoveOnDeleteStack: !Ref RemoveSumoResourcesOnDeleteStack
       AppSources:
-        awsWAF: !Sub "_sourceCategory=${S3SourceCategoryName}"
+        logsrc: !Sub "_sourceCategory=${S3SourceCategoryName}"
       SumoAccessID: !Ref SumoAccessID
       SumoAccessKey: !Ref SumoAccessKey
       SumoDeployment: !Ref SumoDeployment

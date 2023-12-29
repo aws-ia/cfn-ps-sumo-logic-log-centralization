@@ -466,7 +466,7 @@ Resources:
       AppId: "cf3ba421-d959-4b08-9ae8-5bd4202eea87"
       RemoveOnDeleteStack: !Ref RemoveSumoResourcesOnDeleteStack
       AppSources:
-        paramId123: !Sub "_sourceCategory=${S3AuditSourceCategoryName}"
+        s3datasrc: !Sub "_sourceCategory=${S3AuditSourceCategoryName}"
       SumoAccessID: !Ref SumoAccessID
       SumoAccessKey: !Ref SumoAccessKey
       SumoDeployment: !Ref SumoDeployment

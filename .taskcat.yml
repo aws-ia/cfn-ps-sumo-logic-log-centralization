@@ -22,7 +22,7 @@ tests:
       Section1bSumoLogicAccessID: "" #required
       Section1cSumoLogicAccessKey: "" #required
       Section1dSumoLogicOrganizationId: "" #required
-      Section1eSumoLogicResourceRemoveOnDeleteStack: "Yes"
+      Section1eSumoLogicResourceRemoveOnDeleteStack: "true"
 
       #cloudtrail configuration
 
@@ -67,7 +67,7 @@ tests:
       # security hub configuration
 
       Section7aInstallSecurityHubAuditApp: "Yes"
-      Section7bEnableSecurityHub: "Yes"
+      Section7bEnableSecurityHub: "No"
       Section7cSecurityHubCreateBucket: "Yes"
       # Section7dSecurityHubLogsBucketName: "" Required if Section7cSecurityHubCreateBucket is set to No
       Section7eSecurityHubCreateS3Source: "Yes"
