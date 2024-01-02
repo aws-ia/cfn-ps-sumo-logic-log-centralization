@@ -244,13 +244,16 @@ Resources:
                   - logs:CreateLogStream
                   - logs:PutLogEvents
                   - config:DescribeDeliveryChannels
-                  - config:PutDeliveryChannel
                   - config:DeleteDeliveryChannel
                 Resource:
                   - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*"
                   - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*"
                   - !Sub "arn:${AWS::Partition}:config:${AWS::Region}:${AWS::AccountId}:*"
 
+              - Effect: Allow
+                Action:
+                  - config:PutDeliveryChannel
+                Resource: '*'
   SumoLogicHelperFunction:
     Type: "AWS::Serverless::Function"
     Condition: do_not_use_parent_stack

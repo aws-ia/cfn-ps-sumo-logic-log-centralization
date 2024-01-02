@@ -220,7 +220,6 @@ Resources:
                   - s3:GetBucketPolicy
                   - s3:PutBucketPolicy
                   - config:DescribeDeliveryChannels
-                  - config:PutDeliveryChannel
                   - config:DeleteDeliveryChannel
                 Resource:
                   - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*"
@@ -230,6 +229,10 @@ Resources:
                   - !Sub "arn:${AWS::Partition}:ec2:${AWS::Region}::*"
                   - !Sub "arn:${AWS::Partition}:s3:::*"
                   - !Sub "arn:${AWS::Partition}:config:${AWS::Region}:${AWS::AccountId}:*"
+              - Effect: Allow
+                Action:
+                  - config:PutDeliveryChannel
+                Resource: '*'                  
 
   SumoLogicLambdaHelper:
     Type: "AWS::Serverless::Function"
