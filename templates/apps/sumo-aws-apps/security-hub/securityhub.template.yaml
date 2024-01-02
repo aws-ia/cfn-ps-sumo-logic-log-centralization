@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: "AWS::Serverless-2016-10-31"
-Description: "Template to setup the AWS Security Hub app with AWS and Sumo Logic resources for AWS Quick Start Solution. (qs-1use22qe3)"
+Description: "Template to setup the AWS Security Hub app with AWS and Sumo Logic resources for AWS Quick Start Solution. (qs-1ut5kbjb4)"
 
 Metadata:
   AWS::CloudFormation::Interface:
@@ -266,6 +266,10 @@ Resources:
     Type: "AWS::Serverless::Function"
     Condition: do_not_use_parent_stack
     Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W89
+            reason: Lambda functions should be deployed inside a VPC    
       cfn-lint:
         config:
           ignore_checks:
@@ -329,6 +333,11 @@ Resources:
                   - !Sub arn:${AWS::Partition}:s3:::*
 
   SumoSNSTopic:
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W47
+            reason: SNS Topic should specify KmsMasterKeyId property  
     Condition: create_sns_topic
     Type: "AWS::SNS::Topic"
     Properties:
@@ -379,6 +388,13 @@ Resources:
         - Ref: SumoSNSTopic
 
   TargetS3Bucket:
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W51
+            reason: S3 bucket should likely have a bucket policy
+          - id: W41
+            reason: S3 Bucket should have encryption option set  
     Condition: create_target_s3_bucket
     Type: AWS::S3::Bucket
     DependsOn:
@@ -484,6 +500,11 @@ Resources:
         Ref: SecurityHubUser
 
   SecurityHubGroup:
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W28
+            reason: Resource found with an explicit name, this disallows updates that require replacement of this resource
     Type: AWS::IAM::Group
     Condition: install_s3_source
     Properties:
@@ -572,6 +593,9 @@ Resources:
       SumoDeployment: !Ref SumoDeployment
 
 Outputs:
+  QSS3BucketName:
+    Description: Quick Start S3 bucket name
+    Value: !Ref QSS3BucketName
   SecurityHubUserKey:
     Description: Access Key of User
     Condition: install_s3_source

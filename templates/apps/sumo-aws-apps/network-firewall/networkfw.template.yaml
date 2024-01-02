@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: "2010-09-09"
 Transform:
   - AWS::Serverless-2016-10-31
   - MacroFirewall
-Description: "Template to setup the  AWS Network Firewall app with AWS and Sumo Logic resources for AWS Quick Start Solution. (qs-1use2129d)"
+Description: "Template to setup the  AWS Network Firewall app with AWS and Sumo Logic resources for AWS Quick Start Solution. (qs-1ut5kai34)"
 
 Metadata:
   AWS::CloudFormation::Interface:
@@ -484,6 +484,10 @@ Resources:
     Type: "AWS::Serverless::Function"
     Condition: do_not_use_parent_stack
     Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W89
+            reason: Lambda functions should be deployed inside a VPC    
       cfn-lint:
         config:
           ignore_checks:
@@ -547,6 +551,11 @@ Resources:
                   - !Sub "arn:${AWS::Partition}:s3:::*"
 
   SumoSNSTopic:
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W47
+            reason: SNS Topic should specify KmsMasterKeyId property  
     Condition: create_sns_topic
     Type: "AWS::SNS::Topic"
     Properties:
@@ -597,6 +606,13 @@ Resources:
         - Ref: SumoSNSTopic
 
   TargetS3Bucket:
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W51
+            reason: S3 bucket should likely have a bucket policy
+          - id: W41
+            reason: S3 Bucket should have encryption option set  
     Condition: create_target_s3_bucket
     Type: AWS::S3::Bucket
     DependsOn:
@@ -698,6 +714,9 @@ Resources:
       SumoDeployment: !Ref SumoDeployment
 
 Outputs:
+  QSS3BucketName:
+    Description: Quick Start S3 bucket name
+    Value: !Ref QSS3BucketName
   SumoRoleArn:
     Description: ARN of the cretaed Role.
     Condition: do_not_use_parent_stack

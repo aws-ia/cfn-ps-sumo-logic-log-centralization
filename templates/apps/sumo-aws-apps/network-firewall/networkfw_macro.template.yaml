@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
-Description: "Template to setup the Firewal Macro to process multi subnet and multi allowed ports for AWS Network Firewall stack. (qs-1use20imp)"
+Description: "Template to setup the Firewal Macro to process multi subnet and multi allowed ports for AWS Network Firewall stack. (qs-1ut5k9q6e)"
 
 Parameters:
   QSS3BucketName:
@@ -53,6 +53,12 @@ Resources:
   MacroNFWHelperFunction:
     Type: "AWS::Serverless::Function"
     Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W89
+            reason: Lambda functions should be deployed inside a VPC  
+          - id: W58
+            reason: Lambda functions require permission to write CloudWatch Logs              
       cfn-lint:
         config:
           ignore_checks:

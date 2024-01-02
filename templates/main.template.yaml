@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
-Description: "This CloudFormation template sets up AWS and Sumo Logic resources for all of the Sumo Logic security apps. (qs-1use25ls1)"
+Description: "This CloudFormation template sets up AWS and Sumo Logic resources for all of the Sumo Logic security apps. (qs-1ut5k5ess)"
 
 Metadata:
   QuickStartDocumentation:
@@ -8,7 +8,7 @@ Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
-          default: "Sumo Logic access configuration (required)"
+          default: "1.1 Sumo Logic access configuration (required)"
         Parameters:
           - Section1aSumoLogicDeployment
           - Section1bSumoLogicAccessID
@@ -17,148 +17,148 @@ Metadata:
           - Section1eSumoLogicResourceRemoveOnDeleteStack
 
       - Label:
-          default: "CloudTrail app configuration"
+          default: "2.1 CloudTrail app configuration"
         Parameters:
-          - Section2InstallCloudTrailApp
-          - Section2InstallPCICloudTrailApp
-          - Section2InstallCISFoundationApp
-          - Section2InstallCloudTrailMonitoringAnalyticsApp
-          - Section2InstallCloudTrailSecOpsApp
+          - Section2aInstallCloudTrailApp
+          - Section2bInstallPCICloudTrailApp
+          - Section2cInstallCISFoundationApp
+          - Section2dInstallCloudTrailMonitoringAnalyticsApp
+          - Section2eInstallCloudTrailSecOpsApp
       - Label:
-          default: "S3 configuration"
+          default: "2.2 S3 configuration"
         Parameters:
-          - Section2CloudTrailCreateBucket
-          - Section2CloudTrailLogsBucketName
+          - Section2fCloudTrailCreateBucket
+          - Section2gCloudTrailLogsBucketName
       - Label:
-          default: "CloudTrail source configuration"
+          default: "2.3 CloudTrail source configuration"
         Parameters:
-          - Section2CloudTrailCreateLogSource
-          - Section2CloudTrailBucketPathExpression
-          - Section2CloudTrailLogsSourceCategoryName
+          - Section2hCloudTrailCreateLogSource
+          - Section2iCloudTrailBucketPathExpression
+          - Section2jCloudTrailLogsSourceCategoryName
 
       - Label:
-          default: "GuardDuty app configuration"
+          default: "3.1 GuardDuty app configuration"
         Parameters:
           - Section3aInstallGuardDutyApps
       - Label:
-          default: "GuardDuty log-source configuration"
+          default: "3.2 GuardDuty log-source configuration"
         Parameters:
           - Section3bGuardDutyCreateHttpLogsSource
           - Section3cGuardDutyHttpLogsSourceCategoryName
 
       - Label:
-          default: "VPC flow logs app configuration"
+          default: "4.1 VPC flow logs app configuration"
         Parameters:
           - Section4aInstallVpcApps
       - Label:
-          default: "VPC flow logs S3 configuration"
+          default: "4.2 VPC flow logs S3 configuration"
         Parameters:
           - Section4bVpcCreateBucket
           - Section4cVpcLogsBucketName
       - Label:
-          default: "VPC S3 source configuration"
+          default: "4.3 VPC S3 source configuration"
         Parameters:
           - Section4dVpcCreateS3Source
           - Section4eVpcBucketPathExpression
           - Section4fVpcLogsSourceCategoryName
 
       - Label:
-          default: "Sumo Logic Threat Intel for AWS Config"
+          default: "5.1 Sumo Logic Threat Intel for AWS Config"
         Parameters:
           - Section5aInstallThreatIntelApp
           - Section5bElasticLoadBalancerSourceCategory
 
       - Label:
-          default: "Sumo Logic S3 Audit app configuration"
+          default: "6.1 Sumo Logic S3 Audit app configuration"
         Parameters:
           - Section6aInstallS3AuditApp
       - Label:
-          default: "S3 Audit S3 configuration"
+          default: "6.2 S3 Audit S3 configuration"
         Parameters:
           - Section6bS3AuditCreateBucket
           - Section6cS3AuditLogsBucketName
       - Label:
-          default: "Sumo Logic S3 Audit source configuration"
+          default: "6.3 Sumo Logic S3 Audit source configuration"
         Parameters:
           - Section6dS3AuditCreateS3Source
           - Section6eS3AuditBucketPathExpression
           - Section6fS3AuditLogsSourceCategoryName
 
       - Label:
-          default: "AWS Security Hub app configuration"
+          default: "7.1 AWS Security Hub app configuration"
         Parameters:
           - Section7aInstallSecurityHubAuditApp
           - Section7bEnableSecurityHub
       - Label:
-          default: "AWS Security Hub S3 configuration"
+          default: "7.2 AWS Security Hub S3 configuration"
         Parameters:
           - Section7cSecurityHubCreateBucket
           - Section7dSecurityHubLogsBucketName
       - Label:
-          default: "Sumo Logic Security Hub S3 source configuration"
+          default: "7.3 Sumo Logic Security Hub S3 source configuration"
         Parameters:
           - Section7eSecurityHubCreateS3Source
           - Section7fSecurityHubBucketPathExpression
           - Section7gSecurityHubLogsSourceCategoryName
 
       - Label:
-          default: "Sumo Logic AWS WAF app configuration"
+          default: "8.1 Sumo Logic AWS WAF app configuration"
         Parameters:
           - Section8aInstallWafApp
           - Section8bCreateDeliveryStream
       - Label:
-          default: "AWS WAF S3 configuration"
+          default: "8.2 AWS WAF S3 configuration"
         Parameters:
           - Section8cWafCreateBucket
           - Section8dWafLogsBucketName
       - Label:
-          default: "Sumo Logic AWS WAF S3 source configuration"
+          default: "8.3 Sumo Logic AWS WAF S3 source configuration"
         Parameters:
           - Section8eWafCreateS3Source
           - Section8fWafBucketPathExpression
           - Section8gWafLogsSourceCategoryName
 
       - Label:
-          default: "Sumo Logic AWS Config app configuration"
+          default: "9.1 Sumo Logic AWS Config app configuration"
         Parameters:
           - Section9aInstallConfigApp
       - Label:
-          default: "AWS Config Configuration"
+          default: "9.2 AWS Config Configuration"
         Parameters:
           - Section9bConfigEnableConfig
           - Section9cConfigCreateSNSTopic
           - Section9dConfigExistingTopicName
       - Label:
-          default: "Sumo Logic AWS Config HTTP logs source configuration"
+          default: "9.3 Sumo Logic AWS Config HTTP logs source configuration"
         Parameters:
           - Section9eConfigCreateHttpLogsSource
           - Section9fConfigHttpLogsSourceCategoryName
 
       - Label:
-          default: "Auto-enable logging configuration"
+          default: "10.1 Auto-enable logging configuration"
         Parameters:
-          - Section91aEnableAutoLogging
-          - Section91bEnableLoggingForExistingResources
+          - Section10aEnableAutoLogging
+          - Section10bEnableLoggingForExistingResources
       - Label:
-          default: "S3 Audit logging of auto-enable configuration"
+          default: "10.2 S3 Audit logging of auto-enable configuration"
         Parameters:
-          - Section91cS3LoggingBucketPrefix
-          - Section91dS3LoggingFilterExpression
+          - Section10cS3LoggingBucketPrefix
+          - Section10dS3LoggingFilterExpression
       - Label:
-          default: "VPC flow logs auto-enable configuration"
+          default: "10.3 VPC flow logs auto-enable configuration"
         Parameters:
-          - Section91eVPCLoggingBucketPrefix
-          - Section91fVPCLoggingFilterExpression
+          - Section10eVPCLoggingBucketPrefix
+          - Section10fVPCLoggingFilterExpression
       - Label:
-          default: "Firewall logs auto-enable configuration"
+          default: "10.4 Firewall logs auto-enable configuration"
         Parameters:
-          - Section91FireWallLoggingFilterExpression
+          - Section10FireWallLoggingFilterExpression
       - Label:
-          default: "Network Firewall app configuration"
+          default: "11.1 Network Firewall app configuration"
         Parameters:
           - Section11InstallNFWApp
       - Label:
-          default: "Network Firewall configuration"
+          default: "11.2 Network Firewall configuration"
         Parameters:
           - Section11CreateNewFW
           - Section11VPCID
@@ -168,13 +168,13 @@ Metadata:
           - Section11StatefulRule
           - Section11StatelessRule
       - Label:
-          default: "Network Firewall S3 configuration"
+          default: "11.3 Network Firewall S3 configuration"
         Parameters:
           - Section11NFWCreateS3Bucket
           - Section11NFWLogsS3BucketName
           - Section11NFWLogsNFWBucketPrefix
       - Label:
-          default: "Network Firewall source configuration"
+          default: "11.4 Network Firewall source configuration"
         Parameters:
           - Section11NFWCreateS3Source
           - Section11NFWS3BucketLogsPathExpression
@@ -201,25 +201,25 @@ Metadata:
         default: "Remove Sumo Logic resources when stack is deleted"
 
       # CloudTrail apps parameters
-      Section2InstallCloudTrailApp:
+      Section2aInstallCloudTrailApp:
         default: "Install Sumo Logic AWS CloudTrail app"
-      Section2InstallPCICloudTrailApp:
+      Section2bInstallPCICloudTrailApp:
         default: "Install Sumo Logic PCI compliance for AWS CloudTrail app"
-      Section2InstallCISFoundationApp:
+      Section2cInstallCISFoundationApp:
         default: "Install Sumo Logic CIS AWS Foundations Benchmark app"
-      Section2InstallCloudTrailMonitoringAnalyticsApp:
+      Section2dInstallCloudTrailMonitoringAnalyticsApp:
         default: "Install Amazon CloudTrail - Sumo Cloud Security Monitoring and Analytics App"
-      Section2InstallCloudTrailSecOpsApp:
+      Section2eInstallCloudTrailSecOpsApp:
         default: "Install Sumo Global Intelligence for AWS CloudTrail SecOps App"
-      Section2CloudTrailCreateBucket:
+      Section2fCloudTrailCreateBucket:
         default: "Create a CloudTrail S3 bucket"
-      Section2CloudTrailLogsBucketName:
+      Section2gCloudTrailLogsBucketName:
         default: "CloudTrail logs S3 bucket name"
-      Section2CloudTrailCreateLogSource:
+      Section2hCloudTrailCreateLogSource:
         default: "Create Sumo Logic CloudTrail logs source"
-      Section2CloudTrailBucketPathExpression:
+      Section2iCloudTrailBucketPathExpression:
         default: "Path expression for CloudTrail logs"
-      Section2CloudTrailLogsSourceCategoryName:
+      Section2jCloudTrailLogsSourceCategoryName:
         default: "Sumo Logic CloudTrail logs source category name"
 
       # GuardDuty apps parameters
@@ -311,19 +311,19 @@ Metadata:
         default: "Sumo Logic Amazon HTTP logs source category name"
 
       # Auto-enable parameters
-      Section91aEnableAutoLogging:
+      Section10aEnableAutoLogging:
         default: "Choose resource to auto-enable S3 logging"
-      Section91bEnableLoggingForExistingResources:
+      Section10bEnableLoggingForExistingResources:
         default: "Auto-enable logging for existing AWS resources"
-      Section91cS3LoggingBucketPrefix:
+      Section10cS3LoggingBucketPrefix:
         default: "Bucket prefix to store S3 Audit logs"
-      Section91dS3LoggingFilterExpression:
+      Section10dS3LoggingFilterExpression:
         default: "Regex expression to filter S3 buckets"
-      Section91eVPCLoggingBucketPrefix:
+      Section10eVPCLoggingBucketPrefix:
         default: "Bucket prefix to store VPC flow logs"
-      Section91fVPCLoggingFilterExpression:
+      Section10fVPCLoggingFilterExpression:
         default: "Regex expression to filter VPC resources"
-      Section91FireWallLoggingFilterExpression:
+      Section10FireWallLoggingFilterExpression:
         default: "Regex expression to filter firewall resources"
 
       # Network Firewall app parameters
@@ -405,64 +405,64 @@ Parameters:
     Type: String
 
   # CloudTrail apps parameters
-  Section2InstallCloudTrailApp:
+  Section2aInstallCloudTrailApp:
     Type: String
     Description: "Choose No to skip installation of the app."
     Default: "Yes"
     AllowedValues:
       - "Yes"
       - "No"
-  Section2InstallPCICloudTrailApp:
+  Section2bInstallPCICloudTrailApp:
     Type: String
     Description: "Choose No to skip installation of the app."
     Default: "Yes"
     AllowedValues:
       - "Yes"
       - "No"
-  Section2InstallCISFoundationApp:
+  Section2cInstallCISFoundationApp:
     Type: String
     Description: "Choose No to skip installation of the app."
     Default: "Yes"
     AllowedValues:
       - "Yes"
       - "No"
-  Section2InstallCloudTrailMonitoringAnalyticsApp:
+  Section2dInstallCloudTrailMonitoringAnalyticsApp:
     Type: String
     Description: "Choose No to skip installation of the app."
     Default: "Yes"
     AllowedValues:
       - "Yes"
       - "No"
-  Section2InstallCloudTrailSecOpsApp:
+  Section2eInstallCloudTrailSecOpsApp:
     Type: String
     Description: "Choose No to skip installation of the app."
     Default: "Yes"
     AllowedValues:
       - "Yes"
       - "No"
-  Section2CloudTrailCreateBucket:
+  Section2fCloudTrailCreateBucket:
     Type: String
     Description: "Choose Yes to create a CloudTrail S3 bucket for CloudTrail logs."
     Default: "No"
     AllowedValues:
       - "Yes"
       - "No"
-  Section2CloudTrailLogsBucketName:
+  Section2gCloudTrailLogsBucketName:
     Type: String
     Description: "Required when flag is set to No. Provide an existing bucket name that has CloudTrail logs."
     Default: ""
-  Section2CloudTrailCreateLogSource:
+  Section2hCloudTrailCreateLogSource:
     Type: String
     Description: "Choose No to skip creation of a Sumo Logic CloudTrail log source."
     Default: "Yes"
     AllowedValues:
       - "Yes"
       - "No"
-  Section2CloudTrailBucketPathExpression:
+  Section2iCloudTrailBucketPathExpression:
     Type: String
     Description: "Path expression must match the folder structure for CloudTrail logs (e.g., AWSLogs/*/CloudTrail/*)."
     Default: "AWSLogs/*"
-  Section2CloudTrailLogsSourceCategoryName:
+  Section2jCloudTrailLogsSourceCategoryName:
     Type: String
     Description: "Required when flag is set to No. Provide an existing source category name from Sumo Logic collecting CloudTrail logs. This is used for Threat Intel for AWS app installation also."
     Default: "aws/quickstart/cloudtrail/logs"
@@ -706,7 +706,7 @@ Parameters:
     Default: "aws/quickstart/config/logs"
 
   # Auto-enable parameters
-  Section91aEnableAutoLogging:
+  Section10aEnableAutoLogging:
     Type: String
     Description: "S3: Enable S3 Audit logging for new S3 buckets.
       VPC: Enable VPC flow logs for new VPC, subnets, and network interfaces.
@@ -719,34 +719,34 @@ Parameters:
       - "Firewall"
       - "All"
       - "Skip"
-  Section91bEnableLoggingForExistingResources:
+  Section10bEnableLoggingForExistingResources:
     Type: String
     Description: "Choose Yes to enable logging for existing AWS resources."
     Default: "No"
     AllowedValues:
       - "Yes"
       - "No"
-  Section91cS3LoggingBucketPrefix:
+  Section10cS3LoggingBucketPrefix:
     Type: String
     Description: "Provide a prefix for the S3 bucket for S3 Audit logs. The prefix should have a slash (/) at the end."
     AllowedPattern: ".*\\/$"
     ConstraintDescription: "Bucket prefix should have slash (/) at the end."
     Default: "S3_AUDIT_LOGS/"
-  Section91dS3LoggingFilterExpression:
+  Section10dS3LoggingFilterExpression:
     Type: String
     Default: ""
     Description: "Provide a regular expression for matching S3 buckets (e.g., 'test|prod')."
-  Section91eVPCLoggingBucketPrefix:
+  Section10eVPCLoggingBucketPrefix:
     Type: String
     Description: "Provide a prefix for the S3 bucket for VPC flow logs. The prefix should have a slash (/) at the end."
     AllowedPattern: ".*\\/$"
     ConstraintDescription: "Bucket prefix should have a slash (/) at the end."
     Default: "VPC_LOGS/"
-  Section91fVPCLoggingFilterExpression:
+  Section10fVPCLoggingFilterExpression:
     Type: String
     Default: ""
     Description: "Provide a regular expression for matching VPC resources (e.g., 'VpcId': 't1.micro.*?'|'NetworkInterfaceId': 'Test.*?']|'SubnetId': 'prod.*?'|test|prod')."
-  Section91FireWallLoggingFilterExpression:
+  Section10FireWallLoggingFilterExpression:
     Type: String
     Default: ""
     Description: "Provide a regular expression for matching firewall resources (e.g., 'FirewallName': 'firewall-example.*?')."
@@ -879,18 +879,18 @@ Parameters:
 
 Conditions:
   # Conditions for CloudTrail apps
-  install_cloudtrail_app: !Equals [!Ref Section2InstallCloudTrailApp, "Yes"]
+  install_cloudtrail_app: !Equals [!Ref Section2aInstallCloudTrailApp, "Yes"]
   install_pci_cloudtrail_app:
-    !Equals [!Ref Section2InstallPCICloudTrailApp, "Yes"]
+    !Equals [!Ref Section2bInstallPCICloudTrailApp, "Yes"]
   install_cis_foundations_app:
-    !Equals [!Ref Section2InstallCISFoundationApp, "Yes"]
+    !Equals [!Ref Section2cInstallCISFoundationApp, "Yes"]
   install_cloudtrail_monitoring_analytics_app:
-    !Equals [!Ref Section2InstallCloudTrailMonitoringAnalyticsApp, "Yes"]
+    !Equals [!Ref Section2dInstallCloudTrailMonitoringAnalyticsApp, "Yes"]
   install_cloudtrail_secops_app:
-    !Equals [!Ref Section2InstallCloudTrailSecOpsApp, "Yes"]
-  create_cloudtrail_bucket: !Equals [!Ref Section2CloudTrailCreateBucket, "Yes"]
+    !Equals [!Ref Section2eInstallCloudTrailSecOpsApp, "Yes"]
+  create_cloudtrail_bucket: !Equals [!Ref Section2fCloudTrailCreateBucket, "Yes"]
   create_cloudtrail_source:
-    !Equals [!Ref Section2CloudTrailCreateLogSource, "Yes"]
+    !Equals [!Ref Section2hCloudTrailCreateLogSource, "Yes"]
 
   # Conditions for GuardDuty apps
   install_guardduty_app: !Or
@@ -951,16 +951,16 @@ Conditions:
   create_nfw_source: !Equals [!Ref Section11NFWCreateS3Source, "Yes"]
   # Conditions for auto-enable
   auto_enable_s3_audit: !Or
-    - !Equals [!Ref Section91aEnableAutoLogging, "S3"]
-    - !Equals [!Ref Section91aEnableAutoLogging, "All"]
+    - !Equals [!Ref Section10aEnableAutoLogging, "S3"]
+    - !Equals [!Ref Section10aEnableAutoLogging, "All"]
   auto_enable_vpc_logs: !Or
-    - !Equals [!Ref Section91aEnableAutoLogging, "VPC"]
-    - !Equals [!Ref Section91aEnableAutoLogging, "All"]
+    - !Equals [!Ref Section10aEnableAutoLogging, "VPC"]
+    - !Equals [!Ref Section10aEnableAutoLogging, "All"]
   auto_enable_firewall_logs: !Or
-    - !Equals [!Ref Section91aEnableAutoLogging, "Firewall"]
-    - !Equals [!Ref Section91aEnableAutoLogging, "All"]
+    - !Equals [!Ref Section10aEnableAutoLogging, "Firewall"]
+    - !Equals [!Ref Section10aEnableAutoLogging, "All"]
   auto_exisitng_resources:
-    !Equals [!Ref Section91bEnableLoggingForExistingResources, "Yes"]
+    !Equals [!Ref Section10bEnableLoggingForExistingResources, "Yes"]
 
   # Conditions for common resources
   create_common_s3_bucket: !Or
@@ -1027,8 +1027,6 @@ Conditions:
   UsingDefaultBucket: !Or [ !Equals [!Ref QSS3BucketName, 'aws-ia'], !Equals [!Ref QSS3BucketName, 'sumologic-aws-security-solutions'] ]
 
 Resources:
-  WaitHandle:
-    Type: "AWS::CloudFormation::WaitConditionHandle"
 
   CreateCommonResources:
     Type: AWS::CloudFormation::Stack
@@ -1094,59 +1092,41 @@ Resources:
         SumoAccessKey: !Ref Section1cSumoLogicAccessKey
         SumoOrganizationId: !Ref Section1dSumoLogicOrganizationId
         RemoveSumoResourcesOnDeleteStack: !Ref Section1eSumoLogicResourceRemoveOnDeleteStack
-        InstallCloudTrailApp: !Ref Section2InstallCloudTrailApp
-        InstallPCICloudTrailApp: !Ref Section2InstallPCICloudTrailApp
-        InstallCISFoundationApp: !Ref Section2InstallCISFoundationApp
-        InstallCloudTrailMonitoringAnalyticsApp: !Ref Section2InstallCloudTrailMonitoringAnalyticsApp
-        InstallCloudTrailSecOpsApp: !Ref Section2InstallCloudTrailSecOpsApp
+        InstallCloudTrailApp: !Ref Section2aInstallCloudTrailApp
+        InstallPCICloudTrailApp: !Ref Section2bInstallPCICloudTrailApp
+        InstallCISFoundationApp: !Ref Section2cInstallCISFoundationApp
+        InstallCloudTrailMonitoringAnalyticsApp: !Ref Section2dInstallCloudTrailMonitoringAnalyticsApp
+        InstallCloudTrailSecOpsApp: !Ref Section2eInstallCloudTrailSecOpsApp
         CollectorName: !Sub "aws-quickstart-collector-${AWS::AccountId}"
         CreateCloudTrailBucket: "No"
         CloudTrailLogsBucketName:
           !If [
             create_cloudtrail_bucket,
             !GetAtt CreateCommonResources.Outputs.BucketName,
-            !Ref Section2CloudTrailLogsBucketName,
+            !Ref Section2gCloudTrailLogsBucketName,
           ]
         CreateCloudTrailLogSource: !If [create_cloudtrail_source, "Yes", "No"]
         CloudTrailBucketPathExpression:
           !If [
             create_cloudtrail_bucket,
             !Sub "AWSLogs/${AWS::AccountId}/CloudTrail/*",
-            !Ref Section2CloudTrailBucketPathExpression,
+            !Ref Section2iCloudTrailBucketPathExpression,
           ]
         CloudTrailLogsSourceName: !Sub "aws-quickstart-cloudtrail-${AWS::Region}"
         CloudTrailLogsSourceCategoryName:
           !If [
             create_cloudtrail_source,
             "aws/quickstart/cloudtrail/logs",
-            !Ref Section2CloudTrailLogsSourceCategoryName,
+            !Ref Section2jCloudTrailLogsSourceCategoryName,
           ]
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
-  SumoGuardDutyStackWaitHandle:
-    Condition: call_cloudtrail_stack
-    DependsOn: SumoCloudTrailAppsStack
-    Type: "AWS::CloudFormation::WaitConditionHandle"
-
-  SumoGuardDutyStackWaitCondition:
-    Type: "AWS::CloudFormation::WaitCondition"
-    Properties:
-      Handle:
-        !If [
-          call_cloudtrail_stack,
-          !Ref SumoGuardDutyStackWaitHandle,
-          !Ref WaitHandle,
-        ]
-      Timeout: "5"
-      Count: 0
-
   SumoGuardDutyAppsStack:
     Type: AWS::CloudFormation::Stack
     Condition: call_guardduty_stack
-    DependsOn: SumoGuardDutyStackWaitCondition
     Properties:
       Tags:
         - Key: "version"
@@ -1178,28 +1158,14 @@ Resources:
             "aws/quickstart/guardduty/logs",
             !Ref Section3cGuardDutyHttpLogsSourceCategoryName,
           ]
-        QSS3BucketName: !Ref QSS3BucketName
+        QSS3BucketName: !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
-  SumoVpcStackWaitHandle:
-    Condition: call_guardduty_stack
-    DependsOn: SumoGuardDutyAppsStack
-    Type: "AWS::CloudFormation::WaitConditionHandle"
-
-  SumoVpcStackWaitCondition:
-    Type: "AWS::CloudFormation::WaitCondition"
-    Properties:
-      Handle:
-        !If [call_guardduty_stack, !Ref SumoVpcStackWaitHandle, !Ref WaitHandle]
-      Timeout: "5"
-      Count: 0
-
   SumoVpcAppsStack:
     Type: AWS::CloudFormation::Stack
     Condition: call_vpc_stack
-    DependsOn: SumoVpcStackWaitCondition
     Properties:
       Tags:
         - Key: "version"
@@ -1235,7 +1201,7 @@ Resources:
         S3BucketLogsPathExpression:
           !If [
             auto_enable_vpc_logs,
-            !Sub "${Section91eVPCLoggingBucketPrefix}*",
+            !Sub "${Section10eVPCLoggingBucketPrefix}*",
             !Ref Section4eVpcBucketPathExpression,
           ]
         S3SourceName: !Sub "aws-quickstart-vpc-${AWS::Region}"
@@ -1245,32 +1211,15 @@ Resources:
             "aws/quickstart/vpc/flow/logs",
             !Ref Section4fVpcLogsSourceCategoryName,
           ]
-        QSS3BucketName: !Ref QSS3BucketName
+        QSS3BucketName: !If [call_guardduty_stack, !GetAtt SumoGuardDutyAppsStack.Outputs.QSS3BucketName,
+                          !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
-  SumoThreatIntelStackWaitHandle:
-    Condition: call_vpc_stack
-    DependsOn: SumoVpcAppsStack
-    Type: "AWS::CloudFormation::WaitConditionHandle"
-
-  SumoThreatIntelStackWaitCondition:
-    Type: "AWS::CloudFormation::WaitCondition"
-    Properties:
-      Handle:
-        !If [
-          call_vpc_stack,
-          !Ref SumoThreatIntelStackWaitHandle,
-          !Ref WaitHandle,
-        ]
-      Timeout: "5"
-      Count: 0
-
   SumoThreatIntelAppsStack:
     Type: AWS::CloudFormation::Stack
     Condition: call_threat_intel_stack
-    DependsOn: SumoThreatIntelStackWaitCondition
     Properties:
       Tags:
         - Key: "version"
@@ -1294,7 +1243,7 @@ Resources:
           !If [
             create_cloudtrail_source,
             "aws/quickstart/cloudtrail/logs",
-            !Ref Section2CloudTrailLogsSourceCategoryName,
+            !Ref Section2jCloudTrailLogsSourceCategoryName,
           ]
         VPCFlowLogsSourceCategory:
           !If [
@@ -1303,32 +1252,16 @@ Resources:
             !Ref Section4fVpcLogsSourceCategoryName,
           ]
         ElasticLoadBalancerSourceCategory: !Ref Section5bElasticLoadBalancerSourceCategory
-        QSS3BucketName: !Ref QSS3BucketName
+        QSS3BucketName: !If [call_vpc_stack, !GetAtt SumoVpcAppsStack.Outputs.QSS3BucketName, 
+                          !If [call_guardduty_stack, !GetAtt SumoGuardDutyAppsStack.Outputs.QSS3BucketName,
+                            !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]]]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
-  SumoS3AuditStackWaitHandle:
-    Condition: call_threat_intel_stack
-    DependsOn: SumoThreatIntelAppsStack
-    Type: "AWS::CloudFormation::WaitConditionHandle"
-
-  SumoS3AuditStackWaitCondition:
-    Type: "AWS::CloudFormation::WaitCondition"
-    Properties:
-      Handle:
-        !If [
-          call_threat_intel_stack,
-          !Ref SumoS3AuditStackWaitHandle,
-          !Ref WaitHandle,
-        ]
-      Timeout: "5"
-      Count: 0
-
   SumoS3AuditAppsStack:
     Type: AWS::CloudFormation::Stack
     Condition: call_s3_audit_stack
-    DependsOn: SumoS3AuditStackWaitCondition
     Properties:
       Tags:
         - Key: "version"
@@ -1362,7 +1295,7 @@ Resources:
         S3BucketLogsPathExpression:
           !If [
             auto_enable_s3_audit,
-            !Sub "${Section91cS3LoggingBucketPrefix}*",
+            !Sub "${Section10cS3LoggingBucketPrefix}*",
             !Ref Section6eS3AuditBucketPathExpression,
           ]
         S3AuditSourceName: !Sub "aws-quickstart-s3-audit-${AWS::Region}"
@@ -1372,32 +1305,17 @@ Resources:
             "aws/quickstart/s3/audit/logs",
             !Ref Section6fS3AuditLogsSourceCategoryName,
           ]
-        QSS3BucketName: !Ref QSS3BucketName
+        QSS3BucketName: !If [call_threat_intel_stack, !GetAtt SumoThreatIntelAppsStack.Outputs.QSS3BucketName,
+                          !If [call_vpc_stack, !GetAtt SumoVpcAppsStack.Outputs.QSS3BucketName, 
+                            !If [call_guardduty_stack, !GetAtt SumoGuardDutyAppsStack.Outputs.QSS3BucketName,
+                              !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]]]]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
-  SumoSecurityHubStackWaitHandle:
-    Condition: call_s3_audit_stack
-    DependsOn: SumoS3AuditAppsStack
-    Type: "AWS::CloudFormation::WaitConditionHandle"
-
-  SumoSecurityHubStackWaitCondition:
-    Type: "AWS::CloudFormation::WaitCondition"
-    Properties:
-      Handle:
-        !If [
-          call_s3_audit_stack,
-          !Ref SumoSecurityHubStackWaitHandle,
-          !Ref WaitHandle,
-        ]
-      Timeout: "5"
-      Count: 0
-
   SumoSecurityHubAppsStack:
     Type: AWS::CloudFormation::Stack
     Condition: call_security_hub_stack
-    DependsOn: SumoSecurityHubStackWaitCondition
     Properties:
       Tags:
         - Key: "version"
@@ -1443,32 +1361,18 @@ Resources:
           ]
         EnableSecurityHub: !If [enable_security_hub, "Yes", "No"]
         ConnectionName: !Sub "SecurityHubConnection${AWS::Region}-${AWS::AccountId}"
-        QSS3BucketName: !Ref QSS3BucketName
+        QSS3BucketName: !If [call_s3_audit_stack, !GetAtt SumoS3AuditAppsStack.Outputs.QSS3BucketName,
+                          !If [call_threat_intel_stack, !GetAtt SumoThreatIntelAppsStack.Outputs.QSS3BucketName,
+                            !If [call_vpc_stack, !GetAtt SumoVpcAppsStack.Outputs.QSS3BucketName, 
+                              !If [call_guardduty_stack, !GetAtt SumoGuardDutyAppsStack.Outputs.QSS3BucketName,
+                                !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]]]]]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
-  SumoWafStackWaitHandle:
-    Condition: call_security_hub_stack
-    DependsOn: SumoSecurityHubAppsStack
-    Type: "AWS::CloudFormation::WaitConditionHandle"
-
-  SumoWafStackWaitCondition:
-    Type: "AWS::CloudFormation::WaitCondition"
-    Properties:
-      Handle:
-        !If [
-          call_security_hub_stack,
-          !Ref SumoWafStackWaitHandle,
-          !Ref WaitHandle,
-        ]
-      Timeout: "5"
-      Count: 0
-
   SumoWafAppsStack:
     Type: AWS::CloudFormation::Stack
     Condition: call_waf_stack
-    DependsOn: SumoWafStackWaitCondition
     Properties:
       Tags:
         - Key: "version"
@@ -1512,28 +1416,19 @@ Resources:
         DeliveryStreamName: !Sub "QuickStartDeliveryStream${AWS::Region}"
         CompressionFormat: "ZIP"
         S3BackupMode: "Disabled"
-        QSS3BucketName: !Ref QSS3BucketName
+        QSS3BucketName: !If [call_security_hub_stack, !GetAtt SumoSecurityHubAppsStack.Outputs.QSS3BucketName,
+                          !If [call_s3_audit_stack, !GetAtt SumoS3AuditAppsStack.Outputs.QSS3BucketName,
+                            !If [call_threat_intel_stack, !GetAtt SumoThreatIntelAppsStack.Outputs.QSS3BucketName,
+                              !If [call_vpc_stack, !GetAtt SumoVpcAppsStack.Outputs.QSS3BucketName, 
+                                !If [call_guardduty_stack, !GetAtt SumoGuardDutyAppsStack.Outputs.QSS3BucketName,
+                                  !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]]]]]]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
-  SumoConfigStackWaitHandle:
-    Condition: call_waf_stack
-    DependsOn: SumoWafAppsStack
-    Type: "AWS::CloudFormation::WaitConditionHandle"
-
-  SumoConfigStackWaitCondition:
-    Type: "AWS::CloudFormation::WaitCondition"
-    Properties:
-      Handle:
-        !If [call_waf_stack, !Ref SumoConfigStackWaitHandle, !Ref WaitHandle]
-      Timeout: "5"
-      Count: 0
-
   SumoConfigAppsStack:
     Type: AWS::CloudFormation::Stack
     Condition: call_config_stack
-    DependsOn: SumoConfigStackWaitCondition
     Properties:
       Tags:
         - Key: "version"
@@ -1567,29 +1462,20 @@ Resources:
             "aws/quickstart/config/logs",
             !Ref Section9fConfigHttpLogsSourceCategoryName,
           ]
-        QSS3BucketName: !Ref QSS3BucketName
+        QSS3BucketName: !If [call_waf_stack, !GetAtt SumoWafAppsStack.Outputs.QSS3BucketName,
+                          !If [call_security_hub_stack, !GetAtt SumoSecurityHubAppsStack.Outputs.QSS3BucketName,
+                            !If [call_s3_audit_stack, !GetAtt SumoS3AuditAppsStack.Outputs.QSS3BucketName,
+                              !If [call_threat_intel_stack, !GetAtt SumoThreatIntelAppsStack.Outputs.QSS3BucketName,
+                                !If [call_vpc_stack, !GetAtt SumoVpcAppsStack.Outputs.QSS3BucketName, 
+                                  !If [call_guardduty_stack, !GetAtt SumoGuardDutyAppsStack.Outputs.QSS3BucketName,
+                                    !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]]]]]]]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
-  #Stack for Network Firewall app
-  SumoFirewallStackWaitHandle:
-    Condition: call_nfw_stack
-    DependsOn: SumoFireWallAppsStack
-    Type: "AWS::CloudFormation::WaitConditionHandle"
-
-  SumoFirewallStackWaitCondition:
-    Type: "AWS::CloudFormation::WaitCondition"
-    Properties:
-      Handle:
-        !If [call_nfw_stack, !Ref SumoFirewallStackWaitHandle, !Ref WaitHandle]
-      Timeout: "5"
-      Count: 0
-
   SumoFireWallMacroStack:
     Type: AWS::CloudFormation::Stack
     Condition: call_nfw_stack
-    DependsOn: CreateCommonResources
     Properties:
       Tags:
         - Key: "version"
@@ -1605,7 +1491,14 @@ Resources:
               !Ref QSS3BucketName,
             ]
       Parameters:
-        QSS3BucketName: !Ref QSS3BucketName
+        QSS3BucketName: !If [call_config_stack, !GetAtt SumoConfigAppsStack.Outputs.QSS3BucketName,
+                          !If [call_waf_stack, !GetAtt SumoWafAppsStack.Outputs.QSS3BucketName,
+                            !If [call_security_hub_stack, !GetAtt SumoSecurityHubAppsStack.Outputs.QSS3BucketName,
+                              !If [call_s3_audit_stack, !GetAtt SumoS3AuditAppsStack.Outputs.QSS3BucketName,
+                                !If [call_threat_intel_stack, !GetAtt SumoThreatIntelAppsStack.Outputs.QSS3BucketName,
+                                  !If [call_vpc_stack, !GetAtt SumoVpcAppsStack.Outputs.QSS3BucketName, 
+                                    !If [call_guardduty_stack, !GetAtt SumoGuardDutyAppsStack.Outputs.QSS3BucketName,
+                                      !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]]]]]]]]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         QSVersion: !Ref QSVersion
 
@@ -1664,7 +1557,14 @@ Resources:
             "aws/quickstart/nfw/logs",
             !Ref Section11NFWS3SourceCategoryName,
           ]
-        QSS3BucketName: !Ref QSS3BucketName
+        QSS3BucketName: !If [call_config_stack, !GetAtt SumoConfigAppsStack.Outputs.QSS3BucketName,
+                          !If [call_waf_stack, !GetAtt SumoWafAppsStack.Outputs.QSS3BucketName,
+                            !If [call_security_hub_stack, !GetAtt SumoSecurityHubAppsStack.Outputs.QSS3BucketName,
+                              !If [call_s3_audit_stack, !GetAtt SumoS3AuditAppsStack.Outputs.QSS3BucketName,
+                                !If [call_threat_intel_stack, !GetAtt SumoThreatIntelAppsStack.Outputs.QSS3BucketName,
+                                  !If [call_vpc_stack, !GetAtt SumoVpcAppsStack.Outputs.QSS3BucketName, 
+                                    !If [call_guardduty_stack, !GetAtt SumoGuardDutyAppsStack.Outputs.QSS3BucketName,
+                                      !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]]]]]]]]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
@@ -1696,16 +1596,23 @@ Resources:
             !GetAtt CreateCommonResources.Outputs.BucketName,
             !Ref Section6cS3AuditLogsBucketName,
           ]
-        BucketPrefix: !Ref Section91cS3LoggingBucketPrefix
-        FilterExpression: !Ref Section91dS3LoggingFilterExpression
-        QSS3BucketName: !Ref QSS3BucketName
+        BucketPrefix: !Ref Section10cS3LoggingBucketPrefix
+        FilterExpression: !Ref Section10dS3LoggingFilterExpression
+        QSS3BucketName: !If [call_nfw_stack, !GetAtt SumoFireWallAppsStack.Outputs.QSS3BucketName,
+                          !If [call_config_stack, !GetAtt SumoConfigAppsStack.Outputs.QSS3BucketName,
+                            !If [call_waf_stack, !GetAtt SumoWafAppsStack.Outputs.QSS3BucketName,
+                              !If [call_security_hub_stack, !GetAtt SumoSecurityHubAppsStack.Outputs.QSS3BucketName,
+                                !If [call_s3_audit_stack, !GetAtt SumoS3AuditAppsStack.Outputs.QSS3BucketName,
+                                  !If [call_threat_intel_stack, !GetAtt SumoThreatIntelAppsStack.Outputs.QSS3BucketName,
+                                    !If [call_vpc_stack, !GetAtt SumoVpcAppsStack.Outputs.QSS3BucketName, 
+                                      !If [call_guardduty_stack, !GetAtt SumoGuardDutyAppsStack.Outputs.QSS3BucketName,
+                                        !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]]]]]]]]]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         QSVersion: !Ref QSVersion
 
   SumoAutoEnableVpcAuditLogs:
     Type: AWS::CloudFormation::Stack
     Condition: auto_enable_vpc_logs
-    # DependsOn: CreateCommonResources
     Properties:
       Tags:
         - Key: "version"
@@ -1729,9 +1636,18 @@ Resources:
             !GetAtt CreateCommonResources.Outputs.BucketName,
             !Ref Section4cVpcLogsBucketName,
           ]
-        BucketPrefix: !Ref Section91eVPCLoggingBucketPrefix
-        FilterExpression: !Ref Section91fVPCLoggingFilterExpression
-        QSS3BucketName: !Ref QSS3BucketName
+        BucketPrefix: !Ref Section10eVPCLoggingBucketPrefix
+        FilterExpression: !Ref Section10fVPCLoggingFilterExpression
+        QSS3BucketName: !If [auto_enable_s3_audit, !GetAtt SumoAutoEnableS3AuditLogs.Outputs.QSS3BucketName,
+                          !If [call_nfw_stack, !GetAtt SumoFireWallAppsStack.Outputs.QSS3BucketName,
+                            !If [call_config_stack, !GetAtt SumoConfigAppsStack.Outputs.QSS3BucketName,
+                              !If [call_waf_stack, !GetAtt SumoWafAppsStack.Outputs.QSS3BucketName,
+                                !If [call_security_hub_stack, !GetAtt SumoSecurityHubAppsStack.Outputs.QSS3BucketName,
+                                  !If [call_s3_audit_stack, !GetAtt SumoS3AuditAppsStack.Outputs.QSS3BucketName,
+                                    !If [call_threat_intel_stack, !GetAtt SumoThreatIntelAppsStack.Outputs.QSS3BucketName,
+                                      !If [call_vpc_stack, !GetAtt SumoVpcAppsStack.Outputs.QSS3BucketName, 
+                                        !If [call_guardduty_stack, !GetAtt SumoGuardDutyAppsStack.Outputs.QSS3BucketName,
+                                          !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]]]]]]]]]]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         QSVersion: !Ref QSVersion
 
@@ -1762,7 +1678,17 @@ Resources:
             !Ref Section11NFWLogsS3BucketName,
           ]
         BucketPrefix: !Ref Section11NFWLogsNFWBucketPrefix
-        FilterExpression: !Ref Section91FireWallLoggingFilterExpression
-        QSS3BucketName: !Ref QSS3BucketName
+        FilterExpression: !Ref Section10FireWallLoggingFilterExpression
+        QSS3BucketName: !If [auto_enable_vpc_logs, !GetAtt SumoAutoEnableVpcAuditLogs.Outputs.QSS3BucketName,
+                          !If [auto_enable_s3_audit, !GetAtt SumoAutoEnableS3AuditLogs.Outputs.QSS3BucketName,
+                            !If [call_nfw_stack, !GetAtt SumoFireWallAppsStack.Outputs.QSS3BucketName,
+                              !If [call_config_stack, !GetAtt SumoConfigAppsStack.Outputs.QSS3BucketName,
+                                !If [call_waf_stack, !GetAtt SumoWafAppsStack.Outputs.QSS3BucketName,
+                                  !If [call_security_hub_stack, !GetAtt SumoSecurityHubAppsStack.Outputs.QSS3BucketName,
+                                    !If [call_s3_audit_stack, !GetAtt SumoS3AuditAppsStack.Outputs.QSS3BucketName,
+                                      !If [call_threat_intel_stack, !GetAtt SumoThreatIntelAppsStack.Outputs.QSS3BucketName,
+                                        !If [call_vpc_stack, !GetAtt SumoVpcAppsStack.Outputs.QSS3BucketName, 
+                                          !If [call_guardduty_stack, !GetAtt SumoGuardDutyAppsStack.Outputs.QSS3BucketName,
+                                            !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]]]]]]]]]]]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         QSVersion: !Ref QSVersion
