@@ -334,7 +334,7 @@ Resources:
       DeadLetterQueue:
         TargetArn: !Ref AWS::NoValue
         Type: SQS
-      ReservedConcurrentExecutions: !Ref AWS::NoValue
+      ReservedConcurrentExecutions: 4
       VpcConfig:
         SecurityGroupIds:
           - !Ref AWS::NoValue

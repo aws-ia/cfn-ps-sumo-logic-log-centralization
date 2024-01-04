@@ -125,14 +125,14 @@ Metadata:
       - Label:
           default: "9.2 AWS Config Configuration"
         Parameters:
-          - Section9bConfigEnableConfig
-          - Section9cConfigCreateSNSTopic
-          - Section9dConfigExistingTopicName
+          - Section9bConfigCreateBucket
+          - Section9cConfigLogsBucketName
       - Label:
           default: "9.3 Sumo Logic AWS Config HTTP logs source configuration"
         Parameters:
-          - Section9eConfigCreateHttpLogsSource
-          - Section9fConfigHttpLogsSourceCategoryName
+          - Section9dConfigCreateS3LogsSource
+          - Section9eConfigS3BucketLogsPathExpression
+          - Section9fConfigS3LogsSourceCategoryName
 
       - Label:
           default: "10.1 Auto-enable logging configuration"
@@ -299,16 +299,16 @@ Metadata:
       # Config app Parameters
       Section9aInstallConfigApp:
         default: "Install Sumo Logic AWS Config app"
-      Section9bConfigEnableConfig:
-        default: "Enable AWS Config for the Region"
-      Section9cConfigCreateSNSTopic:
-        default: "Create SNS Topic for logs delivery"
-      Section9dConfigExistingTopicName:
-        default: "Existing topic name where logs are delivered"
-      Section9eConfigCreateHttpLogsSource:
-        default: "Create Sumo Logic HTTP logs source"
-      Section9fConfigHttpLogsSourceCategoryName:
-        default: "Sumo Logic Amazon HTTP logs source category name"
+      Section9bConfigCreateBucket:
+        default: "Create AWS S3 Bucket"
+      Section9cConfigLogsBucketName:
+        default: "AWS S3 Bucket Name"
+      Section9dConfigCreateS3LogsSource:
+        default: "Create Sumo Logic Amazon S3 Logs Source"
+      Section9eConfigS3BucketLogsPathExpression:
+        default: "Path Expression for the logs"
+      Section9fConfigS3LogsSourceCategoryName:
+        default: "Sumo Logic Amazon S3 Logs Source Category Name"
 
       # Auto-enable parameters
       Section10aEnableAutoLogging:
@@ -672,35 +672,33 @@ Parameters:
     AllowedValues:
       - "Yes"
       - "No"
-  Section9bConfigEnableConfig:
-    Type: String
-    Description: "Choose Yes to enable Config for the Region.
-      Keep the default (No) if Config is already enabled."
-    Default: "No"
-    AllowedValues:
-      - "Yes"
-      - "No"
-  Section9cConfigCreateSNSTopic:
+  Section9bConfigCreateBucket:
     Type: String
     Description:
-      "Choose Yes to create an SNS topic and attach it to AWS Config setting to deliver the logs.
-      Keep the default (No) if Config logs are already delivered to an existing SNS topic."
+      "Yes - Create a new bucket in AWS S3"
     Default: "No"
     AllowedValues:
       - "Yes"
       - "No"
-  Section9dConfigExistingTopicName:
+  Section9cConfigLogsBucketName:
     Type: String
-    Description: "Required when flag is set to No. Provide an existing SNS topic from Config settings to stream configuration changes and notifications."
+    Description: "Provide a bucket name to receive configuration history and configuration snapshot files."
     Default: ""
-  Section9eConfigCreateHttpLogsSource:
+  Section9dConfigCreateS3LogsSource:
     Type: String
-    Description: "Choose No to skip creation of a Sumo Logic HTTP log source to collect Config logs."
+    Description:
+      "Yes - to create Sumo Logic Amazon S3 Logs Source with provided bucket Name.
+      No - to skip creation of the Sumo Logic Amazon S3 Log Source."    
     Default: "Yes"
     AllowedValues:
       - "Yes"
       - "No"
-  Section9fConfigHttpLogsSourceCategoryName:
+  Section9eConfigS3BucketLogsPathExpression:
+    Type: String
+    Description: Path expression must match one or more S3 objects. For example, ABC*.log or ABC.log
+    Default: "AWSLogs/*/Config/*/"
+      
+  Section9fConfigS3LogsSourceCategoryName:
     Type: String
     Description: "Required when flag is set to No. Provide an existing source category name from Sumo Logic collecting Config logs. This is used for app installation."
     Default: "aws/quickstart/config/logs"
@@ -940,10 +938,9 @@ Conditions:
 
   # Conditions for Config app
   install_config_app: !Equals [!Ref Section9aInstallConfigApp, "Yes"]
-  enable_config: !Equals [!Ref Section9bConfigEnableConfig, "Yes"]
-  create_sns_topic: !Equals [!Ref Section9cConfigCreateSNSTopic, "Yes"]
+  create_config_bucket: !Equals [!Ref Section9bConfigCreateBucket, "Yes"]
   create_config_source:
-    !Equals [!Ref Section9eConfigCreateHttpLogsSource, "Yes"]
+    !Equals [!Ref Section9dConfigCreateS3LogsSource, "Yes"]
 
   #conditions for NFW app
   install_nfw_app: !Equals [!Ref Section11InstallNFWApp, "Yes"]
@@ -969,7 +966,7 @@ Conditions:
     - !Condition create_s3_audit_bucket
     - !Condition create_security_hub_bucket
     - !Condition create_waf_bucket
-    - !Condition enable_config
+    - !Condition create_config_bucket
     - !Condition create_nfw_bucket
   create_common_collector: !Or
     - !Condition create_cloudtrail_source
@@ -985,6 +982,7 @@ Conditions:
     - !Condition auto_enable_s3_audit
     - !Condition auto_enable_vpc_logs
     - !Condition auto_enable_firewall_logs
+    - !Condition create_config_bucket
 
   # Conditions for calling child stack of each app if any resource create condition is true.
   call_cloudtrail_stack: !Or
@@ -1017,8 +1015,7 @@ Conditions:
     - !Condition create_waf_source
   call_config_stack: !Or
     - !Condition install_config_app
-    - !Condition enable_config
-    - !Condition create_sns_topic
+    - !Condition create_config_bucket
     - !Condition create_config_source
   call_nfw_stack: !Or
     - !Condition install_nfw_app
@@ -1447,20 +1444,29 @@ Resources:
         SumoDeployment: !Ref Section1aSumoLogicDeployment
         SumoAccessID: !Ref Section1bSumoLogicAccessID
         SumoAccessKey: !Ref Section1cSumoLogicAccessKey
+        SumoOrganizationId: !Ref Section1dSumoLogicOrganizationId
         RemoveSumoResourcesOnDeleteStack: !Ref Section1eSumoLogicResourceRemoveOnDeleteStack
         InstallApp: !Ref Section9aInstallConfigApp
         CollectorName: !Sub "aws-quickstart-collector-${AWS::AccountId}"
-        EnableConfig: !If [enable_config, "Yes", "No"]
-        BucketName: !GetAtt CreateCommonResources.Outputs.BucketName
-        CreateSNSTopic: !If [create_sns_topic, "Yes", "No"]
-        TopicName: !Ref Section9dConfigExistingTopicName
-        CreateHttpLogsSource: !If [create_config_source, "Yes", "No"]
-        HttpLogsSourceName: !Sub "aws-quickstart-config-${AWS::Region}"
-        HttpLogsSourceCategoryName:
+        BucketName: !If [
+            create_config_bucket,
+            !GetAtt CreateCommonResources.Outputs.BucketName,
+            !Ref Section9cConfigLogsBucketName,
+          ]
+        CreateSNSTopic: "No"
+        CreateS3Bucket: "No"
+        CreateS3LogsSource: !If [create_config_source, "Yes", "No"]
+        S3BucketLogsPathExpression: !If [
+            create_config_bucket,
+            !Sub "AWSLogs/*/Config/*/${AWS::Region}/*",
+            !Ref Section9eConfigS3BucketLogsPathExpression,
+          ]
+        S3LogsSourceName: !Sub "aws-quickstart-config-${AWS::Region}"
+        S3LogsSourceCategoryName:
           !If [
             create_config_source,
             "aws/quickstart/config/logs",
-            !Ref Section9fConfigHttpLogsSourceCategoryName,
+            !Ref Section9fConfigS3LogsSourceCategoryName,
           ]
         QSS3BucketName: !If [call_waf_stack, !GetAtt SumoWafAppsStack.Outputs.QSS3BucketName,
                           !If [call_security_hub_stack, !GetAtt SumoSecurityHubAppsStack.Outputs.QSS3BucketName,

@@ -219,8 +219,6 @@ Resources:
                   - logs:DeleteLogDelivery
                   - s3:GetBucketPolicy
                   - s3:PutBucketPolicy
-                  - config:DescribeDeliveryChannels
-                  - config:DeleteDeliveryChannel
                 Resource:
                   - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*"
                   - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*"
@@ -231,9 +229,23 @@ Resources:
                   - !Sub "arn:${AWS::Partition}:config:${AWS::Region}:${AWS::AccountId}:*"
               - Effect: Allow
                 Action:
+                  - config:DescribeConfigurationRecorderStatus
+                  - config:DescribeConfigurationRecorders
+                  - config:DeleteDeliveryChannel
+                  - config:PutConfigurationRecorder
+                  - config:DescribeDeliveryChannels
+                  - config:StopConfigurationRecorder
+                  - config:StartConfigurationRecorder
                   - config:PutDeliveryChannel
-                Resource: '*'                  
-
+                  - config:DeleteConfigurationRecorder 
+                Resource: '*'  
+              - Effect: Allow
+                Action: iam:PassRole
+                Resource: !Sub 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/*'
+                Condition:
+                  StringEqualsIfExists:
+                    iam:PassedToService:
+                      - config.amazonaws.com
   SumoLogicLambdaHelper:
     Type: "AWS::Serverless::Function"
     Metadata:
@@ -263,7 +275,7 @@ Resources:
       DeadLetterQueue:
         TargetArn: !Ref AWS::NoValue
         Type: SQS
-      ReservedConcurrentExecutions: !Ref AWS::NoValue
+      ReservedConcurrentExecutions: 4
       VpcConfig:
         SecurityGroupIds:
           - !Ref AWS::NoValue
@@ -300,7 +312,6 @@ Resources:
                   - s3:ListBucketVersions
                   - s3:ListBucket
                 Resource: !Sub "arn:${AWS::Partition}:s3:::*"
-
   SumoHostedCollector:
     Type: Custom::Collector
     Condition: install_collector
@@ -386,10 +397,12 @@ Resources:
       Bucket: !Ref BucketName
       PolicyDocument:
         Statement:
-          - Sid: AWSCloudTrailAclCheck
+          - Sid: AWSBucketPermissionsAclCheck
             Effect: Allow
             Principal:
-              Service: cloudtrail.amazonaws.com
+              Service: 
+                - cloudtrail.amazonaws.com
+                - config.amazonaws.com
             Action: s3:GetBucketAcl
             Resource:
               - !Sub "arn:${AWS::Partition}:s3:::${BucketName}"
@@ -406,14 +419,18 @@ Resources:
           - Sid: AWSBucketExistenceCheck
             Effect: Allow
             Principal:
-              Service: cloudtrail.amazonaws.com
+              Service: 
+                - cloudtrail.amazonaws.com
+                - config.amazonaws.com
             Action: s3:ListBucket
             Resource:
               - !Sub "arn:${AWS::Partition}:s3:::${BucketName}"
           - Sid: AWSLogDeliveryWrite
             Effect: Allow
             Principal:
-              Service: delivery.logs.amazonaws.com
+              Service: 
+                - delivery.logs.amazonaws.com
+                - config.amazonaws.com
             Action: s3:PutObject
             Resource:
               - !Sub "arn:${AWS::Partition}:s3:::${BucketName}/*"
