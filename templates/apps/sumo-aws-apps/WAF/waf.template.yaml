@@ -536,7 +536,7 @@ Resources:
     Type: AWS::KinesisFirehose::DeliveryStream
     DependsOn: CreateDeliveryStreamWaitCondition
     Properties:
-      DeliveryStreamName: !Ref DeliveryStreamName
+      DeliveryStreamName: !Sub "aws-waf-logs-${DeliveryStreamName}"
       DeliveryStreamType: "DirectPut"
       ExtendedS3DestinationConfiguration:
         BucketARN: !Sub "arn:${AWS::Partition}:s3:::${LogsS3BucketName}"
