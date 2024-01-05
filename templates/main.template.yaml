@@ -105,18 +105,16 @@ Metadata:
           default: "8.1 Sumo Logic AWS WAF app configuration"
         Parameters:
           - Section8aInstallWafApp
-          - Section8bCreateDeliveryStream
       - Label:
-          default: "8.2 AWS WAF S3 configuration"
+          default: "8.2 AWS Kinesis Firehose S3 configuration"
         Parameters:
-          - Section8cWafCreateBucket
-          - Section8dWafLogsBucketName
+          - Section8bWafCreateBucket
+          - Section8cWafLogsBucketName
       - Label:
           default: "8.3 Sumo Logic AWS WAF S3 source configuration"
         Parameters:
-          - Section8eWafCreateS3Source
-          - Section8fWafBucketPathExpression
-          - Section8gWafLogsSourceCategoryName
+          - Section8dWafCreateDeliveryStreamSource
+          - Section8eWafDeliveryStreamSourceCategoryName
 
       - Label:
           default: "9.1 Sumo Logic AWS Config app configuration"
@@ -283,18 +281,14 @@ Metadata:
       # WAF app Parameters
       Section8aInstallWafApp:
         default: "Install Sumo Logic AWS WAF app"
-      Section8bCreateDeliveryStream:
-        default: "Create a delivery stream for bucket"
-      Section8cWafCreateBucket:
+      Section8bWafCreateBucket:
         default: "Create S3 bucket"
-      Section8dWafLogsBucketName:
-        default: "WAF logs S3 bucket name"
-      Section8eWafCreateS3Source:
-        default: "Create Sumo Logic S3 logs source"
-      Section8fWafBucketPathExpression:
-        default: "Path expression for WAF logs"
-      Section8gWafLogsSourceCategoryName:
-        default: "Sumo Logic S3 logs source category name"
+      Section8cWafLogsBucketName:
+        default: "WAF S3 bucket name for backup Kinesis Firehose"
+      Section8dWafCreateDeliveryStreamSource:
+        default: "Create a Kinesis Firehose Delivery Stream Source for WAF"
+      Section8eWafDeliveryStreamSourceCategoryName:
+        default: "Sumo Logic AWS Kinesis Firehose Logs Source Category Name"
 
       # Config app Parameters
       Section9aInstallConfigApp:
@@ -630,36 +624,26 @@ Parameters:
     AllowedValues:
       - "Yes"
       - "No"
-  Section8bCreateDeliveryStream:
+  Section8bWafCreateBucket:
     Type: String
-    Description: "Choose Yes to create a Kinesis delivery stream."
+    Description: "Choose Yes to create an S3 bucket for backup Kinesis Firehose."
     Default: "No"
     AllowedValues:
       - "Yes"
       - "No"
-  Section8cWafCreateBucket:
+  Section8cWafLogsBucketName:
     Type: String
-    Description: "Choose Yes to create an S3 bucket for AWS WAF logs."
-    Default: "No"
-    AllowedValues:
-      - "Yes"
-      - "No"
-  Section8dWafLogsBucketName:
-    Type: String
-    Description: "Required when flag is set to No. Provide an existing bucket name that has AWS WAF logs in your account that begins with 'aws-waf-logs-'"
+    Description: "Required when flag is set to No. Provide an existing bucket name in your account"
     Default: ""
-  Section8eWafCreateS3Source:
+  Section8dWafCreateDeliveryStreamSource:
     Type: String
-    Description: "Choose No to skip creation of a Sumo Logic S3 log source."
-    Default: "Yes"
+    Description: "Yes - to create Kinesis Delivery Stream Source for WAF.
+                  No - to skip creation Kinesis Delivery Stream."
+    Default: 'Yes'
     AllowedValues:
-      - "Yes"
-      - "No"
-  Section8fWafBucketPathExpression:
-    Type: String
-    Description: "Path expression must match the folder structure for WAF logs (e.g., AWSLogs/*/WAFLogs/*)."
-    Default: "AWSLogs/*/WAFLogs/*"
-  Section8gWafLogsSourceCategoryName:
+      - 'Yes'
+      - 'No'
+  Section8eWafDeliveryStreamSourceCategoryName:
     Type: String
     Description: "Required when flag is set to No. Provide an existing source category name from Sumo Logic collecting WAF logs. This is used for app installation."
     Default: "aws/quickstart/waf/logs"
@@ -932,9 +916,8 @@ Conditions:
 
   # Conditions for WAF app
   install_waf_app: !Equals [!Ref Section8aInstallWafApp, "Yes"]
-  enable_waf: !Equals [!Ref Section8bCreateDeliveryStream, "Yes"]
-  create_waf_bucket: !Equals [!Ref Section8cWafCreateBucket, "Yes"]
-  create_waf_source: !Equals [!Ref Section8eWafCreateS3Source, "Yes"]
+  create_waf_bucket: !Equals [!Ref Section8bWafCreateBucket, "Yes"]
+  create_waf_source: !Equals [!Ref Section8dWafCreateDeliveryStreamSource, "Yes"]
 
   # Conditions for Config app
   install_config_app: !Equals [!Ref Section9aInstallConfigApp, "Yes"]
@@ -1011,7 +994,6 @@ Conditions:
     - !Condition create_security_hub_source
   call_waf_stack: !Or
     - !Condition install_waf_app
-    - !Condition enable_waf
     - !Condition create_waf_source
   call_config_stack: !Or
     - !Condition install_config_app
@@ -1388,7 +1370,6 @@ Resources:
         SumoDeployment: !Ref Section1aSumoLogicDeployment
         SumoAccessID: !Ref Section1bSumoLogicAccessID
         SumoAccessKey: !Ref Section1cSumoLogicAccessKey
-        SumoOrganizationId: !Ref Section1dSumoLogicOrganizationId
         RemoveSumoResourcesOnDeleteStack: !Ref Section1eSumoLogicResourceRemoveOnDeleteStack
         InstallApp: !Ref Section8aInstallWafApp
         CollectorName: !Sub "aws-quickstart-collector-${AWS::AccountId}"
@@ -1397,22 +1378,16 @@ Resources:
           !If [
             create_waf_bucket,
             !GetAtt CreateCommonResources.Outputs.BucketName,
-            !Ref Section8dWafLogsBucketName,
+            !Ref Section8cWafLogsBucketName,
           ]
-        CreateS3Source: !If [create_waf_source, "Yes", "No"]
-        S3BucketLogsPathExpression:
-          !If [enable_waf, "AWSLogs/*/WAFLogs/*", !Ref Section8fWafBucketPathExpression]
-        S3SourceName: !Sub "aws-quickstart-waf-${AWS::Region}"
-        S3SourceCategoryName:
+        CreateDeliveryStreamSource: !If [create_waf_source, "Yes", "No"]
+        DeliveryStreamSourceCategoryName:
           !If [
             create_waf_source,
             "aws/quickstart/waf/logs",
-            !Ref Section8gWafLogsSourceCategoryName,
+            !Ref Section8eWafDeliveryStreamSourceCategoryName,
           ]
-        CreateDeliveryStream: !If [enable_waf, "Yes", "No"]
-        DeliveryStreamName: !Sub "QuickStartDeliveryStream${AWS::Region}"
-        CompressionFormat: "ZIP"
-        S3BackupMode: "Disabled"
+        DeliveryStreamName: !Sub "aws-qs-awf-${AWS::StackName}"
         QSS3BucketName: !If [call_security_hub_stack, !GetAtt SumoSecurityHubAppsStack.Outputs.QSS3BucketName,
                           !If [call_s3_audit_stack, !GetAtt SumoS3AuditAppsStack.Outputs.QSS3BucketName,
                             !If [call_threat_intel_stack, !GetAtt SumoThreatIntelAppsStack.Outputs.QSS3BucketName,

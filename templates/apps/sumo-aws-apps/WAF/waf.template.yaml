@@ -11,9 +11,7 @@ Metadata:
           - SumoDeployment
           - SumoAccessID
           - SumoAccessKey
-          - SumoOrganizationId
           - RemoveSumoResourcesOnDeleteStack
-          - SumoAccountID
       - Label:
           default: "App Details - Collector Configuration"
         Parameters:
@@ -21,22 +19,17 @@ Metadata:
           - CollectorName
 
       - Label:
-          default: "App Details - S3 Source Configuration"
+          default: "App Details - S3 Configuration"
         Parameters:
           - CreateS3Bucket
           - LogsS3BucketName
-          - CreateS3Source
-          - S3BucketLogsPathExpression
-          - S3SourceName
-          - S3SourceCategoryName
-
       - Label:
           default: "Kinesis Firehose Delivery Stream Configuration"
         Parameters:
-          - CreateDeliveryStream
+          - CreateDeliveryStreamSource
           - DeliveryStreamName
-          - CompressionFormat
-          - S3BackupMode
+          - DeliveryStreamSourceName
+          - DeliveryStreamSourceCategoryName          
 
       - Label:
           default: "AWS Quick Start configuration"
@@ -56,10 +49,6 @@ Metadata:
         default: "Sumo Logic Access ID"
       SumoAccessKey:
         default: "Sumo Logic Access Key"
-      SumoOrganizationId:
-        default: "Sumo Logic Organization Id"
-      SumoAccountID:
-        default: "Sumo Logic AWS Account ID"
       RemoveSumoResourcesOnDeleteStack:
         default: "Delete Sumo Logic Resources when stack is deleted"
 
@@ -72,24 +61,16 @@ Metadata:
         default: "Create AWS S3 Bucket"
       LogsS3BucketName:
         default: "AWS S3 Bucket Name"
-      CreateS3Source:
-        default: "Create Sumo Logic Amazon S3 Logs Source"
-      S3BucketLogsPathExpression:
-        default: "Path Expression for the logs"
-      S3SourceName:
-        default: "Sumo Logic Amazon S3 Logs Source Name"
-      S3SourceCategoryName:
-        default: "Sumo Logic Amazon S3 Logs Source Category Name"
 
-      CreateDeliveryStream:
-        default: "Create a Delivery Stream for the Bucket"
+      CreateDeliveryStreamSource:
+        default: "Create a Kinesis Firehose Delivery Stream Source for WAF"
+      DeliveryStreamSourceName:
+        default: "Sumo Logic AWS Kinesis Firehose for Logs Source Name"          
       DeliveryStreamName:
         default: "Amazon Kinesis Data Firehose delivery stream name"
-      CompressionFormat:
-        default: "Compression format"
-      S3BackupMode:
-        default: "Amazon S3 backup mode"
-
+      DeliveryStreamSourceCategoryName:
+        default: "Sumo Logic AWS Kinesis Firehose Logs Source Category Name"
+        
       QSS3BucketName:
         default: "Quick Start S3 bucket name"
 
@@ -125,18 +106,6 @@ Parameters:
     ConstraintDescription: "Sumo Logic Access Key can not be empty."
     NoEcho: true
 
-  SumoAccountID:
-    Type: String
-    Description: "Account belonging to Sumo Logic used for ingestion of logs from customers"
-    AllowedPattern: ".+"
-    ConstraintDescription: "Sumo Logic AWS Account ID can not be empty."
-    Default: "926226587429"
-
-  SumoOrganizationId:
-    Description: "The Account Overview page displays information about your Sumo Logic organization. Used for IAM Role in Sumo Logic AWS Sources."
-    Type: String
-    AllowedPattern: ".+"
-    ConstraintDescription: "Sumo Logic Organization Id can not be empty."
 
   RemoveSumoResourcesOnDeleteStack:
     AllowedValues:
@@ -174,52 +143,26 @@ Parameters:
     Type: String
     Description: "Existing Bucket Name - Provide value if the Flag is set to No.
       New Bucket Name - Provide a unique Bucket Name if the flag is set to Yes."
-  CreateS3Source:
+  CreateDeliveryStreamSource:
     Type: String
-    Description:
-      "Yes - to create Sumo Logic Amazon S3 Log Source with provided bucket Name.
-      No - to skip creation of the Sumo Logic Amazon S3 Log Source."
-    Default: "Yes"
+    Description: "Yes - to create Kinesis Delivery Stream Source for WAF.
+                  No - to skip creation Kinesis Delivery Stream."
+    Default: 'Yes'
     AllowedValues:
-      - "Yes"
-      - "No"
-  S3BucketLogsPathExpression:
-    Type: String
-    Description: Path expression to match one or more S3 objects. For example, ABC*.log or ABC.log
-    Default: "WAF_LOGS/*"
-  S3SourceName:
-    Type: String
-    Description: Change the Sumo Logic Amazon S3 Source name to be created else default name will be used.
-    Default: AWS-Waf-Source
-  S3SourceCategoryName:
-    Type: String
-    Description:
-      "Existing - Change to an existing Source Category from Sumo Logic if Amazon S3 Source is not created.
-      New - Default will be used if Amazon S3 Source is Created."
-    Default: AWS/Waf/Logs
-
-  CreateDeliveryStream:
-    Type: String
-    Description:
-      "Yes - to create Kinesis Delivery Stream with provided bucket Name.
-      No - to skip creation Kinesis Delivery Stream."
-    Default: "Yes"
-    AllowedValues:
-      - "Yes"
-      - "No"
+      - 'Yes'
+      - 'No'
   DeliveryStreamName:
     Type: String
     Description: "Amazon Kinesis Data Firehose (Kinesis Data Firehose) delivery stream Name"
-  CompressionFormat:
+  DeliveryStreamSourceName:
     Type: String
-    Description: "The compression format. If no value is specified, the default is ZIP."
-    Default: "ZIP"
-    AllowedValues: ["UNCOMPRESSED", "GZIP", "ZIP", "Snappy"]
-  S3BackupMode:
+    Description: Change the Sumo Logic AWS Kinesis Firehose Source name to be created else default name will be used.
+    Default: AWS-Waf-Source  
+  DeliveryStreamSourceCategoryName:
     Type: String
-    Description: "The Amazon S3 backup mode."
-    Default: "Disabled"
-    AllowedValues: ["Disabled", "Enabled"]
+    Description: "Existing - Change to an existing Source Category from Sumo Logic if AWS Kinesis Firehose Source is not created.
+                  New - Default will be used if AWS Kinesis Firehose Source is Created."
+    Default: AWS/WAF/Logs
 
   QSS3BucketName:
     AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
@@ -250,15 +193,9 @@ Conditions:
   UsingDefaultBucket: !Or [ !Equals [!Ref QSS3BucketName, 'aws-ia'], !Equals [!Ref QSS3BucketName, 'sumologic-aws-security-solutions'] ]
 
   install_app: !Equals [!Ref InstallApp, "Yes"]
-  create_target_s3_bucket: !And
-    - !Equals [!Ref CreateS3Bucket, "Yes"]
-    - !Condition create_sns_topic
-  install_s3_source: !Equals [!Ref CreateS3Source, "Yes"]
-  create_delivery_stream: !Equals [!Ref CreateDeliveryStream, "Yes"]
+  create_target_s3_bucket: !Equals [!Ref CreateS3Bucket, "Yes"]
+  create_delivery_stream_source: !Equals [!Ref CreateDeliveryStreamSource, "Yes"]
 
-  create_sns_topic: !And
-    - !Condition do_not_use_parent_stack
-    - !Condition install_s3_source
 
 Resources:
   SumoLogicHelperRole:
@@ -328,90 +265,6 @@ Resources:
           - SumoLogicHelperRole
           - Arn
 
-  SumoRole:
-    Type: AWS::IAM::Role
-    Condition: do_not_use_parent_stack
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              AWS: !Sub arn:aws:iam::${SumoAccountID}:root
-            Action: sts:AssumeRole
-            Condition:
-              StringEquals:
-                sts:ExternalId: !Sub "${SumoDeployment}:${SumoOrganizationId}"
-      Path: "/"
-      Policies:
-        - PolicyName: SumoPolicy
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - s3:GetObject
-                  - s3:GetObjectVersion
-                  - s3:ListBucketVersions
-                  - s3:ListBucket
-                Resource:
-                  - !Sub arn:${AWS::Partition}:s3:::*
-
-  SumoSNSTopic:
-    Metadata:
-      cfn_nag:
-        rules_to_suppress:
-          - id: W47
-            reason: SNS Topic should specify KmsMasterKeyId property  
-    Condition: create_sns_topic
-    Type: "AWS::SNS::Topic"
-    Properties:
-      KmsMasterKeyId: !Ref AWS::NoValue
-      TopicName: !Sub "SumoSNSTopic-${AWS::StackName}"
-
-  SumoSNSSubscription:
-    Condition: install_s3_source
-    Type: "AWS::SNS::Subscription"
-    Properties:
-      TopicArn: !If
-        - create_sns_topic
-        - !Ref SumoSNSTopic
-        - !ImportValue
-          "Fn::Sub": "${ParentStackName}-SNSTopicArn"
-      Endpoint: !GetAtt SumoS3Source.SUMO_ENDPOINT
-      Protocol: https
-      DeliveryPolicy:
-        healthyRetryPolicy:
-          numRetries: 40
-          minDelayTarget: 10
-          maxDelayTarget: 300
-          numMinDelayRetries: 3
-          numMaxDelayRetries: 5
-          numNoDelayRetries: 0
-          backoffFunction: exponential
-
-  SumoSNSpolicy:
-    Condition: create_sns_topic
-    Type: "AWS::SNS::TopicPolicy"
-    Properties:
-      PolicyDocument:
-        Id: SumoTopicPolicy
-        Statement:
-          - Action:
-              - sns:Publish
-            Condition:
-              StringEquals:
-                aws:SourceAccount: !Ref "AWS::AccountId"
-              ArnLike:
-                aws:SourceArn: !Sub "arn:${AWS::Partition}:s3:::${LogsS3BucketName}"
-            Effect: Allow
-            Principal:
-              Service: "s3.amazonaws.com"
-            Resource:
-              - !Ref SumoSNSTopic
-      Topics:
-        - Ref: SumoSNSTopic
-
   TargetS3Bucket:
     Metadata:
       cfn_nag:
@@ -424,14 +277,8 @@ Resources:
             reason: S3 Bucket should have encryption option set            
     Condition: create_target_s3_bucket
     Type: AWS::S3::Bucket
-    DependsOn:
-      - SumoSNSpolicy
     Properties:
       BucketName: !Ref LogsS3BucketName
-      NotificationConfiguration:
-        TopicConfigurations:
-          - Event: s3:ObjectCreated:Put
-            Topic: !Ref SumoSNSTopic
       PublicAccessBlockConfiguration:
         BlockPublicAcls: True
         BlockPublicPolicy: True
@@ -447,7 +294,7 @@ Resources:
 
   SumoHostedCollector:
     Type: Custom::Collector
-    Condition: install_s3_source
+    Condition: create_delivery_stream_source
     Properties:
       ServiceToken: !If
         - do_not_use_parent_stack
@@ -469,33 +316,13 @@ Resources:
       SumoAccessKey: !Ref SumoAccessKey
       SumoDeployment: !Ref SumoDeployment
 
-  WaitHandle:
-    Type: "AWS::CloudFormation::WaitConditionHandle"
-
-  CreateDeliveryStreamWaitHandle:
-    Condition: create_target_s3_bucket
-    DependsOn: TargetS3Bucket
-    Type: "AWS::CloudFormation::WaitConditionHandle"
-
-  CreateDeliveryStreamWaitCondition:
-    Type: "AWS::CloudFormation::WaitCondition"
-    Properties:
-      Handle:
-        !If [
-          create_target_s3_bucket,
-          !Ref CreateDeliveryStreamWaitHandle,
-          !Ref WaitHandle,
-        ]
-      Timeout: "10"
-      Count: 0
-
-  KinesisS3Role:
-    Condition: create_delivery_stream
-    DependsOn: CreateDeliveryStreamWaitCondition
+  KinesisRole:
+    Condition: create_delivery_stream_source
     Type: AWS::IAM::Role
     Properties:
+      RoleName: !Sub 'ws-waf-logs-${AWS::Region}-${DeliveryStreamName}'
       AssumeRolePolicyDocument:
-        Version: "2012-10-17"
+        Version: '2012-10-17'
         Statement:
           - Effect: Allow
             Principal:
@@ -506,54 +333,85 @@ Resources:
                 sts:ExternalId: !Ref AWS::AccountId
       Path: "/"
       Policies:
-        - PolicyName: KinesisS3RolePolicy
+        - PolicyName: "S3BucketPermissionPolicy"
           PolicyDocument:
-            Version: "2012-10-17"
+            Version: '2012-10-17'
             Statement:
               - Effect: Allow
                 Action:
-                  - s3:PutObject
-                  - s3:GetObject
-                  - s3:ListBucketMultipartUploads
                   - s3:AbortMultipartUpload
-                  - s3:ListBucket
                   - s3:GetBucketLocation
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - s3:ListBucketMultipartUploads
+                  - s3:PutObject
                 Resource:
-                  - !Sub
-                    - arn:${AWS::Partition}:s3:::${S3bucketName}
-                    - { S3bucketName: !Ref LogsS3BucketName }
-                  - !Sub
-                    - arn:${AWS::Partition}:s3:::${S3bucketName}/*
-                    - { S3bucketName: !Ref LogsS3BucketName }
+                  - !Sub 'arn:${AWS::Partition}:s3:::${LogsS3BucketName}'
+        - PolicyName: KinesisKinesisRolePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - kinesis:DescribeStream
+                  - kinesis:GetShardIterator
+                  - kinesis:GetRecords
+                  - kinesis:ListShards
+                  - firehose:PutRecord
+                  - firehose:PutRecordBatch
+                  - kinesis:PutRecord
+                  - kinesis:PutRecordBatch
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:kinesis:${AWS::Region}:${AWS::AccountId}:stream/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%'
+        - PolicyName: KinesisLogsRolePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:PutLogEvents
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/kinesisfirehose/aws-waf-logs-${AWS::Region}-${DeliveryStreamName}:log-stream:*'
+                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%:log-stream:*'
+
 
   KinesisFirehoseDeliveryStream:
     Metadata:
       cfn_nag:
         rules_to_suppress:
           - id: W88
-            reason: Kinesis Firehose DeliveryStream of type DirectPut should specify SSE.
-    Condition: create_delivery_stream
+            reason: Kinesis Firehose DeliveryStream of type DirectPut should specify SSE. 
+    Condition: create_delivery_stream_source
     Type: AWS::KinesisFirehose::DeliveryStream
-    DependsOn: CreateDeliveryStreamWaitCondition
     Properties:
       DeliveryStreamName: !Sub "aws-waf-logs-${DeliveryStreamName}"
       DeliveryStreamType: "DirectPut"
-      ExtendedS3DestinationConfiguration:
-        BucketARN: !Sub "arn:${AWS::Partition}:s3:::${LogsS3BucketName}"
-        Prefix: "WAF_LOGS/"
-        ErrorOutputPrefix: "WAF_LOGS/"
-        RoleARN: !GetAtt KinesisS3Role.Arn
+      HttpEndpointDestinationConfiguration:
+        RoleARN: !GetAtt KinesisRole.Arn
+        EndpointConfiguration:
+          Url: !GetAtt SumoDeliveryStreamSource.SUMO_ENDPOINT
+          Name: !Sub "sumologic-logs-endpoint-${ParentStackName}"
         BufferingHints:
-          IntervalInSeconds: 300
-          SizeInMBs: 5
-        CompressionFormat: !Ref CompressionFormat
-        S3BackupMode: !Ref S3BackupMode
-        EncryptionConfiguration:
-          NoEncryptionConfig: "NoEncryption"
+          IntervalInSeconds: 60
+          SizeInMBs: 4
+        RetryOptions:
+          DurationInSeconds: 60
+        RequestConfiguration:
+          ContentEncoding: NONE
+        S3BackupMode: FailedDataOnly
+        S3Configuration:
+          BucketARN: !If
+            - create_target_s3_bucket
+            - !Ref TargetS3Bucket
+            - !Sub 'arn:aws:s3:::${LogsS3BucketName}'
+          CompressionFormat: UNCOMPRESSED
+          ErrorOutputPrefix: "SumoLogic-Kinesis-Failed-Logs/"
+          RoleARN: !GetAtt KinesisRole.Arn
 
-  SumoS3Source:
-    Type: Custom::AWSSource
-    Condition: install_s3_source
+
+  SumoDeliveryStreamSource:
+    Type: Custom::KinesisLogSource
+    Condition: create_delivery_stream_source
     Properties:
       ServiceToken: !If
         - do_not_use_parent_stack
@@ -562,24 +420,14 @@ Resources:
           - Arn
         - !ImportValue
           "Fn::Sub": "${ParentStackName}-SumoLogicHelperFunctionARN"
-      SourceType: AwsS3Bucket
-      Region: !Ref "AWS::Region"
-      SourceName: !Ref S3SourceName
+      SourceName: !Ref DeliveryStreamSourceName
       RemoveOnDeleteStack: !Ref RemoveSumoResourcesOnDeleteStack
-      SourceCategory: !Ref S3SourceCategoryName
+      SourceCategory: !Ref DeliveryStreamSourceCategoryName
       CollectorId: !GetAtt SumoHostedCollector.COLLECTOR_ID
       SumoAccessID: !Ref SumoAccessID
       SumoAccessKey: !Ref SumoAccessKey
       SumoDeployment: !Ref SumoDeployment
-      TargetBucketName: !Ref LogsS3BucketName
-      PathExpression: !Ref S3BucketLogsPathExpression
-      RoleArn: !If
-        - do_not_use_parent_stack
-        - !GetAtt
-          - SumoRole
-          - Arn
-        - !ImportValue
-          "Fn::Sub": "${ParentStackName}-SumoSourceRoleARN"
+
 
   SumoApp:
     Type: Custom::App
@@ -597,7 +445,7 @@ Resources:
       AppId: "87c2e6ca-a526-4745-af48-0c7225127b22"
       RemoveOnDeleteStack: !Ref RemoveSumoResourcesOnDeleteStack
       AppSources:
-        logsrc: !Sub "_sourceCategory=${S3SourceCategoryName}"
+        logsrc: !Sub "_sourceCategory=${DeliveryStreamSourceCategoryName}"
       SumoAccessID: !Ref SumoAccessID
       SumoAccessKey: !Ref SumoAccessKey
       SumoDeployment: !Ref SumoDeployment
