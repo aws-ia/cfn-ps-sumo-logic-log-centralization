@@ -19,14 +19,11 @@ Metadata:
           - CollectorName
 
       - Label:
-          default: "App Details - S3 Configuration"
-        Parameters:
-          - CreateS3Bucket
-          - LogsS3BucketName
-      - Label:
           default: "Kinesis Firehose Delivery Stream Configuration"
         Parameters:
           - CreateDeliveryStreamSource
+          - CreateS3Bucket
+          - LogsS3BucketName          
           - DeliveryStreamName
           - DeliveryStreamSourceName
           - DeliveryStreamSourceCategoryName          
@@ -58,9 +55,9 @@ Metadata:
         default: "Collector Name"
 
       CreateS3Bucket:
-        default: "Create AWS S3 Bucket"
+        default: "Create AWS S3 Bucket backup for the data that Kinesis Data Firehose delivers"
       LogsS3BucketName:
-        default: "AWS S3 Bucket Name"
+        default: "AWS S3 Bucket Backup Name"
 
       CreateDeliveryStreamSource:
         default: "Create a Kinesis Firehose Delivery Stream Source for WAF"
