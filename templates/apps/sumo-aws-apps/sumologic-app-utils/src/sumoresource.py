@@ -308,6 +308,7 @@ class AWSSource(BaseSource):
             "scanInterval": 300000,
             "paused": False,
         })
+        
         return source_json
 
     def _get_path(self, props):
@@ -359,6 +360,11 @@ class AWSSource(BaseSource):
                         source_id = source["id"]
                         print("fetched existing source %s" % source_id)
                         endpoint = source["url"]
+                        source_json, etag = self.sumologic_cli.source(collector_id, source_id)
+                        source_json['source'] = self.build_source_params(props, source_json['source'])
+                        resp = self.sumologic_cli.update_source(collector_id, source_json, etag)
+                        data = resp.json()['source']
+                        print("updated source %s" % data["id"])
             else:
                 print(e, source_json)
                 raise
@@ -368,7 +374,10 @@ class AWSSource(BaseSource):
                **kwargs):
         source_json, etag = self.sumologic_cli.source(collector_id, source_id)
         source_json['source'] = self.build_source_params(props, source_json['source'])
+        #print(f"source_json: {source_json}")
+        #print(f"etag: {etag}")
         try:
+
             resp = self.sumologic_cli.update_source(collector_id, source_json, etag)
             data = resp.json()['source']
             print("updated source %s" % data["id"])
