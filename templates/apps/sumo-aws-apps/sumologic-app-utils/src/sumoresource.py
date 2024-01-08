@@ -383,7 +383,7 @@ class AWSSource(BaseSource):
             print("deleted source %s : %s" % (source_id, response.text))
         else:
             print("skipping source deletion")
-            
+
 class KinesisLogSource(SumoResource):
     # Todo refactor this to use basesource class
 
@@ -974,6 +974,80 @@ class SumoLogicFieldExtractionRule(SumoResource):
             "fer_id": fer_id
         }
 
+class SumoLogicFieldsSchema(SumoResource):
+
+    def get_field_id(self, field_name):
+        all_fields = self.sumologic_cli.get_all_fields()
+        if all_fields:
+            for field in all_fields:
+                if field_name == field["fieldName"]:
+                    return field["fieldId"]
+        raise Exception("Field Name with name %s not found" % field_name)
+
+    def add_field(self, field_name):
+        content = {
+            "fieldName": field_name,
+        }
+        try:
+            response = self.sumologic_cli.create_new_field(content)
+            field_id = response["fieldId"]
+            print("FIELD NAME -  creation successful with Field Id %s" % field_id)
+            return {"FIELD_NAME": response["fieldName"]}, field_id
+        except Exception as e:
+            if hasattr(e, 'response') and "errors" in e.response.json() and e.response.json()["errors"]:
+                errors = e.response.json()["errors"]
+                for error in errors:
+                    if error.get('code') == 'field:already_exists':
+                        print("FIELD NAME -  Duplicate Exists for Name %s" % field_name)
+                        # Get the Field ID from the existing fields.
+                        field_id = self.get_field_id(field_name)
+                        return {"FIELD_NAME": field_name}, field_id
+            raise
+
+    def create(self, field_name, *args, **kwargs):
+        return self.add_field(field_name)
+
+    # No Update API. So, Fields will be added and deleted from the main stack.
+    def update(self, field_id, field_name, old_field_name, *args, **kwargs):
+        # Create a new field when field name changes. Delete will happen for old Field. No Update API, so no updates.
+        if field_name != old_field_name:
+            return self.create(field_name)
+        return {"FIELD_NAME": field_name}, field_id
+
+    # handling exception during delete, as update can fail if the previous explorer, metric rule or field has
+    # already been deleted. This is required in case of multiple installation of
+    # CF template with same names for metric rule, explorer view or fields
+    def delete(self, field_id, field_name, remove_on_delete_stack, *args, **kwargs):
+        if remove_on_delete_stack:
+            # Backward Compatibility for 2.0.2 Versions.
+            # Check for field_id is duplicate, then get the field ID from name and delete the field.
+            try:
+                if field_id == "Duplicate":
+                    field_id = self.get_field_id(field_name)
+                response = self.sumologic_cli.delete_existing_field(field_id)
+                print("FIELD NAME - Completed the Field deletion for ID %s, response - %s" % (field_id, response.text))
+            except Exception as e:
+                print("AWS EXPLORER - Exception while deleting the Field %s," % e)
+        else:
+            print("FIELD NAME - Skipping the Field deletion")
+
+    def extract_params(self, event):
+        props = event.get("ResourceProperties")
+
+        field_id = None
+        if event.get('PhysicalResourceId'):
+            _, field_id = event['PhysicalResourceId'].split("/")
+
+        # Get previous Metric Rule Name
+        old_field_name = None
+        if "OldResourceProperties" in event and "FieldName" in event['OldResourceProperties']:
+            old_field_name = event["OldResourceProperties"]['FieldName']
+
+        return {
+            "field_name": props.get("FieldName"),
+            "field_id": field_id,
+            "old_field_name": old_field_name
+        }
 
 if __name__ == '__main__':
 
