@@ -78,7 +78,7 @@ tests:
 
       Section8aInstallWafApp: "Yes"
       Section8bWafCreateBucket: "Yes"
-      # Section8bWafCreateBucket: "" Required if Section8bWafCreateBucket is set to No
+      # Section8cWafLogsBucketName: "" Required if Section8bWafCreateBucket is set to No
       Section8dWafCreateDeliveryStreamSource: "Yes"
       Section8eWafDeliveryStreamSourceCategoryName: "aws/quickstart/waf/logs"
 
