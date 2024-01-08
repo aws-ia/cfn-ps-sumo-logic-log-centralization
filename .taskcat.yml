@@ -1,7 +1,7 @@
 general:
   s3_regional_buckets: true
 project:
-  name: cfn-ps-sumo-logic-log-centralization/2
+  name: cfn-ps-sumo-logic-log-centralization
   shorten_stack_name: true
   regions:
     - us-west-1
@@ -19,9 +19,9 @@ tests:
 
       ## Sumo Logic configuration
       Section1aSumoLogicDeployment: "us1"
-      Section1bSumoLogicAccessID: "" #required
-      Section1cSumoLogicAccessKey: "" #required
-      Section1dSumoLogicOrganizationId: "" #required
+      Section1bSumoLogicAccessID: $[taskcat_ssm_/sumologic/Section1bSumoLogicAccessID] #required
+      Section1cSumoLogicAccessKey: $[taskcat_ssm_/sumologic/Section1cSumoLogicAccessKey] #required
+      Section1dSumoLogicOrganizationId: $[taskcat_ssm_/sumologic/Section1dSumoLogicOrganizationId] #required
       Section1eSumoLogicResourceRemoveOnDeleteStack: "true"
 
       #cloudtrail configuration
