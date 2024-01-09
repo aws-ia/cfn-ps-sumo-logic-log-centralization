@@ -1045,7 +1045,6 @@ Resources:
         CreateTrail: !If [create_cloudtrail, "Yes", "No"]
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-        QSVersion: !Ref QSVersion
 
   SumoCloudTrailAppsStack:
     Type: AWS::CloudFormation::Stack
@@ -1100,7 +1099,6 @@ Resources:
           ]
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-        QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
   SumoGuardDutyAppsStack:
@@ -1139,7 +1137,6 @@ Resources:
           ]
         QSS3BucketName: !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-        QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
   SumoVpcAppsStack:
@@ -1193,7 +1190,6 @@ Resources:
         QSS3BucketName: !If [call_guardduty_stack, !GetAtt SumoGuardDutyAppsStack.Outputs.QSS3BucketName,
                           !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-        QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
   SumoThreatIntelAppsStack:
@@ -1235,7 +1231,6 @@ Resources:
                           !If [call_guardduty_stack, !GetAtt SumoGuardDutyAppsStack.Outputs.QSS3BucketName,
                             !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]]]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-        QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
   SumoS3AuditAppsStack:
@@ -1289,7 +1284,6 @@ Resources:
                             !If [call_guardduty_stack, !GetAtt SumoGuardDutyAppsStack.Outputs.QSS3BucketName,
                               !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]]]]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-        QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
   SumoSecurityHubAppsStack:
@@ -1346,7 +1340,6 @@ Resources:
                               !If [call_guardduty_stack, !GetAtt SumoGuardDutyAppsStack.Outputs.QSS3BucketName,
                                 !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]]]]]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-        QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
   SumoWafAppsStack:
@@ -1395,7 +1388,6 @@ Resources:
                                 !If [call_guardduty_stack, !GetAtt SumoGuardDutyAppsStack.Outputs.QSS3BucketName,
                                   !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]]]]]]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-        QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
   SumoConfigAppsStack:
@@ -1451,7 +1443,6 @@ Resources:
                                   !If [call_guardduty_stack, !GetAtt SumoGuardDutyAppsStack.Outputs.QSS3BucketName,
                                     !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]]]]]]]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-        QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
   SumoFireWallMacroStack:
@@ -1481,7 +1472,6 @@ Resources:
                                     !If [call_guardduty_stack, !GetAtt SumoGuardDutyAppsStack.Outputs.QSS3BucketName,
                                       !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]]]]]]]]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-        QSVersion: !Ref QSVersion
 
   SumoFireWallAppsStack:
     Type: AWS::CloudFormation::Stack
@@ -1547,7 +1537,6 @@ Resources:
                                     !If [call_guardduty_stack, !GetAtt SumoGuardDutyAppsStack.Outputs.QSS3BucketName,
                                       !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]]]]]]]]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-        QSVersion: !Ref QSVersion
         ParentStackName: !GetAtt CreateCommonResources.Outputs.StackName
 
   SumoAutoEnableS3AuditLogs:
@@ -1589,7 +1578,6 @@ Resources:
                                       !If [call_guardduty_stack, !GetAtt SumoGuardDutyAppsStack.Outputs.QSS3BucketName,
                                         !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]]]]]]]]]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-        QSVersion: !Ref QSVersion
 
   SumoAutoEnableVpcAuditLogs:
     Type: AWS::CloudFormation::Stack
@@ -1672,4 +1660,3 @@ Resources:
                                           !If [call_guardduty_stack, !GetAtt SumoGuardDutyAppsStack.Outputs.QSS3BucketName,
                                             !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]]]]]]]]]]]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-        QSVersion: !Ref QSVersion
