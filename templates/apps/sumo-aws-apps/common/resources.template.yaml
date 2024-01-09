@@ -14,7 +14,6 @@ Metadata:
           - SumoOrganizationId
           - RemoveSumoResourcesOnDeleteStack
           - SumoAccountID
-          - QSVersion
 
       - Label:
           default: "App Details - Collector Configuration"
@@ -66,9 +65,6 @@ Metadata:
 
       QSS3KeyPrefix:
         default: "Quick Start S3 key prefix"
-
-      QSVersion:
-        default: "Quick Start Version"
 
 Parameters:
   SumoDeployment:
@@ -162,10 +158,6 @@ Parameters:
     Description: "S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/)."
     Type: "String"
 
-  QSVersion:
-    Type: String
-    Description: "Version of Quick Start"
-    Default: "1.0"
 
 Conditions:
   UsingDefaultBucket: !Or [ !Equals [!Ref QSS3BucketName, 'aws-ia'], !Equals [!Ref QSS3BucketName, 'sumologic-aws-security-solutions'] ]
