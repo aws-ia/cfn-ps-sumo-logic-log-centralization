@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
-Description: "Template to setup the Amazon GuardDuty, Global Intelligence for Amazon GuardDuty with AWS and Sumo Logic resources for AWS Quick Start Solution. (qs-1use1ukii)"
+Description: "Template to setup the Amazon GuardDuty, Global Intelligence for Amazon GuardDuty with AWS and Sumo Logic resources for AWS Quick Start Solution. (qs-1ut5k9bjq)"
 
 Metadata:
   AWS::CloudFormation::Interface:
@@ -215,6 +215,10 @@ Resources:
     Type: "AWS::Serverless::Function"
     Condition: do_not_use_parent_stack
     Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W89
+            reason: Lambda functions should be deployed inside a VPC    
       cfn-lint:
         config:
           ignore_checks:
@@ -231,13 +235,13 @@ Resources:
                 !Sub "${QSS3BucketName}-${AWS::Region}",
                 !Ref QSS3BucketName,
               ]
-        Key: !Sub "${QSS3KeyPrefix}${QSVersion}/templates/apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
+        Key: !Sub "${QSS3KeyPrefix}templates/apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
       MemorySize: 128
       Timeout: 900
       DeadLetterQueue:
         TargetArn: !Ref AWS::NoValue
         Type: SQS
-      ReservedConcurrentExecutions: !Ref AWS::NoValue
+      ReservedConcurrentExecutions: 4
       VpcConfig:
         SecurityGroupIds:
           - !Ref AWS::NoValue
@@ -347,6 +351,9 @@ Resources:
       SumoDeployment: !Ref SumoDeployment
 
 Outputs:
+  QSS3BucketName:
+    Description: Quick Start S3 bucket name
+    Value: !Ref QSS3BucketName
   CloudWatchEventFunction:
     Description: "CloudWatchEvent Processor Function ARN"
     Condition: install_http_logs_source

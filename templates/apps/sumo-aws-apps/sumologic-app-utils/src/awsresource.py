@@ -9,7 +9,8 @@ import six
 from botocore.exceptions import ClientError
 from resourcefactory import AutoRegisterResource
 from retrying import retry
-
+from botocore.config import Config
+from mypy_boto3_config import ConfigServiceClient
 
 @six.add_metaclass(AutoRegisterResource)
 class AWSResource(object):
@@ -30,7 +31,78 @@ class AWSResource(object):
     def extract_params(self, event):
         pass
 
+class AWSConfig(AWSResource):
+    def __init__(self, props,  *args, **kwargs):
+        self.CLOUDFORMATION_PARAMETERS = ["NAME_CONFIG_RECORDER", "CONFIG_RECORDER_ROLEARN", "DELIVERY_CHANNEL_S3_BUCKET_NAME",
+                                    "DELIVERY_CHANNEL_FREQUENCY", "REMOVE_RESOURCES_ON_DELETES_TACK", "SNS_TOPIC_ARN" "AWS_REGION"]
+        self.UNEXPECTED = "Unexpected!"   
+        self.BOTO3_CONFIG = Config(retries={"max_attempts": 10, "mode": "standard"})
+        try:
+            session = boto3.Session()
+            self.session_config: ConfigServiceClient = session.client("config", config=self.BOTO3_CONFIG)
+        except Exception:
 
+            print(self.UNEXPECTED)
+            raise ValueError("Unexpected error executing Lambda function. Review CloudWatch logs for details.") from None
+    def create_account_config(self, Name: str, RoleARN: str, Frequency: str, ConfigBucket: str):
+#        config_recorder_response = self.session_config.describe_configuration_recorder_status()
+
+#        if 'ConfigurationRecordersStatus' not in config_recorder_response or len(config_recorder_response['ConfigurationRecordersStatus']) < 1:
+        ConfigurationRecorder={
+            "name":f"{Name}",
+            "roleARN": f"{RoleARN}" ,
+            "recordingGroup":{
+                "allSupported": True,
+                "includeGlobalResourceTypes":False
+            }
+        }
+        response = self.session_config.put_configuration_recorder(
+            ConfigurationRecorder = ConfigurationRecorder                 
+        )         
+        response = self.session_config.put_delivery_channel(
+            DeliveryChannel={
+                "name":f"{Name}",
+                "s3BucketName":f"{ConfigBucket}",
+                "configSnapshotDeliveryProperties":
+                {
+                    "deliveryFrequency":f"{Frequency}"
+                }
+            }
+        )
+
+        response = self.session_config.start_configuration_recorder(
+            ConfigurationRecorderName=Name
+        )
+    def delete_account_config(self, Name: str):
+        self.session_config.stop_configuration_recorder(ConfigurationRecorderName=Name)
+        self.session_config.delete_delivery_channel(DeliveryChannelName=Name)
+
+    def create(self, params, *args, **kwargs):
+        self.create_account_config(
+            Name=params["NAME_CONFIG_RECORDER"],
+            RoleARN=params["CONFIG_RECORDER_ROLEARN"],
+            Frequency=params["DELIVERY_CHANNEL_FREQUENCY"],
+            ConfigBucket=params["DELIVERY_CHANNEL_S3_BUCKET_NAME"])
+        return {'AWSConfigId': "AWSConfigId"}, "AWSConfigId"
+    
+    def update(self, params, *args, **kwargs):
+        self.create_account_config(
+            Name=params["NAME_CONFIG_RECORDER"],
+            RoleARN=params["CONFIG_RECORDER_ROLEARN"],
+            Frequency=params["DELIVERY_CHANNEL_FREQUENCY"],
+            ConfigBucket=params["DELIVERY_CHANNEL_S3_BUCKET_NAME"])
+        return {'AWSConfigId': "AWSConfigId"}, "AWSConfigId"
+    
+    def delete(self, params, *args, **kwargs):
+        if params["REMOVE_RESOURCES_ON_DELETES_TACK"]=="true":
+            self.delete_account_config(Name=params["NAME_CONFIG_RECORDER"])
+
+    def extract_params(self, event):
+        props = event.get("ResourceProperties")
+        return {
+            "params": props
+        } 
+            
 class AWSTrail(AWSResource):
     boolean_params = ["IncludeGlobalServiceEvents", "IsMultiRegionTrail", "EnableLogFileValidation",
                       "IsOrganizationTrail"]

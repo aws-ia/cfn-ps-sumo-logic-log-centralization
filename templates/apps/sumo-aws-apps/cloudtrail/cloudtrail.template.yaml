@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: "AWS::Serverless-2016-10-31"
-Description: "Template to setup the AWS CloudTrail, PCI Compliance For AWS CloudTrail, CIS AWS Foundations Benchmark, Sumo Cloud Security Monitoring and Analytics For AWS CloudTrail, Sumo Global Intelligence for AWS CloudTrail SecOps app with AWS and Sumo Logic resources for AWS Quick Start Solution. (qs-1use1qt2t)"
+Description: "Template to setup the AWS CloudTrail, PCI Compliance For AWS CloudTrail, CIS AWS Foundations Benchmark, Sumo Cloud Security Monitoring and Analytics For AWS CloudTrail, Sumo Global Intelligence for AWS CloudTrail SecOps app with AWS and Sumo Logic resources for AWS Quick Start Solution. (qs-1ut5k7fbc)"
 
 Metadata:
   "AWS::CloudFormation::Interface":
@@ -308,6 +308,10 @@ Resources:
     Type: "AWS::Serverless::Function"
     Condition: do_not_use_parent_stack
     Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W89
+            reason: Lambda functions should be deployed inside a VPC    
       cfn-lint:
         config:
           ignore_checks:
@@ -324,13 +328,13 @@ Resources:
                 !Sub "${QSS3BucketName}-${AWS::Region}",
                 !Ref QSS3BucketName,
               ]
-        Key: !Sub "${QSS3KeyPrefix}${QSVersion}/templates/apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
+        Key: !Sub "${QSS3KeyPrefix}templates/apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
       MemorySize: 128
       Timeout: 900
       DeadLetterQueue:
         TargetArn: !Ref AWS::NoValue
         Type: SQS
-      ReservedConcurrentExecutions: !Ref AWS::NoValue
+      ReservedConcurrentExecutions: 4
       VpcConfig:
         SecurityGroupIds:
           - !Ref AWS::NoValue
@@ -500,13 +504,18 @@ Resources:
       SumoDeployment: !Ref SumoDeployment
 
   SumoSNSTopic:
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W47
+            reason: SNS Topic should specify KmsMasterKeyId property  
     Condition: create_sns_topic
     Type: "AWS::SNS::Topic"
     Properties:
       KmsMasterKeyId: !Ref AWS::NoValue
       TopicName: !Sub "SumoSNSTopic-${AWS::StackName}"
 
-  SumoSNSSubscription:
+  SumoSNSSubscription:  
     Condition: install_cloudtrail_logs_source
     Type: "AWS::SNS::Subscription"
     Properties:
@@ -550,6 +559,13 @@ Resources:
         - Ref: SumoSNSTopic
 
   TargetS3Bucket:
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W51
+            reason: S3 bucket should likely have a bucket policy
+          - id: W41
+            reason: S3 Bucket should have encryption option set
     Condition: create_target_s3_bucket
     Type: AWS::S3::Bucket
     DependsOn:
@@ -664,6 +680,10 @@ Resources:
           "Fn::Sub": "${ParentStackName}-SumoSourceRoleARN"
 
 Outputs:
+  QSS3BucketName:
+    Description: Quick Start S3 bucket name
+    Value: !Ref QSS3BucketName
+
   SumoRoleArn:
     Description: ARN of the cretaed Role.
     Condition: do_not_use_parent_stack

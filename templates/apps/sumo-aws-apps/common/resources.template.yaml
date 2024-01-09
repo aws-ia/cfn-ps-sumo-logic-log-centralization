@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: "AWS::Serverless-2016-10-31"
-Description: "Template to setup the common AWS and Sumo Logic resources for AWS Quick Start Solution. (qs-1use1rs8d)"
+Description: "Template to setup the common AWS and Sumo Logic resources for AWS Quick Start Solution. (qs-1ut5k8331)"
 
 Metadata:
   "AWS::CloudFormation::Interface":
@@ -219,9 +219,6 @@ Resources:
                   - logs:DeleteLogDelivery
                   - s3:GetBucketPolicy
                   - s3:PutBucketPolicy
-                  - config:DescribeDeliveryChannels
-                  - config:PutDeliveryChannel
-                  - config:DeleteDeliveryChannel
                 Resource:
                   - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*"
                   - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*"
@@ -230,10 +227,32 @@ Resources:
                   - !Sub "arn:${AWS::Partition}:ec2:${AWS::Region}::*"
                   - !Sub "arn:${AWS::Partition}:s3:::*"
                   - !Sub "arn:${AWS::Partition}:config:${AWS::Region}:${AWS::AccountId}:*"
-
+              - Effect: Allow
+                Action:
+                  - config:DescribeConfigurationRecorderStatus
+                  - config:DescribeConfigurationRecorders
+                  - config:DeleteDeliveryChannel
+                  - config:PutConfigurationRecorder
+                  - config:DescribeDeliveryChannels
+                  - config:StopConfigurationRecorder
+                  - config:StartConfigurationRecorder
+                  - config:PutDeliveryChannel
+                  - config:DeleteConfigurationRecorder 
+                Resource: '*'  
+              - Effect: Allow
+                Action: iam:PassRole
+                Resource: !Sub 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/*'
+                Condition:
+                  StringEqualsIfExists:
+                    iam:PassedToService:
+                      - config.amazonaws.com
   SumoLogicLambdaHelper:
     Type: "AWS::Serverless::Function"
     Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W89
+            reason: Lambda functions should be deployed inside a VPC    
       cfn-lint:
         config:
           ignore_checks:
@@ -250,13 +269,13 @@ Resources:
                 !Sub "${QSS3BucketName}-${AWS::Region}",
                 !Ref QSS3BucketName,
               ]
-        Key: !Sub "${QSS3KeyPrefix}${QSVersion}/templates/apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
+        Key: !Sub "${QSS3KeyPrefix}templates/apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
       MemorySize: 128
       Timeout: 900
       DeadLetterQueue:
         TargetArn: !Ref AWS::NoValue
         Type: SQS
-      ReservedConcurrentExecutions: !Ref AWS::NoValue
+      ReservedConcurrentExecutions: 4
       VpcConfig:
         SecurityGroupIds:
           - !Ref AWS::NoValue
@@ -293,7 +312,6 @@ Resources:
                   - s3:ListBucketVersions
                   - s3:ListBucket
                 Resource: !Sub "arn:${AWS::Partition}:s3:::*"
-
   SumoHostedCollector:
     Type: Custom::Collector
     Condition: install_collector
@@ -308,6 +326,11 @@ Resources:
       SumoDeployment: !Ref SumoDeployment
 
   SumoSNSTopic:
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W47
+            reason: SNS Topic should specify KmsMasterKeyId property
     Condition: create_sns_topic
     Type: "AWS::SNS::Topic"
     Properties:
@@ -337,6 +360,13 @@ Resources:
         - Ref: SumoSNSTopic
 
   TargetS3Bucket:
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W51
+            reason: S3 bucket should likely have a bucket policy
+          - id: W41
+            reason: S3 Bucket should have encryption option set  
     Condition: create_target_s3_bucket
     Type: AWS::S3::Bucket
     DependsOn:
@@ -367,10 +397,12 @@ Resources:
       Bucket: !Ref BucketName
       PolicyDocument:
         Statement:
-          - Sid: AWSCloudTrailAclCheck
+          - Sid: AWSBucketPermissionsAclCheck
             Effect: Allow
             Principal:
-              Service: cloudtrail.amazonaws.com
+              Service: 
+                - cloudtrail.amazonaws.com
+                - config.amazonaws.com
             Action: s3:GetBucketAcl
             Resource:
               - !Sub "arn:${AWS::Partition}:s3:::${BucketName}"
@@ -387,14 +419,18 @@ Resources:
           - Sid: AWSBucketExistenceCheck
             Effect: Allow
             Principal:
-              Service: cloudtrail.amazonaws.com
+              Service: 
+                - cloudtrail.amazonaws.com
+                - config.amazonaws.com
             Action: s3:ListBucket
             Resource:
               - !Sub "arn:${AWS::Partition}:s3:::${BucketName}"
           - Sid: AWSLogDeliveryWrite
             Effect: Allow
             Principal:
-              Service: delivery.logs.amazonaws.com
+              Service: 
+                - delivery.logs.amazonaws.com
+                - config.amazonaws.com
             Action: s3:PutObject
             Resource:
               - !Sub "arn:${AWS::Partition}:s3:::${BucketName}/*"

@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
-Description: "Template to setup the Firewal Macro to process multi subnet and multi allowed ports for AWS Network Firewall stack. (qs-1use20imp)"
+Description: "Template to setup the Firewal Macro to process multi subnet and multi allowed ports for AWS Network Firewall stack. (qs-1ut5k9q6e)"
 
 Parameters:
   QSS3BucketName:
@@ -53,6 +53,12 @@ Resources:
   MacroNFWHelperFunction:
     Type: "AWS::Serverless::Function"
     Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W89
+            reason: Lambda functions should be deployed inside a VPC  
+          - id: W58
+            reason: Lambda functions require permission to write CloudWatch Logs              
       cfn-lint:
         config:
           ignore_checks:
@@ -69,13 +75,13 @@ Resources:
                 !Sub "${QSS3BucketName}-${AWS::Region}",
                 !Ref QSS3BucketName,
               ]
-        Key: !Sub "${QSS3KeyPrefix}${QSVersion}/templates/apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
+        Key: !Sub "${QSS3KeyPrefix}templates/apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
       MemorySize: 128
       Timeout: 900
       DeadLetterQueue:
         TargetArn: !Ref AWS::NoValue
         Type: SQS
-      ReservedConcurrentExecutions: !Ref AWS::NoValue
+      ReservedConcurrentExecutions: 4
       VpcConfig:
         SecurityGroupIds:
           - !Ref AWS::NoValue

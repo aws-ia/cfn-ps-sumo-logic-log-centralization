@@ -308,6 +308,7 @@ class AWSSource(BaseSource):
             "scanInterval": 300000,
             "paused": False,
         })
+        
         return source_json
 
     def _get_path(self, props):
@@ -359,6 +360,11 @@ class AWSSource(BaseSource):
                         source_id = source["id"]
                         print("fetched existing source %s" % source_id)
                         endpoint = source["url"]
+                        source_json, etag = self.sumologic_cli.source(collector_id, source_id)
+                        source_json['source'] = self.build_source_params(props, source_json['source'])
+                        resp = self.sumologic_cli.update_source(collector_id, source_json, etag)
+                        data = resp.json()['source']
+                        print("updated source %s" % data["id"])
             else:
                 print(e, source_json)
                 raise
@@ -368,7 +374,10 @@ class AWSSource(BaseSource):
                **kwargs):
         source_json, etag = self.sumologic_cli.source(collector_id, source_id)
         source_json['source'] = self.build_source_params(props, source_json['source'])
+        #print(f"source_json: {source_json}")
+        #print(f"etag: {etag}")
         try:
+
             resp = self.sumologic_cli.update_source(collector_id, source_json, etag)
             data = resp.json()['source']
             print("updated source %s" % data["id"])
@@ -384,6 +393,85 @@ class AWSSource(BaseSource):
         else:
             print("skipping source deletion")
 
+class KinesisLogSource(SumoResource):
+    # Todo refactor this to use basesource class
+
+    def create(self, collector_id, source_name, source_category, fields, message_per_request,
+               date_format=None, date_locator="\"timestamp\": (.*),", *args, **kwargs):
+
+        endpoint = source_id = None
+        params = {
+            "sourceType": "HTTP",
+            "contentType": "KinesisLog",
+            "name": source_name,
+            "messagePerRequest": message_per_request,
+            "multilineProcessingEnabled": False if message_per_request else True,
+            "category": source_category
+        }
+        if date_format:
+            params["defaultDateFormats"] = [{"format": date_format, "locator": date_locator}]
+
+        # Fields condition
+        if fields:
+            params['fields'] = fields
+
+        try:
+            resp = self.sumologic_cli.create_source(collector_id, {"source": params})
+            data = resp.json()['source']
+            source_id = data["id"]
+            endpoint = data["url"]
+            print("created source %s" % source_id)
+        except Exception as e:
+            # Todo 100 sources in a collector is good
+            if hasattr(e, 'response') and e.response.json()["code"] == 'collectors.validation.name.duplicate':
+                for source in self.sumologic_cli.sources(collector_id, limit=300):
+                    if source["name"] == source_name:
+                        source_id = source["id"]
+                        print("fetched existing source %s" % source_id)
+                        endpoint = source["url"]
+            else:
+                raise
+        return {"SUMO_ENDPOINT": endpoint}, source_id
+
+    def update(self, collector_id, source_id, source_name, source_category, date_format=None, date_locator=None, *args,
+               **kwargs):
+        sv, etag = self.sumologic_cli.source(collector_id, source_id)
+        sv['source']['category'] = source_category
+        sv['source']['name'] = source_name
+        if date_format:
+            sv['source']["defaultDateFormats"] = [{"format": date_format, "locator": date_locator}]
+        resp = self.sumologic_cli.update_source(collector_id, sv, etag)
+        data = resp.json()['source']
+        print("updated source %s" % data["id"])
+        return {"SUMO_ENDPOINT": data["url"]}, data["id"]
+
+    def delete(self, collector_id, source_id, remove_on_delete_stack, *args, **kwargs):
+        if remove_on_delete_stack:
+            response = self.sumologic_cli.delete_source(collector_id, {"source": {"id": source_id}})
+            print("deleted source %s : %s" % (source_id, response.text))
+        else:
+            print("skipping source deletion")
+
+    def extract_params(self, event):
+        props = event.get("ResourceProperties")
+        source_id = None
+        if event.get('PhysicalResourceId'):
+            _, source_id = event['PhysicalResourceId'].split("/")
+
+        fields = {}
+        if 'Fields' in props:
+            fields = props.get("Fields")
+
+        return {
+            "collector_id": props.get("CollectorId"),
+            "source_name": props.get("SourceName"),
+            "source_category": props.get("SourceCategory"),
+            "date_format": props.get("DateFormat"),
+            "date_locator": props.get("DateLocatorRegex"),
+            "message_per_request": props.get("MessagePerRequest") == 'true',
+            "source_id": source_id,
+            "fields": fields
+        }
 
 class HTTPSource(SumoResource):
     # Todo refactor this to use basesource class
@@ -895,6 +983,80 @@ class SumoLogicFieldExtractionRule(SumoResource):
             "fer_id": fer_id
         }
 
+class SumoLogicFieldsSchema(SumoResource):
+
+    def get_field_id(self, field_name):
+        all_fields = self.sumologic_cli.get_all_fields()
+        if all_fields:
+            for field in all_fields:
+                if field_name == field["fieldName"]:
+                    return field["fieldId"]
+        raise Exception("Field Name with name %s not found" % field_name)
+
+    def add_field(self, field_name):
+        content = {
+            "fieldName": field_name,
+        }
+        try:
+            response = self.sumologic_cli.create_new_field(content)
+            field_id = response["fieldId"]
+            print("FIELD NAME -  creation successful with Field Id %s" % field_id)
+            return {"FIELD_NAME": response["fieldName"]}, field_id
+        except Exception as e:
+            if hasattr(e, 'response') and "errors" in e.response.json() and e.response.json()["errors"]:
+                errors = e.response.json()["errors"]
+                for error in errors:
+                    if error.get('code') == 'field:already_exists':
+                        print("FIELD NAME -  Duplicate Exists for Name %s" % field_name)
+                        # Get the Field ID from the existing fields.
+                        field_id = self.get_field_id(field_name)
+                        return {"FIELD_NAME": field_name}, field_id
+            raise
+
+    def create(self, field_name, *args, **kwargs):
+        return self.add_field(field_name)
+
+    # No Update API. So, Fields will be added and deleted from the main stack.
+    def update(self, field_id, field_name, old_field_name, *args, **kwargs):
+        # Create a new field when field name changes. Delete will happen for old Field. No Update API, so no updates.
+        if field_name != old_field_name:
+            return self.create(field_name)
+        return {"FIELD_NAME": field_name}, field_id
+
+    # handling exception during delete, as update can fail if the previous explorer, metric rule or field has
+    # already been deleted. This is required in case of multiple installation of
+    # CF template with same names for metric rule, explorer view or fields
+    def delete(self, field_id, field_name, remove_on_delete_stack, *args, **kwargs):
+        if remove_on_delete_stack:
+            # Backward Compatibility for 2.0.2 Versions.
+            # Check for field_id is duplicate, then get the field ID from name and delete the field.
+            try:
+                if field_id == "Duplicate":
+                    field_id = self.get_field_id(field_name)
+                response = self.sumologic_cli.delete_existing_field(field_id)
+                print("FIELD NAME - Completed the Field deletion for ID %s, response - %s" % (field_id, response.text))
+            except Exception as e:
+                print("AWS EXPLORER - Exception while deleting the Field %s," % e)
+        else:
+            print("FIELD NAME - Skipping the Field deletion")
+
+    def extract_params(self, event):
+        props = event.get("ResourceProperties")
+
+        field_id = None
+        if event.get('PhysicalResourceId'):
+            _, field_id = event['PhysicalResourceId'].split("/")
+
+        # Get previous Metric Rule Name
+        old_field_name = None
+        if "OldResourceProperties" in event and "FieldName" in event['OldResourceProperties']:
+            old_field_name = event["OldResourceProperties"]['FieldName']
+
+        return {
+            "field_name": props.get("FieldName"),
+            "field_id": field_id,
+            "old_field_name": old_field_name
+        }
 
 if __name__ == '__main__':
 

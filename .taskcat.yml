@@ -1,7 +1,7 @@
 general:
   s3_regional_buckets: true
 project:
-  name: cfn-ps-sumo-logic-log-centralization/2
+  name: cfn-ps-sumo-logic-log-centralization
   shorten_stack_name: true
   regions:
     - us-west-1
@@ -19,9 +19,9 @@ tests:
 
       ## Sumo Logic configuration
       Section1aSumoLogicDeployment: "us1"
-      Section1bSumoLogicAccessID: "" #required
-      Section1cSumoLogicAccessKey: "" #required
-      Section1dSumoLogicOrganizationId: "" #required
+      Section1bSumoLogicAccessID: $[taskcat_ssm_/sumologic/Section1bSumoLogicAccessID] #required
+      Section1cSumoLogicAccessKey: $[taskcat_ssm_/sumologic/Section1cSumoLogicAccessKey] #required
+      Section1dSumoLogicOrganizationId: $[taskcat_ssm_/sumologic/Section1dSumoLogicOrganizationId] #required
       Section1eSumoLogicResourceRemoveOnDeleteStack: "true"
 
       #cloudtrail configuration
@@ -77,21 +77,19 @@ tests:
       # WAF configuration
 
       Section8aInstallWafApp: "Yes"
-      Section8bCreateDeliveryStream: "No" # why delivery stream is same as enabling waf?
-      Section8cWafCreateBucket: "Yes"
-      # Section8dWafLogsBucketName: "" Required if Section8cWafCreateBucket is set to No
-      Section8eWafCreateS3Source: "Yes"
-      Section8fWafBucketPathExpression: "WAF_LOGS/*"
-      Section8gWafLogsSourceCategoryName: "aws/quickstart/waf/logs"
+      Section8bWafCreateBucket: "Yes"
+      # Section8cWafLogsBucketName: "" Required if Section8bWafCreateBucket is set to No
+      Section8dWafCreateDeliveryStreamSource: "Yes"
+      Section8eWafDeliveryStreamSourceCategoryName: "aws/quickstart/waf/logs"
 
       # config configuration
 
       Section9aInstallConfigApp: "Yes"
-      Section9bConfigEnableConfig: "Yes"
-      Section9cConfigCreateSNSTopic: "Yes"
-      # Section9dConfigExistingTopicName: "" Required when Section9cConfigCreateSNSTopic is set to No
-      Section9eConfigCreateHttpLogsSource: "Yes"
-      Section9fConfigHttpLogsSourceCategoryName: "aws/quickstart/config/logs"
+      Section9bConfigCreateBucket: "Yes"
+      # Section9cConfigLogsBucketName: "" Required when Section9bConfigCreateBucket is set to No
+      Section9dConfigCreateS3LogsSource: "Yes"
+      Section9eConfigS3BucketLogsPathExpression: "AWSLogs/*/Config/*/*"      
+      Section9fConfigS3LogsSourceCategoryName: "aws/quickstart/config/logs"
 
       # enable auto logging configuration
       Section91aEnableAutoLogging: "Skip"
