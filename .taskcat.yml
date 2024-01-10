@@ -4,13 +4,13 @@ project:
   name: cfn-ps-sumo-logic-log-centralization
   shorten_stack_name: true
   regions:
-    - us-west-1
+    - us-east-1
 
 tests:
   default:
     template: ./templates/main.template.yaml
     regions:
-      - us-west-1
+      - us-east-1
     parameters:
       QSS3KeyPrefix: "cfn-ps-sumo-logic-log-centralization/"
       QSS3BucketName: "$[taskcat_autobucket]"
