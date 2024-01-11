@@ -11,6 +11,7 @@ from resourcefactory import AutoRegisterResource
 from retrying import retry
 from botocore.config import Config
 from mypy_boto3_config import ConfigServiceClient
+from mypy_boto3_securityhub import SecurityHubClient
 
 @six.add_metaclass(AutoRegisterResource)
 class AWSResource(object):
@@ -30,6 +31,57 @@ class AWSResource(object):
     @abstractmethod
     def extract_params(self, event):
         pass
+
+class AWSSecurityHub(AWSResource):
+    def __init__(self, props,  *args, **kwargs):
+        self.CLOUDFORMATION_PARAMETERS = ["ENABLE_DEFAULT_STANDARDS", "CONTROL_FINDING_GENERATOR", "REMOVE_RESOURCES_ON_DELETES_TACK", "AWS_REGION"]
+        self.UNEXPECTED = "Unexpected!"   
+        self.BOTO3_CONFIG = Config(retries={"max_attempts": 10, "mode": "standard"})
+        try:
+            session = boto3.Session()
+            self.session_security_hub: SecurityHubClient = session.client("securityhub", config=self.BOTO3_CONFIG)
+        except Exception:
+            print(self.UNEXPECTED)
+            raise ValueError("Unexpected error executing Lambda function. Review CloudWatch logs for details.") from None
+    def security_hub_config(self, active:str, EnableDefaultStandards: bool, ControlFindingGenerator: str):
+        if active!="Delete":
+            try:
+                self.session_security_hub.enable_security_hub(
+                    EnableDefaultStandards=EnableDefaultStandards,
+                    ControlFindingGenerator=ControlFindingGenerator
+                )
+            except self.session_security_hub.exceptions.ResourceConflictException as error:
+                print(f"Account is already subscribed to Security Hub") 
+            except ClientError as error:
+                print(f"Enable Security Hub error: {error}")
+                raise
+        else:
+            try:
+                self.session_security_hub.disable_security_hub()
+            except ClientError as error:
+                print(f"Enable Security Hub error: {error}")
+                raise            
+    def create(self, params, *args, **kwargs):
+        EnableDefaultStandards = (params.get("ENABLE_DEFAULT_STANDARDS", "false")).lower() in "true" 
+        ControlFindingGenerator = params.get("CONTROL_FINDING_GENERATOR")
+        self.security_hub_config(active="Create",EnableDefaultStandards=EnableDefaultStandards, ControlFindingGenerator=ControlFindingGenerator)
+        return {'AWSSecurityHubId': "AWSSecurityHubId"}, "AWSSecurityHubId"
+    def update(self, params, *args, **kwargs):
+        EnableDefaultStandards = (params.get("ENABLE_DEFAULT_STANDARDS", "false")).lower() in "true" 
+        ControlFindingGenerator = params.get("CONTROL_FINDING_GENERATOR")
+        self.security_hub_config(active="Update",EnableDefaultStandards=EnableDefaultStandards, ControlFindingGenerator=ControlFindingGenerator)
+        return {'AWSSecurityHubId': "AWSSecurityHubId"}, "AWSSecurityHubId"
+    def delete(self, params, *args, **kwargs):
+        if (params.get("REMOVE_RESOURCES_ON_DELETES_TACK", "false")).lower() in "true":
+            EnableDefaultStandards = (params.get("ENABLE_DEFAULT_STANDARDS", "false")).lower() in "true" 
+            ControlFindingGenerator = params.get("CONTROL_FINDING_GENERATOR")
+            self.security_hub_config(active="Delete",EnableDefaultStandards=EnableDefaultStandards, ControlFindingGenerator=ControlFindingGenerator)
+    def extract_params(self, event):
+        props = event.get("ResourceProperties")
+        return {
+            "params": props
+        } 
+
 
 class AWSConfig(AWSResource):
     def __init__(self, props,  *args, **kwargs):
