@@ -257,7 +257,13 @@ Resources:
                 Resource:
                   - !Sub arn:${AWS::Partition}:logs:*:${AWS::AccountId}:log-group:*
                   - !Sub arn:${AWS::Partition}:logs:*:${AWS::AccountId}:log-group:*:log-stream:*
-
+              - Effect: Allow
+                Action:
+                  - securityhub:EnableSecurityHub
+                  - securityhub:DisableSecurityHub
+                Resource:
+                  - !Sub arn:${AWS::Partition}:securityhub:*:${AWS::AccountId}:hub/default                  
+                  - !Sub arn:${AWS::Partition}:securityhub:*:${AWS::AccountId}:/accounts
   SumoLogicHelperFunction:
     Type: "AWS::Serverless::Function"
     Condition: do_not_use_parent_stack
@@ -540,8 +546,19 @@ Resources:
                 - !Split ["/", !Ref "AWS::StackId"]
 
   SecurityHubConfiguration:
-    Type: AWS::SecurityHub::Hub
+    Type: Custom::AWSSecurityHub
     Condition: enable_security_hub
+    Properties:
+      ServiceToken: !If
+        - do_not_use_parent_stack
+        - !GetAtt
+          - SumoLogicHelperFunction
+          - Arn
+        - !ImportValue
+          "Fn::Sub": "${ParentStackName}-SumoLogicHelperFunctionARN"
+      ENABLE_DEFAULT_STANDARDS: "False"
+      CONTROL_FINDING_GENERATOR: "STANDARD_CONTROL"
+      REMOVE_RESOURCES_ON_DELETES_TACK: "False"
 
   Connections:
     Type: Custom::Connections
