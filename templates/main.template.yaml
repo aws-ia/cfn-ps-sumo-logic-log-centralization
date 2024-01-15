@@ -138,7 +138,7 @@ Metadata:
           - Section10aEnableAutoLogging
           - Section10bEnableLoggingForExistingResources
       - Label:
-          default: "10.2 S3 Audit logging of auto-enable configuration"
+          default: "10.2 S3 Audit logs auto-enable configuration"
         Parameters:
           - Section10cS3LoggingBucketPrefix
           - Section10dS3LoggingFilterExpression
@@ -455,7 +455,7 @@ Parameters:
   Section2iCloudTrailBucketPathExpression:
     Type: String
     Description: "Path expression must match the folder structure for CloudTrail logs (e.g., AWSLogs/*/CloudTrail/*)."
-    Default: "AWSLogs/*"
+    Default: "AWSLogs/*/CloudTrail/*"
   Section2jCloudTrailLogsSourceCategoryName:
     Type: String
     Description: "Required when flag is set to No. Provide an existing source category name from Sumo Logic collecting CloudTrail logs. This is used for Threat Intel for AWS app installation also."
@@ -626,7 +626,7 @@ Parameters:
       - "No"
   Section8bWafCreateBucket:
     Type: String
-    Description: "Choose Yes to create an S3 bucket for backup Kinesis Firehose."
+    Description: "Choose Yes to create an S3 bucket where Kinesis Data Firehose backs up your data"
     Default: "No"
     AllowedValues:
       - "Yes"
@@ -772,7 +772,7 @@ Parameters:
     Type: String
     Description:
       'Skip if using an existing firewall policy. Enter a stateful rule.
-      Example: pass tcp 10.20.20.0/24 45400:45500 <> 10.10.10.0/24 5203 (msg:"test";sid:1;rev:1;)'
+      Example: reject tls any any -> any any (msg:"TLS 1.0 or 1.1"; ssl_version:tls1.0,tls1.1; sid:2023070518;)'
     Default: ""
 
   Section11StatelessRule:
@@ -1380,6 +1380,7 @@ Resources:
             "aws/quickstart/waf/logs",
             !Ref Section8eWafDeliveryStreamSourceCategoryName,
           ]
+        DeliveryStreamSourceName: !Sub "aws-quickstart-waf-${AWS::Region}"
         DeliveryStreamName: !Sub "aws-qs-awf-${AWS::StackName}"
         QSS3BucketName: !If [call_security_hub_stack, !GetAtt SumoSecurityHubAppsStack.Outputs.QSS3BucketName,
                           !If [call_s3_audit_stack, !GetAtt SumoS3AuditAppsStack.Outputs.QSS3BucketName,
@@ -1425,7 +1426,7 @@ Resources:
         CreateS3LogsSource: !If [create_config_source, "Yes", "No"]
         S3BucketLogsPathExpression: !If [
             create_config_bucket,
-            !Sub "AWSLogs/*/Config/*/${AWS::Region}/*",
+            !Sub "AWSLogs/*/Config/${AWS::Region}/*",
             !Ref Section9eConfigS3BucketLogsPathExpression,
           ]
         S3LogsSourceName: !Sub "aws-quickstart-config-${AWS::Region}"
