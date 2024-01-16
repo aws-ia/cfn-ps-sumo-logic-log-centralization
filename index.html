@@ -879,6 +879,7 @@ p.footer-text a{color:#d7d8d8}
 </li>
 <li><a href="#_postdeployment_steps">Postdeployment steps</a>
 <ul class="sectlevel2">
+<li><a href="#_if_using_a_new_s3_bucket">If using a New S3 bucket</a></li>
 <li><a href="#_if_using_an_existing_s3_bucket">If using an existing S3 bucket</a></li>
 <li><a href="#_if_using_aws_waf_logs_for_an_amazon_kinesis_data_firehose_delivery_stream">If using AWS WAF logs for an Amazon Kinesis Data Firehose delivery stream</a></li>
 <li><a href="#_view_the_sumo_logic_dashboards">View the Sumo Logic dashboards</a></li>
@@ -1447,6 +1448,16 @@ Unless you&#8217;re customizing the Partner Solution templates or are instructed
 <div class="sect1">
 <h2 id="_postdeployment_steps">Postdeployment steps</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>If you have not enabled guardduty you need to explicitly enable it</p>
+</div>
+<div class="sect2">
+<h3 id="_if_using_a_new_s3_bucket">If using a New S3 bucket</h3>
+<div class="paragraph">
+<p>You have to configure flow logs in your VPC to export to S3 bucket.
+You must also enable logging and configure alert and flow logs in your Network Firewall to export to S3 bucket.</p>
+</div>
+</div>
 <div class="sect2">
 <h3 id="_if_using_an_existing_s3_bucket">If using an existing S3 bucket</h3>
 <div class="paragraph">
