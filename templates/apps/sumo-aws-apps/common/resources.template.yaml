@@ -160,7 +160,10 @@ Parameters:
 
 
 Conditions:
-  UsingDefaultBucket: !Or [ !Equals [!Ref QSS3BucketName, 'aws-ia'], !Equals [!Ref QSS3BucketName, 'sumologic-aws-security-solutions'] ]
+  UsingDefaultBucket: !Or 
+    - !Equals [!Ref QSS3BucketName, 'aws-ia']
+    - !Equals [!Ref QSS3BucketName, 'sumologic-aws-security-solutions']
+    - !Equals [!Ref QSS3BucketName, 'tcat-cfn-ps-sumo-logic-cloudsiem']
 
   install_collector: !Equals [!Ref CreateCollector, "Yes"]
   create_target_s3_bucket: !Equals [!Ref CreateBucket, "Yes"]

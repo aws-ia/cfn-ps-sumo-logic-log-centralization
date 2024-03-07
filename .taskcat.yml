@@ -13,8 +13,8 @@ tests:
       - us-east-1
     parameters:
       QSS3KeyPrefix: "cfn-ps-sumo-logic-log-centralization/"
-      QSS3BucketName: "$[taskcat_autobucket]"
-      QSS3BucketRegion: "$[taskcat_current_region]"
+      QSS3BucketName: "tcat-cfn-ps-sumo-logic-log-centralization"
+      QSS3BucketRegion: "us-east-1"
       QSVersion: "2"
 
       ## Sumo Logic configuration

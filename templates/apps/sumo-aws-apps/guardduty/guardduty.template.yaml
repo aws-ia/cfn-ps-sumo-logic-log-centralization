@@ -170,7 +170,10 @@ Parameters:
 
 Conditions:
   do_not_use_parent_stack: !Equals [!Ref ParentStackName, "ParentStackName"]
-  UsingDefaultBucket: !Or [ !Equals [!Ref QSS3BucketName, 'aws-ia'], !Equals [!Ref QSS3BucketName, 'sumologic-aws-security-solutions'] ]
+  UsingDefaultBucket: !Or 
+    - !Equals [!Ref QSS3BucketName, 'aws-ia']
+    - !Equals [!Ref QSS3BucketName, 'sumologic-aws-security-solutions']
+    - !Equals [!Ref QSS3BucketName, 'tcat-cfn-ps-sumo-logic-cloudsiem']
 
   install_guardduty_app: !Equals [!Ref InstallGuardDutyApp, "Yes"]
   install_global_guardduty_app: !Equals [!Ref InstallGlobalGuardDutyApp, "Yes"]
