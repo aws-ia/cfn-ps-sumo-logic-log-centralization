@@ -26,16 +26,16 @@ tests:
 
       #cloudtrail configuration
 
-      Section2CloudTrailCreateBucket: "Yes"
-      # Section2CloudTrailLogsBucketName: "" Required if Section2CloudTrailCreateBucket is set to No
-      Section2CloudTrailCreateLogSource: "Yes"
-      Section2CloudTrailBucketPathExpression: "AWSLogs/*"
-      Section2CloudTrailLogsSourceCategoryName: "aws/quickstart/cloudtrail/logs"
-      Section2InstallCloudTrailApp: "Yes"
-      Section2InstallPCICloudTrailApp: "Yes"
-      Section2InstallCISFoundationApp: "Yes"
-      Section2InstallCloudTrailMonitoringAnalyticsApp: "Yes"
-      Section2InstallCloudTrailSecOpsApp: "Yes"
+      Section2fCloudTrailCreateBucket: "Yes"
+      # Section2gCloudTrailLogsBucketName: "" Required if Section2fCloudTrailCreateBucket is set to No
+      Section2hCloudTrailCreateLogSource: "Yes"
+      Section2iCloudTrailBucketPathExpression: "AWSLogs/*"
+      Section2jCloudTrailLogsSourceCategoryName: "aws/quickstart/cloudtrail/logs"
+      Section2aInstallCloudTrailApp: "Yes"
+      Section2bInstallPCICloudTrailApp: "Yes"
+      Section2cInstallCISFoundationApp: "Yes"
+      Section2dInstallCloudTrailMonitoringAnalyticsApp: "Yes"
+      Section2eInstallCloudTrailSecOpsApp: "Yes"
 
       # guarddduty configuration
 
@@ -92,14 +92,14 @@ tests:
       Section9fConfigS3LogsSourceCategoryName: "aws/quickstart/config/logs"
 
       # enable auto logging configuration
-      Section91aEnableAutoLogging: "Skip"
-      Section91bEnableLoggingForExistingResources: "No"
-      Section91cS3LoggingBucketPrefix: "S3_AUDIT_LOGS/"
-      Section91eVPCLoggingBucketPrefix: "VPC_LOGS/"
+      Section10aEnableAutoLogging: "Skip"
+      Section10bEnableLoggingForExistingResources: "No"
+      Section10cS3LoggingBucketPrefix: "S3_AUDIT_LOGS/"
+      Section10eVPCLoggingBucketPrefix: "VPC_LOGS/"
       Section11NFWLogsNFWBucketPrefix: "NFW/"
-      Section91dS3LoggingFilterExpression: ""
-      Section91fVPCLoggingFilterExpression: ""
-      Section91FireWallLoggingFilterExpression: ""
+      Section10dS3LoggingFilterExpression: ""
+      Section10fVPCLoggingFilterExpression: ""
+      Section10FireWallLoggingFilterExpression: ""
 
       # network firewall configuration
 
