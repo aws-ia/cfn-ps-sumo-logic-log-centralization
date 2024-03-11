@@ -279,7 +279,10 @@ Parameters:
 
 Conditions:
   do_not_use_parent_stack: !Equals [!Ref ParentStackName, "ParentStackName"]
-  UsingDefaultBucket: !Or [ !Equals [!Ref QSS3BucketName, 'aws-ia'], !Equals [!Ref QSS3BucketName, 'sumologic-aws-security-solutions'] ]
+  UsingDefaultBucket: !Or 
+    - !Equals [!Ref QSS3BucketName, 'aws-ia']
+    - !Equals [!Ref QSS3BucketName, 'sumologic-aws-security-solutions']
+    - !Equals [!Ref QSS3BucketName, 'tcat-cfn-ps-sumo-logic-cloudsiem']
   create_new_fw_aws: !Equals [!Ref CreateNewFW, "Yes"]
   create_fw_policy: !And
     - !Equals [!Ref CreateFirewallPolicy, "Yes"]

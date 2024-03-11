@@ -1003,7 +1003,10 @@ Conditions:
     - !Condition install_nfw_app
     - !Condition create_nfw_source
 
-  UsingDefaultBucket: !Or [ !Equals [!Ref QSS3BucketName, 'aws-ia'], !Equals [!Ref QSS3BucketName, 'sumologic-aws-security-solutions'] ]
+  UsingDefaultBucket: !Or 
+    - !Equals [!Ref QSS3BucketName, 'aws-ia']
+    - !Equals [!Ref QSS3BucketName, 'sumologic-aws-security-solutions']
+    - !Equals [!Ref QSS3BucketName, 'tcat-cfn-ps-sumo-logic-cloudsiem']
 
 Resources:
 

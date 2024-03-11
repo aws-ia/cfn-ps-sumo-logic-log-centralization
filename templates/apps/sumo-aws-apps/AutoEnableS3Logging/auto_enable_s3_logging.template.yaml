@@ -73,7 +73,10 @@ Conditions:
     - !Equals [!Ref ExistingResource, "Yes"]
     - !Equals [!Ref EnableLogging, "Firewall"]
 
-  UsingDefaultBucket: !Or [ !Equals [!Ref QSS3BucketName, 'aws-ia'], !Equals [!Ref QSS3BucketName, 'sumologic-aws-security-solutions'] ]
+  UsingDefaultBucket: !Or 
+    - !Equals [!Ref QSS3BucketName, 'aws-ia']
+    - !Equals [!Ref QSS3BucketName, 'sumologic-aws-security-solutions']
+    - !Equals [!Ref QSS3BucketName, 'tcat-cfn-ps-sumo-logic-cloudsiem']
 
 Resources:
   SumoLambdaRole:
