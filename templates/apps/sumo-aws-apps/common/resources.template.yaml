@@ -248,6 +248,15 @@ Resources:
                   StringEqualsIfExists:
                     iam:PassedToService:
                       - config.amazonaws.com
+              - Sid: AllowCreateServiceLinkedRole
+                Effect: Allow
+                Action: iam:CreateServiceLinkedRole
+                Condition:
+                  StringLike:
+                    iam:AWSServiceName:
+                      - securityhub.amazonaws.com
+                Resource: !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/aws-service-role/securityhub.amazonaws.com/AWSServiceRoleForSecurityHub
+                                      
   SumoLogicLambdaHelper:
     Type: "AWS::Serverless::Function"
     Metadata:
