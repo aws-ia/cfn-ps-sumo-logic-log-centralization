@@ -256,7 +256,7 @@ Resources:
                     iam:AWSServiceName:
                       - securityhub.amazonaws.com
                 Resource: !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/aws-service-role/securityhub.amazonaws.com/AWSServiceRoleForSecurityHub
-                                      
+
   SumoLogicLambdaHelper:
     Type: "AWS::Serverless::Function"
     Metadata:
@@ -322,7 +322,10 @@ Resources:
                   - s3:GetObjectVersion
                   - s3:ListBucketVersions
                   - s3:ListBucket
-                Resource: !Sub "arn:${AWS::Partition}:s3:::*"
+                Resource: 
+                  - !Sub "arn:${AWS::Partition}:s3:::${BucketName}"
+                  - !Sub "arn:${AWS::Partition}:s3:::${BucketName}/*"
+                  
   SumoHostedCollector:
     Type: Custom::Collector
     Condition: install_collector

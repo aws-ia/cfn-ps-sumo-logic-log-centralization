@@ -336,7 +336,8 @@ Resources:
                   - s3:ListBucketVersions
                   - s3:ListBucket
                 Resource:
-                  - !Sub arn:${AWS::Partition}:s3:::*
+                  - !Sub "arn:${AWS::Partition}:s3:::${BucketName}"
+                  - !Sub "arn:${AWS::Partition}:s3:::${BucketName}/*"
 
   ConfigRole:
     Type: AWS::IAM::Role
