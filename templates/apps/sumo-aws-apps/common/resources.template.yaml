@@ -27,7 +27,20 @@ Metadata:
           - CreateBucket
           - BucketName
           - CreateTrail
-
+          - CloudTrailCreateBucket
+          - CloudTrailLogsBucketName
+          - VpcCreateBucket
+          - VpcLogsBucketName
+          - S3AuditCreateBucket
+          - S3AuditLogsBucketName
+          - SecurityHubCreateBucket
+          - SecurityHubLogsBucketName
+          - WafCreateBucket
+          - WafLogsBucketName
+          - ConfigCreateBucket
+          - ConfigLogsBucketName
+          - NFWCreateS3Bucket
+          - NFWLogsS3BucketName
       - Label:
           default: "AWS Quick Start configuration"
         Parameters:
@@ -60,6 +73,34 @@ Metadata:
       CreateTrail:
         default: "Create Trail for the provided Bucket"
 
+      CloudTrailCreateBucket:
+        default: "Create AWS S3 Bucket for CloudTrail"
+      CloudTrailLogsBucketName:
+        default: "CloudTrail logs S3 bucket name"
+      VpcCreateBucket:
+        default: "Create AWS S3 Bucket for VPC"
+      VpcLogsBucketName:
+        default: "VPC logs S3 bucket name"
+      S3AuditCreateBucket:
+        default: "Create AWS S3 Bucket for S3 Audit"
+      S3AuditLogsBucketName:
+        default: "S3 Audit logs S3 bucket name"
+      SecurityHubCreateBucket:
+        default: "Create AWS S3 Bucket for Security Hub"
+      SecurityHubLogsBucketName:
+        default: "Security Hub logs S3 bucket name"
+      WafCreateBucket:
+        default: "Create AWS S3 Bucket for WAF"
+      WafLogsBucketName:
+        default: "WAF logs S3 bucket name"
+      ConfigCreateBucket:
+        default: "Create AWS S3 Bucket for Config"
+      ConfigLogsBucketName:
+        default: "Config logs S3 bucket name"
+      NFWCreateS3Bucket:
+        default: "Create AWS S3 Bucket for Network Firewall"
+      NFWLogsS3BucketName:
+        default: "Network Firewall logs S3 bucket name"
       QSS3BucketName:
         default: "Quick Start S3 bucket name"
 
@@ -144,6 +185,77 @@ Parameters:
       - "Yes"
       - "No"
 
+  CloudTrailCreateBucket:
+    Type: String
+    Description: "Yes - Create a new bucket in AWS S3 for CloudTrail."
+    Default: "No"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  CloudTrailLogsBucketName:
+    Type: String
+    Description: "Bucket Name for CloudTrail - Provide a unique Bucket Name if the flag is set to Yes."
+  VpcCreateBucket:
+    Type: String
+    Description: "Yes - Create a new bucket in AWS S3 for VPC."
+    Default: "No"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  VpcLogsBucketName:
+    Type: String
+    Description: "Bucket Name for VPC - Provide a unique Bucket Name if the flag is set to Yes."
+  S3AuditCreateBucket:
+    Type: String
+    Description: "Yes - Create a new bucket in AWS S3 for S3 Audit."
+    Default: "No"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  S3AuditLogsBucketName:
+    Type: String
+    Description: "Bucket Name for S3 Audit - Provide a unique Bucket Name if the flag is set to Yes."
+  SecurityHubCreateBucket:
+    Type: String
+    Description: "Yes - Create a new bucket in AWS S3 for Security Hub."
+    Default: "No"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  SecurityHubLogsBucketName:
+    Type: String
+    Description: "Bucket Name for Security Hub - Provide a unique Bucket Name if the flag is set to Yes."
+  WafCreateBucket:
+    Type: String
+    Description: "Yes - Create a new bucket in AWS S3 for WAF."
+    Default: "No"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  WafLogsBucketName:
+    Type: String
+    Description: "Bucket Name for WAF- Provide a unique Bucket Name if the flag is set to Yes."
+  ConfigCreateBucket:
+    Type: String
+    Description: "Yes - Create a new bucket in AWS S3 for Config."
+    Default: "No"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  ConfigLogsBucketName:
+    Type: String
+    Description: "Bucket Name for Config- Provide a unique Bucket Name if the flag is set to Yes."
+  NFWCreateS3Bucket:
+    Type: String
+    Description: "Yes - Create a new bucket in AWS S3 for Network Firewall."
+    Default: "No"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  NFWLogsS3BucketName:
+    Type: String
+    Description: "Bucket Name for Network Firewall- Provide a unique Bucket Name if the flag is set to Yes."
+    
   QSS3BucketName:
     AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
     ConstraintDescription: "Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-)."
@@ -164,6 +276,23 @@ Conditions:
     - !Equals [!Ref QSS3BucketName, 'aws-ia']
     - !Equals [!Ref QSS3BucketName, 'sumologic-aws-security-solutions']
     - !Equals [!Ref QSS3BucketName, 'tcat-cfn-ps-sumo-logic-cloudsiem']
+
+  create_cloudtrail_bucket: !Equals [!Ref CloudTrailCreateBucket, "Yes"]
+  create_vpc_bucket: !Equals [!Ref VpcCreateBucket, "Yes"]
+  create_s3_audit_bucket: !Equals [!Ref S3AuditCreateBucket, "Yes"]
+  create_security_hub_bucket: !Equals [!Ref SecurityHubCreateBucket, "Yes"]
+  create_waf_bucket: !Equals [!Ref WafCreateBucket, "Yes"]
+  create_config_bucket: !Equals [!Ref ConfigCreateBucket, "Yes"]
+  create_nfw_bucket: !Equals [!Ref NFWCreateS3Bucket, "Yes"]
+
+  IsCloudtrailBucketEmpty:  !Equals [!Ref "CloudTrailLogsBucketName", ""]
+  IsVpcLogsBucketEmpty:  !Equals [!Ref "VpcLogsBucketName", ""]
+  IsS3AuditLogsBuckeEmpty:  !Equals [!Ref "S3AuditLogsBucketName", ""]
+  IsSecurityHubLogsBucketEmpty:  !Equals [!Ref "SecurityHubLogsBucketName", ""]
+  IsWafLogsBucketEmpty:  !Equals [!Ref "WafLogsBucketName", ""]
+  IsConfigLogsBucketEmpty:  !Equals [!Ref "ConfigLogsBucketName", ""]
+  IsNFWLogsS3BucketEmpty:  !Equals [!Ref "NFWLogsS3BucketName", ""]
+
 
   install_collector: !Equals [!Ref CreateCollector, "Yes"]
   create_target_s3_bucket: !Equals [!Ref CreateBucket, "Yes"]
@@ -316,7 +445,8 @@ Resources:
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
-              - Effect: Allow
+              - Sid: S3AllowGlobal
+                Effect: Allow
                 Action:
                   - s3:GetObject
                   - s3:GetObjectVersion
@@ -325,7 +455,126 @@ Resources:
                 Resource: 
                   - !Sub "arn:${AWS::Partition}:s3:::${BucketName}"
                   - !Sub "arn:${AWS::Partition}:s3:::${BucketName}/*"
-                  
+
+              - !If 
+                - create_cloudtrail_bucket
+                - !Ref AWS::NoValue
+                - !If
+                  - IsCloudtrailBucketEmpty
+                  - !Ref AWS::NoValue
+                  - Sid: S3AllowCloudTrailLogsBucket
+                    Effect: Allow
+                    Action:
+                      - s3:GetObject
+                      - s3:GetObjectVersion
+                      - s3:ListBucketVersions
+                      - s3:ListBucket
+                    Resource:                     
+                      - !Sub "arn:${AWS::Partition}:s3:::${CloudTrailLogsBucketName}"
+                      - !Sub "arn:${AWS::Partition}:s3:::${CloudTrailLogsBucketName}/*"
+
+              - !If 
+                - create_vpc_bucket
+                - !Ref AWS::NoValue
+                - !If
+                  - IsVpcLogsBucketEmpty
+                  - !Ref AWS::NoValue
+                  - Sid: S3AllowVpcLogsBucket
+                    Effect: Allow
+                    Action:
+                      - s3:GetObject
+                      - s3:GetObjectVersion
+                      - s3:ListBucketVersions
+                      - s3:ListBucket
+                    Resource:
+                      - !Sub "arn:${AWS::Partition}:s3:::${VpcLogsBucketName}"
+                      - !Sub "arn:${AWS::Partition}:s3:::${VpcLogsBucketName}/*"
+
+              - !If 
+                - create_s3_audit_bucket
+                - !Ref AWS::NoValue
+                - !If
+                  - IsS3AuditLogsBuckeEmpty
+                  - !Ref AWS::NoValue
+                  - Sid: S3AllowS3AuditLogsBucket
+                    Effect: Allow
+                    Action:
+                      - s3:GetObject
+                      - s3:GetObjectVersion
+                      - s3:ListBucketVersions
+                      - s3:ListBucket
+                    Resource:
+                      - !Sub "arn:${AWS::Partition}:s3:::${S3AuditLogsBucketName}"
+                      - !Sub "arn:${AWS::Partition}:s3:::${S3AuditLogsBucketName}/*"
+
+              - !If 
+                - create_security_hub_bucket
+                - !Ref AWS::NoValue
+                - !If
+                  - IsSecurityHubLogsBucketEmpty
+                  - !Ref AWS::NoValue
+                  - Sid: S3AllowSecurityHubLogsBucket
+                    Effect: Allow
+                    Action:
+                      - s3:GetObject
+                      - s3:GetObjectVersion
+                      - s3:ListBucketVersions
+                      - s3:ListBucket
+                    Resource:
+                      - !Sub "arn:${AWS::Partition}:s3:::${SecurityHubLogsBucketName}"
+                      - !Sub "arn:${AWS::Partition}:s3:::${SecurityHubLogsBucketName}/*"
+
+              - !If 
+                - create_waf_bucket
+                - !Ref AWS::NoValue
+                - !If
+                  - IsWafLogsBucketEmpty
+                  - !Ref AWS::NoValue
+                  - Sid: S3AllowWafLogsBucket
+                    Effect: Allow
+                    Action:
+                      - s3:GetObject
+                      - s3:GetObjectVersion
+                      - s3:ListBucketVersions
+                      - s3:ListBucket
+                    Resource:
+                      - !Sub "arn:${AWS::Partition}:s3:::${WafLogsBucketName}"
+                      - !Sub "arn:${AWS::Partition}:s3:::${WafLogsBucketName}/*"
+
+              - !If 
+                - create_config_bucket
+                - !Ref AWS::NoValue
+                - !If
+                  - IsConfigLogsBucketEmpty
+                  - !Ref AWS::NoValue
+                  - Sid: S3AllowConfigLogsBucket
+                    Effect: Allow
+                    Action:
+                      - s3:GetObject
+                      - s3:GetObjectVersion
+                      - s3:ListBucketVersions
+                      - s3:ListBucket
+                    Resource:
+                      - !Sub "arn:${AWS::Partition}:s3:::${ConfigLogsBucketName}"
+                      - !Sub "arn:${AWS::Partition}:s3:::${ConfigLogsBucketName}/*"
+
+              - !If 
+                - create_nfw_bucket
+                - !Ref AWS::NoValue
+                - !If
+                  - IsNFWLogsS3BucketEmpty
+                  - !Ref AWS::NoValue
+                  - Sid: S3AllowNFWLogsS3Bucket
+                    Effect: Allow
+                    Action:
+                      - s3:GetObject
+                      - s3:GetObjectVersion
+                      - s3:ListBucketVersions
+                      - s3:ListBucket
+                    Resource:
+                      - !Sub "arn:${AWS::Partition}:s3:::${NFWLogsS3BucketName}"
+                      - !Sub "arn:${AWS::Partition}:s3:::${NFWLogsS3BucketName}/*"
+
   SumoHostedCollector:
     Type: Custom::Collector
     Condition: install_collector

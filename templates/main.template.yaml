@@ -1045,6 +1045,20 @@ Resources:
                 - !Select
                   - 2
                   - !Split ["/", !Ref "AWS::StackId"]
+        CloudTrailCreateBucket: !Ref Section2fCloudTrailCreateBucket
+        VpcCreateBucket: !Ref Section4bVpcCreateBucket
+        S3AuditCreateBucket: !Ref Section6bS3AuditCreateBucket
+        SecurityHubCreateBucket: !Ref Section7cSecurityHubCreateBucket
+        WafCreateBucket: !Ref Section8bWafCreateBucket
+        ConfigCreateBucket: !Ref Section9bConfigCreateBucket
+        NFWCreateS3Bucket: !Ref Section11NFWCreateS3Bucket
+        CloudTrailLogsBucketName: !Ref Section2gCloudTrailLogsBucketName
+        VpcLogsBucketName: !Ref Section4cVpcLogsBucketName
+        S3AuditLogsBucketName: !Ref Section6cS3AuditLogsBucketName
+        SecurityHubLogsBucketName: !Ref Section7dSecurityHubLogsBucketName
+        WafLogsBucketName: !Ref Section8cWafLogsBucketName
+        ConfigLogsBucketName: !Ref Section9cConfigLogsBucketName
+        NFWLogsS3BucketName: !Ref Section11NFWLogsS3BucketName
         CreateTrail: !If [create_cloudtrail, "Yes", "No"]
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
