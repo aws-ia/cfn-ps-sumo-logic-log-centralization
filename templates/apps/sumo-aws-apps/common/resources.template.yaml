@@ -336,7 +336,6 @@ Resources:
                   - s3:PutBucketLogging
                   - s3:PutBucketAcl
                   - s3:GetBucketAcl
-                  - ec2:DescribeVpcs
                   - ec2:DeleteFlowLogs
                   - ec2:CreateFlowLogs
                   - logs:CreateLogDelivery
@@ -362,6 +361,7 @@ Resources:
                   - config:StartConfigurationRecorder
                   - config:PutDeliveryChannel
                   - config:DeleteConfigurationRecorder 
+                  - ec2:DescribeVpcs                  
                 Resource: '*'
               - Effect: Allow
                 Action:

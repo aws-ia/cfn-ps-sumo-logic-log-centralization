@@ -1466,6 +1466,7 @@ Resources:
   SumoFireWallMacroStack:
     Type: AWS::CloudFormation::Stack
     Condition: call_nfw_stack
+    DependsOn: CreateCommonResources
     Properties:
       Tags:
         - Key: "version"
