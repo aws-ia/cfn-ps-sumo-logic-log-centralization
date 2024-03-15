@@ -1636,7 +1636,6 @@ Resources:
                                         !If [call_guardduty_stack, !GetAtt SumoGuardDutyAppsStack.Outputs.QSS3BucketName,
                                           !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]]]]]]]]]]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-        QSVersion: !Ref QSVersion
 
   SumoAutoEnableFirewallAuditLogs:
     Type: AWS::CloudFormation::Stack
