@@ -249,7 +249,12 @@ Conditions:
     - !Equals [!Ref CreateS3Bucket, "Yes"]
     - !Condition create_sns_topic
   install_s3_source: !Equals [!Ref CreateS3Source, "Yes"]
-
+  create_validation_logs_s3_bucket: !And
+    - !Condition do_not_use_parent_stack
+    - !Equals [!Ref CreateS3Bucket, "No"]
+  vpc_validation_path_expression: !And 
+    - !Condition do_not_use_parent_stack
+    - !Equals [!Ref CreateS3Source, "Yes"]    
   create_sns_topic: !And
     - !Condition do_not_use_parent_stack
     - !Condition install_s3_source
@@ -364,6 +369,24 @@ Resources:
         Fn::GetAtt:
           - SumoLogicHelperRole
           - Arn
+
+  ValidationLogsS3BucketBucket:
+    Condition: create_validation_logs_s3_bucket
+    Type: Custom::AWSValidation
+    Properties:
+      ServiceToken: !GetAtt SumoLogicHelperFunction.Arn
+      PARAMETER_NAME: "LogsS3BucketName"
+      PARAMETER_VALUE: !Ref LogsS3BucketName
+      PARAMETER_ALLOWED_PATTERN: '(?!(^xn--|.+-s3alias$))^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$'
+
+  ValidationVpcPathExpression:
+    Condition: vpc_validation_path_expression
+    Type: Custom::AWSValidation
+    Properties:
+      ServiceToken: !GetAtt SumoLogicHelperFunction.Arn
+      PARAMETER_NAME: "VPC bucket path expression (S3BucketLogsPathExpression)"
+      PARAMETER_VALUE: !Ref S3BucketLogsPathExpression
+      PARAMETER_ALLOWED_PATTERN: '.+'
 
   SumoRole:
     Type: AWS::IAM::Role

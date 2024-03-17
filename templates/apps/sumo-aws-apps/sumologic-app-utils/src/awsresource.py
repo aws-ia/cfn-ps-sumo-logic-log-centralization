@@ -12,6 +12,7 @@ from retrying import retry
 from botocore.config import Config
 from mypy_boto3_config import ConfigServiceClient
 from mypy_boto3_securityhub import SecurityHubClient
+import uuid
 
 @six.add_metaclass(AutoRegisterResource)
 class AWSResource(object):
@@ -31,7 +32,42 @@ class AWSResource(object):
     @abstractmethod
     def extract_params(self, event):
         pass
-
+class AWSValidation(AWSResource):
+    def __init__(self, props,  *args, **kwargs):
+        self.CLOUDFORMATION_PARAMETERS = ["PARAMETER_NAME", "PARAMETER_VALUE", "PARAMETER_ALLOWED_PATTERN"]
+    def create(self, params, *args, **kwargs):
+        try:
+            pat = re.compile(params["PARAMETER_ALLOWED_PATTERN"])
+            if re.fullmatch(pat, params["PARAMETER_VALUE"]):
+                RandomID = str(uuid.uuid4())[0:8]        
+                return {'VALIDATION': RandomID}, RandomID
+            else:
+                print(f'{params["PARAMETER_NAME"]} Non valid regex pattern')
+                raise ValueError(f'{params["PARAMETER_NAME"]} should satisfy <> pattern {params["PARAMETER_ALLOWED_PATTERN"]}')
+        except re.error:
+            print(f'{params["PARAMETER_NAME"]} Non valid regex pattern')
+            raise ValueError(f'{params["PARAMETER_NAME"]} should satisfy <> pattern {params["PARAMETER_ALLOWED_PATTERN"]}')
+        
+    def update(self, params, *args, **kwargs):
+        try:
+            pat = re.compile(params["PARAMETER_ALLOWED_PATTERN"])
+            if re.fullmatch(pat, params["PARAMETER_VALUE"]):
+                RandomID = str(uuid.uuid4())[0:8]        
+                return {'VALIDATION': RandomID}, RandomID
+            else:
+                print(f'{params["PARAMETER_NAME"]} Non valid regex pattern')
+                raise ValueError(f'{params["PARAMETER_NAME"]} should satisfy <> pattern {params["PARAMETER_ALLOWED_PATTERN"]}')
+        except re.error:
+            print(f'{params["PARAMETER_NAME"]} Non valid regex pattern')
+            raise ValueError(f'{params["PARAMETER_NAME"]} should satisfy <> pattern {params["PARAMETER_ALLOWED_PATTERN"]}')
+        
+    def delete(self, params, *args, **kwargs):        
+        pass
+    def extract_params(self, event):
+        props = event.get("ResourceProperties")
+        return {
+            "params": props
+        }     
 class AWSSecurityHub(AWSResource):
     def __init__(self, props,  *args, **kwargs):
         self.CLOUDFORMATION_PARAMETERS = ["ENABLE_DEFAULT_STANDARDS", "CONTROL_FINDING_GENERATOR", "REMOVE_RESOURCES_ON_DELETES_TACK", "AWS_REGION"]

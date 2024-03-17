@@ -265,6 +265,12 @@ Conditions:
     - !Condition create_sns_topic
   install_cloudtrail_logs_source:
     !Equals [!Ref CreateCloudTrailLogSource, "Yes"]
+  create_validation_logs_s3_bucket: !And
+    - !Condition do_not_use_parent_stack
+    - !Equals [!Ref CreateCloudTrailBucket, "No"]
+  cloudtrail_validation_path_expression: !And
+    - !Condition do_not_use_parent_stack
+    - !Equals [!Ref CreateCloudTrailLogSource, "Yes"]
 
   create_sns_topic: !And
     - !Condition do_not_use_parent_stack
@@ -342,6 +348,24 @@ Resources:
         Fn::GetAtt:
           - SumoLogicHelperRole
           - Arn
+
+  ValidationCloudTrailBucket:
+    Condition: create_validation_logs_s3_bucket
+    Type: Custom::AWSValidation
+    Properties:
+      ServiceToken: !GetAtt SumoLogicHelperFunction.Arn
+      PARAMETER_NAME: "CloudTrailLogsBucketName"
+      PARAMETER_VALUE: !Ref CloudTrailLogsBucketName
+      PARAMETER_ALLOWED_PATTERN: '(?!(^xn--|.+-s3alias$))^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$'
+      
+  ValidationCloudTrailPathExpression:
+    Condition: cloudtrail_validation_path_expression
+    Type: Custom::AWSValidation
+    Properties:
+      ServiceToken: !GetAtt SumoLogicHelperFunction.Arn
+      PARAMETER_NAME: "cloudtrail bucket path expression (CloudTrailBucketPathExpression)"
+      PARAMETER_VALUE: !Ref CloudTrailBucketPathExpression
+      PARAMETER_ALLOWED_PATTERN: '.+'
 
   SumoRole:
     Type: AWS::IAM::Role
@@ -459,6 +483,7 @@ Resources:
       SumoAccessID: !Ref SumoAccessID
       SumoAccessKey: !Ref SumoAccessKey
       SumoDeployment: !Ref SumoDeployment
+
   sumMonitoringAnalyticsApp:
     Type: Custom::App
     Condition: install_cloudtrail_monitoring_analytics_app

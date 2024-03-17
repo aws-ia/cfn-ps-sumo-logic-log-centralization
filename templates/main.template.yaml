@@ -1003,6 +1003,52 @@ Conditions:
     - !Condition install_nfw_app
     - !Condition create_nfw_source
 
+  cloudtrail_validation_bucket: !And
+    - !Condition call_cloudtrail_stack
+    - !Equals [!Ref Section2fCloudTrailCreateBucket, "No"]
+  cloudtrail_validation_path_expression: !And
+    - !Condition call_cloudtrail_stack
+    - !Equals [!Ref Section2hCloudTrailCreateLogSource, "Yes"]
+
+  vpc_validation_bucket: !And
+    - !Condition call_vpc_stack
+    - !Equals [!Ref Section4bVpcCreateBucket, "No"]
+  vpc_validation_path_expression: !And
+    - !Condition call_vpc_stack
+    - !Equals [!Ref Section4dVpcCreateS3Source, "Yes"]  
+
+  s3audit_validation_bucket: !And
+    - !Condition call_s3_audit_stack
+    - !Equals [!Ref Section6bS3AuditCreateBucket, "No"]
+  s3audit_validation_path_expression: !And
+    - !Condition call_s3_audit_stack
+    - !Equals [!Ref Section6dS3AuditCreateS3Source, "Yes"]  
+
+  securityhub_validation_bucket: !And
+    - !Condition call_security_hub_stack
+    - !Equals [!Ref Section7cSecurityHubCreateBucket, "No"]
+  securityhub_validation_path_expression: !And
+    - !Condition call_security_hub_stack
+    - !Equals [!Ref Section7fSecurityHubBucketPathExpression, "Yes"]
+
+  waf_validation_bucket: !And
+    - !Condition call_waf_stack
+    - !Equals [!Ref Section8bWafCreateBucket, "No"]
+
+  config_validation_bucket: !And
+    - !Condition call_config_stack
+    - !Equals [!Ref Section9bConfigCreateBucket, "No"]
+  config_validation_path_expression: !And
+    - !Condition call_config_stack
+    - !Equals [!Ref Section9dConfigCreateS3LogsSource, "Yes"]
+
+  nfw_validation_bucket: !And
+    - !Condition call_nfw_stack
+    - !Equals [!Ref Section11NFWCreateS3Bucket, "No"]  
+  nfw_validation_path_expression: !And
+    - !Condition call_nfw_stack
+    - !Equals [!Ref Section11NFWCreateS3Source, "Yes"]  
+
   UsingDefaultBucket: !Or 
     - !Equals [!Ref QSS3BucketName, 'aws-ia']
     - !Equals [!Ref QSS3BucketName, 'sumologic-aws-security-solutions']
@@ -1045,13 +1091,25 @@ Resources:
                 - !Select
                   - 2
                   - !Split ["/", !Ref "AWS::StackId"]
-        CloudTrailCreateBucket: !Ref Section2fCloudTrailCreateBucket
-        VpcCreateBucket: !Ref Section4bVpcCreateBucket
-        S3AuditCreateBucket: !Ref Section6bS3AuditCreateBucket
-        SecurityHubCreateBucket: !Ref Section7cSecurityHubCreateBucket
-        WafCreateBucket: !Ref Section8bWafCreateBucket
-        ConfigCreateBucket: !Ref Section9bConfigCreateBucket
-        NFWCreateS3Bucket: !Ref Section11NFWCreateS3Bucket
+        CloudtrailValidationPathExpression: !If [cloudtrail_validation_path_expression, "Yes","No"]
+        VpcValidationPathExpression: !If [vpc_validation_path_expression, "Yes","No"]
+        S3auditValidationPathExpression: !If [s3audit_validation_path_expression, "Yes","No"]
+        SecurityHubValidationPathExpression: !If [securityhub_validation_path_expression, "Yes","No"]
+        ConfigValidationPathExpression: !If [config_validation_path_expression, "Yes","No"]
+        NFWValidationPathExpression: !If [nfw_validation_path_expression, "Yes","No"]
+        CloudTrailBucketPathExpression: !Ref Section2iCloudTrailBucketPathExpression
+        VpcBucketPathExpression: !Ref Section4eVpcBucketPathExpression
+        S3AuditBucketPathExpression: !Ref Section6eS3AuditBucketPathExpression
+        SecurityHubBucketPathExpression: !Ref Section7fSecurityHubBucketPathExpression
+        ConfigS3BucketLogsPathExpression: !Ref Section9eConfigS3BucketLogsPathExpression
+        NFWS3BucketLogsPathExpression: !Ref Section11NFWS3BucketLogsPathExpression
+        CloudtrailValidationBucket: !If [cloudtrail_validation_bucket,"Yes","No"]
+        VpcValidationBucket: !If [vpc_validation_bucket,"Yes","No"]
+        S3AuditValidationBucket: !If [s3audit_validation_bucket,"Yes","No"]
+        SecurityHubValidationBucket: !If [securityhub_validation_bucket,"Yes","No"]
+        WAFValidationBucket: !If [waf_validation_bucket,"Yes","No"]
+        ConfigValidationBucket: !If [config_validation_bucket,"Yes","No"]
+        NFWValidationBucket: !If [nfw_validation_bucket,"Yes","No"]
         CloudTrailLogsBucketName: !Ref Section2gCloudTrailLogsBucketName
         VpcLogsBucketName: !Ref Section4cVpcLogsBucketName
         S3AuditLogsBucketName: !Ref Section6cS3AuditLogsBucketName
