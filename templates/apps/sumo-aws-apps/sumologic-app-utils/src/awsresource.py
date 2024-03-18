@@ -43,10 +43,10 @@ class AWSValidation(AWSResource):
                 return {'VALIDATION': RandomID}, RandomID
             else:
                 print(f'{params["PARAMETER_NAME"]} Non valid regex pattern')
-                raise ValueError(f'{params["PARAMETER_NAME"]} should satisfy <> pattern {params["PARAMETER_ALLOWED_PATTERN"]}')
+                raise ValueError(f'{params["PARAMETER_NAME"]} should satisfy <{params["PARAMETER_ALLOWED_PATTERN"]}> pattern.')
         except re.error:
             print(f'{params["PARAMETER_NAME"]} Non valid regex pattern')
-            raise ValueError(f'{params["PARAMETER_NAME"]} should satisfy <> pattern {params["PARAMETER_ALLOWED_PATTERN"]}')
+            raise ValueError(f'{params["PARAMETER_NAME"]} should satisfy <{params["PARAMETER_ALLOWED_PATTERN"]}> pattern')
         
     def update(self, params, *args, **kwargs):
         try:
@@ -56,10 +56,10 @@ class AWSValidation(AWSResource):
                 return {'VALIDATION': RandomID}, RandomID
             else:
                 print(f'{params["PARAMETER_NAME"]} Non valid regex pattern')
-                raise ValueError(f'{params["PARAMETER_NAME"]} should satisfy <> pattern {params["PARAMETER_ALLOWED_PATTERN"]}')
+                raise ValueError(f'{params["PARAMETER_NAME"]} should satisfy <{params["PARAMETER_ALLOWED_PATTERN"]}> pattern')
         except re.error:
             print(f'{params["PARAMETER_NAME"]} Non valid regex pattern')
-            raise ValueError(f'{params["PARAMETER_NAME"]} should satisfy <> pattern {params["PARAMETER_ALLOWED_PATTERN"]}')
+            raise ValueError(f'{params["PARAMETER_NAME"]} should satisfy <{params["PARAMETER_ALLOWED_PATTERN"]}> pattern')
         
     def delete(self, params, *args, **kwargs):        
         pass
