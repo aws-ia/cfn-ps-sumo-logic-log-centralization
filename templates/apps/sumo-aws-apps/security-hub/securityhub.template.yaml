@@ -176,7 +176,7 @@ Parameters:
   S3BucketLogsPathExpression:
     Type: String
     Description: Path expression to match one or more S3 objects. For example, ABC*.log or ABC.log
-    Default: "*"
+    Default: "*securityhub*/*"
   S3SourceName:
     Type: String
     Description: Change the Sumo Logic Amazon S3 Source name to be created else default name will be used.

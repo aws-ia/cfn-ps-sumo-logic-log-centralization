@@ -215,7 +215,7 @@ Parameters:
   CloudTrailBucketPathExpression:
     Type: String
     Description: Path expression to match one or more S3 objects. For example, ABC*.log or ABC.log
-    Default: "*"
+    Default: "AWSLogs/*"
   CloudTrailLogsSourceName:
     Type: String
     Description: Change the CloudTrail Source name to be created else default name will be used.

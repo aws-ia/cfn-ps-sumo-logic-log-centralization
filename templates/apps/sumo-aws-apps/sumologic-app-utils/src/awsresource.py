@@ -35,7 +35,7 @@ class AWSResource(object):
 class AWSValidation(AWSResource):
     def __init__(self, props,  *args, **kwargs):
         self.CLOUDFORMATION_PARAMETERS = ["PARAMETER_NAME", "PARAMETER_VALUE", "PARAMETER_ALLOWED_PATTERN"]
-    def create(self, params, *args, **kwargs):
+    def match_pattern(self,params):
         try:
             pat = re.compile(params["PARAMETER_ALLOWED_PATTERN"])
             if re.fullmatch(pat, params["PARAMETER_VALUE"]):
@@ -46,20 +46,12 @@ class AWSValidation(AWSResource):
                 raise ValueError(f'{params["PARAMETER_NAME"]} should satisfy <{params["PARAMETER_ALLOWED_PATTERN"]}> pattern.')
         except re.error:
             print(f'{params["PARAMETER_NAME"]} Non valid regex pattern')
-            raise ValueError(f'{params["PARAMETER_NAME"]} should satisfy <{params["PARAMETER_ALLOWED_PATTERN"]}> pattern')
+            raise ValueError(f'{params["PARAMETER_NAME"]} should satisfy <{params["PARAMETER_ALLOWED_PATTERN"]}> pattern')        
+    def create(self, params, *args, **kwargs):
+        return self.match_pattern(params)
         
     def update(self, params, *args, **kwargs):
-        try:
-            pat = re.compile(params["PARAMETER_ALLOWED_PATTERN"])
-            if re.fullmatch(pat, params["PARAMETER_VALUE"]):
-                RandomID = str(uuid.uuid4())[0:8]        
-                return {'VALIDATION': RandomID}, RandomID
-            else:
-                print(f'{params["PARAMETER_NAME"]} Non valid regex pattern')
-                raise ValueError(f'{params["PARAMETER_NAME"]} should satisfy <{params["PARAMETER_ALLOWED_PATTERN"]}> pattern')
-        except re.error:
-            print(f'{params["PARAMETER_NAME"]} Non valid regex pattern')
-            raise ValueError(f'{params["PARAMETER_NAME"]} should satisfy <{params["PARAMETER_ALLOWED_PATTERN"]}> pattern')
+        return self.match_pattern(params)
         
     def delete(self, params, *args, **kwargs):        
         pass

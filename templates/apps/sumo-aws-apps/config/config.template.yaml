@@ -185,7 +185,7 @@ Parameters:
   S3BucketLogsPathExpression:
     Type: String
     Description: Path expression to match one or more S3 objects. For example, ABC*.log or ABC.log
-    Default: "*"
+    Default: "AWSLogs/*/Config/*/*"
 
   S3LogsSourceName:
     Type: String
