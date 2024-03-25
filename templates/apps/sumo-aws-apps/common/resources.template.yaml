@@ -27,31 +27,32 @@ Metadata:
           - CreateBucket
           - BucketName
           - CreateTrail
-          - CloudtrailValidationBucket
+          - CloudTrailCreateBucket
           - CloudTrailLogsBucketName
-          - VpcValidationBucket
+          - VpcCreateBucket
           - VpcLogsBucketName
-          - S3AuditValidationBucket
+          - S3AuditCreateBucket
           - S3AuditLogsBucketName
-          - SecurityHubValidationBucket
+          - SecurityHubCreateBucket
           - SecurityHubLogsBucketName
-          - WAFValidationBucket
+          - WafCreateBucket
           - WafLogsBucketName
-          - ConfigValidationBucket
+          - ConfigCreateBucket
           - ConfigLogsBucketName
-          - NFWValidationBucket
+          - NFWCreateS3Bucket
           - NFWLogsS3BucketName
-          - CloudtrailValidationPathExpression
+          - CloudTrailCreateLogSource
           - CloudTrailBucketPathExpression
-          - VpcValidationPathExpression
+          - VpcCreateS3Source
           - VpcBucketPathExpression
-          - S3auditValidationPathExpression
+          - S3AuditCreateS3Source
           - S3AuditBucketPathExpression
-          - SecurityHubValidationPathExpression
+          - SecurityHubCreateS3Source
           - SecurityHubBucketPathExpression
-          - ConfigValidationPathExpression
+          - WafCreateDeliveryStreamSource
+          - ConfigCreateS3LogsSource
           - ConfigS3BucketLogsPathExpression
-          - NFWValidationPathExpression
+          - NFWCreateS3Source
           - NFWS3BucketLogsPathExpression
       - Label:
           default: "AWS Quick Start configuration"
@@ -84,57 +85,59 @@ Metadata:
         default: "AWS S3 Bucket Name"
       CreateTrail:
         default: "Create Trail for the provided Bucket"
-      CloudtrailValidationPathExpression:
-        default: "Validation path expression for CloudTrail logs"
+      CloudTrailCreateLogSource:
+        default: "Create Sumo Logic CloudTrail logs source"
       CloudTrailBucketPathExpression:
         default: "Path expression for CloudTrail logs"
-      VpcValidationPathExpression:
-        default: "Validation path expression for VPC logs"
+      VpcCreateS3Source:
+        default: "Create Sumo Logic VPC S3 logs source"
       VpcBucketPathExpression:
         default: "Path expression for VPC logs"
-      S3auditValidationPathExpression:
-        default: "Validation path expression for S3 Audit logs"
+      S3AuditCreateS3Source:
+        default: "Create Sumo Logic S3 Audit logs source"
       S3AuditBucketPathExpression:
         default: "Path expression for S3 Audit logs"
-      SecurityHubValidationPathExpression:
-        default: "Validation S3 bucket name for Security Hub"
+      SecurityHubCreateS3Source:
+        default: "Create Sumo Logic Security Hub Audit logs source"
       SecurityHubBucketPathExpression:
         default: "Path expression for S3 Security Hub logs"
-      ConfigValidationPathExpression:
-        default: "Validation S3 bucket name for Config"
+      WafCreateDeliveryStreamSource:
+        default: "Create a Kinesis Firehose Delivery Stream Source for WAF"
+      ConfigCreateS3LogsSource:
+        default: "Create Sumo Logic Config Audit logs source"
       ConfigS3BucketLogsPathExpression:
         default: "Path expression for S3 Config logs"
-      NFWValidationPathExpression:
-        default: "Validation S3 bucket name for Network Firewall"
+      NFWCreateS3Source:
+        default: "Create Sumo Logic Network Firewall Audit logs source"
       NFWS3BucketLogsPathExpression:
         default: "Path expression for S3 Network firewall logs"
 
-      CloudtrailValidationBucket:
-        default: "Validation S3 bucket name for CloudTrail"
+      CloudTrailCreateBucket:
+        default: "Create a CloudTrail S3 bucket"
       CloudTrailLogsBucketName:
         default: "CloudTrail logs S3 bucket name"
-      VpcValidationBucket:
-        default: "Validation AWS S3 bucket name for VPC"
+      VpcCreateBucket:
+        default: "Create a VPC S3 bucket"
       VpcLogsBucketName:
         default: "VPC logs S3 bucket name"
-      S3AuditValidationBucket:
-        default: "Validation AWS S3 bucket name for S3 Audit"
+      S3AuditCreateBucket:
+        default: "Create a S3 Audit S3 bucket"
       S3AuditLogsBucketName:
         default: "S3 Audit logs S3 bucket name"
-      SecurityHubValidationBucket:
-        default: "Validation AWS S3 bucket name for Security Hub"
+      SecurityHubCreateBucket:
+        default: "Create a Security Hub S3 bucket"
       SecurityHubLogsBucketName:
         default: "Security Hub logs S3 bucket name"
-      WAFValidationBucket:
-        default: "Validation AWS S3 bucket name for WAF"
+      WafCreateBucket:
+        default: "Create a WAF S3 bucket"
       WafLogsBucketName:
         default: "WAF logs S3 bucket name"
-      ConfigValidationBucket:
-        default: "Validation AWS S3 bucket name for Config"
+      ConfigCreateBucket:
+        default: "Create a Config S3 bucket"
       ConfigLogsBucketName:
         default: "Config logs S3 bucket name"
-      NFWValidationBucket:
-        default: "Validation AWS S3 bucket name for Network Firewall"
+      NFWCreateS3Bucket:
+        default: "Create a Network Firewall S3 bucket"
       NFWLogsS3BucketName:
         default: "Network Firewall logs S3 bucket name"
       QSS3BucketName:
@@ -220,60 +223,70 @@ Parameters:
       - "Yes"
       - "No"
 
-  CloudtrailValidationPathExpression:
+  CloudTrailCreateLogSource:
     Type: String
-    Description: "Yes - Create validation path expression in AWS S3 for CloudTrail."
-    Default: "No"
+    Description: "Choose No to skip creation of a Sumo Logic CloudTrail log source."
+    Default: "Yes"
     AllowedValues:
       - "Yes"
       - "No"
   CloudTrailBucketPathExpression:
     Type: String
     Description: "Path expression for CloudTrail logs"
-  VpcValidationPathExpression:
+  VpcCreateS3Source:
     Type: String
-    Description: "Yes - Create validation path expression in AWS S3 for VPC."
-    Default: "No"
+    Description: "Choose No to skip creation of a Sumo Logic S3 VPC log source."
+    Default: "Yes"
     AllowedValues:
       - "Yes"
       - "No"
   VpcBucketPathExpression:
     Type: String
     Description: "Path expression for VPC logs"
-  S3auditValidationPathExpression:
+  S3AuditCreateS3Source:
     Type: String
-    Description: "Yes - Create validation path expression in AWS S3 for S3 Audit."
-    Default: "No"
+    Description: "Choose No to skip creation of the Sumo Logic S3 Audit log source."
+    Default: "Yes"
     AllowedValues:
       - "Yes"
       - "No"
   S3AuditBucketPathExpression:
     Type: String
     Description: "Path expression for S3 Audit logs"
-  SecurityHubValidationPathExpression:
+  SecurityHubCreateS3Source:
     Type: String
-    Description: "Yes - Create validation path expression in AWS S3 for Security Hub."
-    Default: "No"
+    Description: "Choose No to skip creation of a Sumo Logic S3 Security Hub logs source."
+    Default: "Yes"
     AllowedValues:
       - "Yes"
       - "No"
+  WafCreateDeliveryStreamSource:
+    Type: String
+    Description: "Yes - to create Kinesis Delivery Stream Source for WAF.
+                  No - to skip creation Kinesis Delivery Stream."
+    Default: 'Yes'
+    AllowedValues:
+      - 'Yes'
+      - 'No'  
   SecurityHubBucketPathExpression:
     Type: String
     Description: "Path expression for S3 Security Hub logs"
-  ConfigValidationPathExpression:
+  ConfigCreateS3LogsSource:
     Type: String
-    Description: "Yes - Create validation path expression in AWS S3 for Config."
-    Default: "No"
+    Description:
+      "Yes - to create Sumo Logic Amazon S3 Config Logs Source with provided bucket Name.
+      No - to skip creation of the Sumo Logic Amazon S3 Config Log Source."    
+    Default: "Yes"
     AllowedValues:
       - "Yes"
       - "No"
   ConfigS3BucketLogsPathExpression:
     Type: String  
     Description: "Path expression for S3 Config logs"
-  NFWValidationPathExpression:
+  NFWCreateS3Source:
     Type: String
-    Description: "Yes - Create validation path expression in AWS S3 for Network Firewall."
-    Default: "No"
+    Description: "Choose No to skip creation of a Sumo Logic Amazon S3 Network Firewall log source."
+    Default: "Yes"
     AllowedValues:
       - "Yes"
       - "No"
@@ -281,9 +294,9 @@ Parameters:
     Type: String
     Description: "Path expression for S3 Network firewall logs"
 
-  CloudtrailValidationBucket:
+  CloudTrailCreateBucket:
     Type: String
-    Description: "Yes - Create validation bucket in AWS S3 for CloudTrail."
+    Description: "Choose Yes to create a CloudTrail S3 bucket for CloudTrail logs."
     Default: "No"
     AllowedValues:
       - "Yes"
@@ -291,9 +304,9 @@ Parameters:
   CloudTrailLogsBucketName:
     Type: String
     Description: "Bucket Name for CloudTrail."
-  VpcValidationBucket:
+  VpcCreateBucket:
     Type: String
-    Description: "Yes - Create validation bucket in AWS S3 for VPC."
+    Description: "Choose Yes to create an S3 bucket for VPC flow logs."
     Default: "No"
     AllowedValues:
       - "Yes"
@@ -301,9 +314,9 @@ Parameters:
   VpcLogsBucketName:
     Type: String
     Description: "Bucket Name for VPC ."
-  S3AuditValidationBucket:
+  S3AuditCreateBucket:
     Type: String
-    Description: "Yes - Create validation bucket in AWS S3 for S3 Audit."
+    Description: "Choose Yes to create an S3 bucket for S3 Audit logs."
     Default: "No"
     AllowedValues:
       - "Yes"
@@ -311,9 +324,9 @@ Parameters:
   S3AuditLogsBucketName:
     Type: String
     Description: "Bucket Name for S3 Audit."
-  SecurityHubValidationBucket:
+  SecurityHubCreateBucket:
     Type: String
-    Description: "Yes - Create validation bucket in AWS S3 for Security Hub."
+    Description: "Choose Yes to create an S3 bucket for Security Hub logs."
     Default: "No"
     AllowedValues:
       - "Yes"
@@ -321,9 +334,9 @@ Parameters:
   SecurityHubLogsBucketName:
     Type: String
     Description: "Bucket Name for Security Hub"
-  WAFValidationBucket:
+  WafCreateBucket:
     Type: String
-    Description: "Yes - Create validation bucket in AWS S3 for WAF."
+    Description: "Choose Yes to create an S3 bucket where Kinesis Data Firehose backs up your data"
     Default: "No"
     AllowedValues:
       - "Yes"
@@ -331,9 +344,10 @@ Parameters:
   WafLogsBucketName:
     Type: String
     Description: "Bucket Name for WAF"
-  ConfigValidationBucket:
+  ConfigCreateBucket:
     Type: String
-    Description: "Yes - Create validation bucket in AWS S3 for Config."
+    Description:
+      "Yes - Choose Yes to create an S3 bucket for Config logs."
     Default: "No"
     AllowedValues:
       - "Yes"
@@ -341,9 +355,9 @@ Parameters:
   ConfigLogsBucketName:
     Type: String
     Description: "Bucket Name for Config"
-  NFWValidationBucket:
+  NFWCreateS3Bucket:
     Type: String
-    Description: "Yes - Create validation bucket in AWS S3 for Network Firewall."
+    Description: "Choose Yes to create an S3 bucket for Network Firewall logs."
     Default: "No"
     AllowedValues:
       - "Yes"
@@ -373,20 +387,33 @@ Conditions:
     - !Equals [!Ref QSS3BucketName, 'sumologic-aws-security-solutions']
     - !Equals [!Ref QSS3BucketName, 'tcat-cfn-ps-sumo-logic-cloudsiem']
 
-  cloudtrail_validation_bucket: !Equals [!Ref CloudtrailValidationBucket, "Yes"]
-  vpc_validation_bucket: !Equals [!Ref VpcValidationBucket, "Yes"]
-  s3audit_validation_bucket: !Equals [!Ref S3AuditValidationBucket, "Yes"]
-  securityhub_validation_bucket: !Equals [!Ref SecurityHubValidationBucket, "Yes"]
-  waf_validation_bucket: !Equals [!Ref WAFValidationBucket, "Yes"]
-  config_validation_bucket: !Equals [!Ref ConfigValidationBucket, "Yes"]
-  nfw_validation_bucket: !Equals [!Ref NFWValidationBucket, "Yes"]
-
-  cloudtrail_validation_path_expression: !Equals [!Ref CloudtrailValidationPathExpression, "Yes"]
-  vpc_validation_path_expression: !Equals [!Ref VpcValidationPathExpression, "Yes"]
-  s3audit_validation_path_expression: !Equals [!Ref S3auditValidationPathExpression, "Yes"]
-  securityhub_validation_path_expression: !Equals [!Ref SecurityHubValidationPathExpression, "Yes"]
-  config_validation_path_expression: !Equals [!Ref ConfigValidationPathExpression, "Yes"]
-  nfw_validation_path_expression: !Equals [!Ref NFWValidationPathExpression, "Yes"]
+  cloudtrail_validation_bucket: !And
+    - !Equals [!Ref CloudTrailCreateBucket, "No"]
+    - !Equals [!Ref CloudTrailCreateLogSource, "Yes"]
+  cloudtrail_validation_path_expression: !Equals [!Ref CloudTrailCreateLogSource, "Yes"]
+  vpc_validation_bucket: !And 
+    - !Equals [!Ref VpcCreateBucket, "No"]
+    - !Equals [!Ref VpcCreateS3Source, "Yes"]
+  vpc_validation_path_expression: !Equals [!Ref VpcCreateS3Source, "Yes"]  
+  s3audit_validation_bucket: !And
+    - !Equals [!Ref S3AuditCreateBucket, "No"]
+    - !Equals [!Ref S3AuditCreateS3Source, "Yes"]
+  s3audit_validation_path_expression: !Equals [!Ref S3AuditCreateS3Source, "Yes"]  
+  securityhub_validation_bucket: !And 
+    - !Equals [!Ref SecurityHubCreateBucket, "No"]
+    - !Equals [!Ref SecurityHubCreateS3Source, "Yes"]
+  securityhub_validation_path_expression: !Equals [!Ref SecurityHubCreateS3Source, "Yes"]
+  waf_validation_bucket: !And
+    - !Equals [!Ref WafCreateBucket, "No"]
+    - !Equals [!Ref WafCreateDeliveryStreamSource, "Yes"]
+  config_validation_bucket: !And 
+    - !Equals [!Ref ConfigCreateBucket, "No"]
+    - !Equals [!Ref ConfigCreateS3LogsSource, "Yes"]
+  config_validation_path_expression: !Equals [!Ref ConfigCreateS3LogsSource, "Yes"]
+  nfw_validation_bucket: !And
+    - !Equals [!Ref NFWCreateS3Bucket, "No"]
+    - !Equals [!Ref NFWCreateS3Source, "Yes"]
+  nfw_validation_path_expression: !Equals [!Ref NFWCreateS3Source, "Yes"]
 
   install_collector: !Equals [!Ref CreateCollector, "Yes"]
   create_target_s3_bucket: !Equals [!Ref CreateBucket, "Yes"]

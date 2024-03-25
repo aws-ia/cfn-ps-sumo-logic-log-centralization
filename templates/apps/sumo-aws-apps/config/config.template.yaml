@@ -235,6 +235,7 @@ Conditions:
   create_validation_logs_s3_bucket: !And
     - !Condition do_not_use_parent_stack
     - !Equals [!Ref CreateS3Bucket, "No"]
+    - !Equals [!Ref CreateS3LogsSource, "Yes"]
   config_validation_path_expression: !And
     - !Condition do_not_use_parent_stack
     - !Equals [!Ref CreateS3LogsSource, "Yes"]  
