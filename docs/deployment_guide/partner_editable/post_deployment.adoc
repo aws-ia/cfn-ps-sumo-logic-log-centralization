@@ -18,6 +18,11 @@ Confirm that the AWS CloudFormation template installed the collectors and source
 image::../docs/deployment_guide/images/output2.png[output2, 80%]
 
 == Postdeployment steps
+If you have not enabled guardduty you need to explicitly enable it
+
+=== If using a New S3 bucket
+You have to configure flow logs in your VPC to export to S3 bucket.
+You must also enable logging and configure alert and flow logs in your Network Firewall to export to S3 bucket.
 
 === If using an existing S3 bucket
 If you use an existing S3 bucket with logs, create an SNS topic (`SumoSNSTopic-{StackName}`) that subscribes to the Sumo Logic sources. After the deployment completes, add that SNS topic to the S3 bucket events. For more information, see https://docs.aws.amazon.com/AmazonS3/latest/user-guide/enable-event-notifications.html[How do I enable and configure event notifications for an S3 bucket?^]

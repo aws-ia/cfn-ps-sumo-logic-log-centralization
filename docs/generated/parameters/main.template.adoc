@@ -1,5 +1,5 @@
 
-.Sumo Logic access configuration (required)
+.1.1 Sumo Logic access configuration (required)
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Sumo Logic deployment location
@@ -9,86 +9,86 @@
 (`Section1dSumoLogicOrganizationId`)|`**__Requires input__**`|Enter your Sumo Logic organization ID, which you can find in the Sumo Logic console, under Account.|Remove Sumo Logic resources when stack is deleted
 (`Section1eSumoLogicResourceRemoveOnDeleteStack`)|`true`|Choose "false" if you do not want the collector, sources, and Sumo Logic apps to be removed when the stack is deleted.
 |===
-.CloudTrail app configuration
+.2.1 CloudTrail app configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Install Sumo Logic AWS CloudTrail app
-(`Section2InstallCloudTrailApp`)|`Yes`|Choose No to skip installation of the app.|Install Sumo Logic PCI compliance for AWS CloudTrail app
-(`Section2InstallPCICloudTrailApp`)|`Yes`|Choose No to skip installation of the app.|Install Sumo Logic CIS AWS Foundations Benchmark app
-(`Section2InstallCISFoundationApp`)|`Yes`|Choose No to skip installation of the app.|Install Amazon CloudTrail - Sumo Cloud Security Monitoring and Analytics App
-(`Section2InstallCloudTrailMonitoringAnalyticsApp`)|`Yes`|Choose No to skip installation of the app.|Install Sumo Global Intelligence for AWS CloudTrail SecOps App
-(`Section2InstallCloudTrailSecOpsApp`)|`Yes`|Choose No to skip installation of the app.
+(`Section2aInstallCloudTrailApp`)|`Yes`|Choose No to skip installation of the app.|Install Sumo Logic PCI compliance for AWS CloudTrail app
+(`Section2bInstallPCICloudTrailApp`)|`Yes`|Choose No to skip installation of the app.|Install Sumo Logic CIS AWS Foundations Benchmark app
+(`Section2cInstallCISFoundationApp`)|`Yes`|Choose No to skip installation of the app.|Install Amazon CloudTrail - Sumo Cloud Security Monitoring and Analytics App
+(`Section2dInstallCloudTrailMonitoringAnalyticsApp`)|`Yes`|Choose No to skip installation of the app.|Install Sumo Global Intelligence for AWS CloudTrail SecOps App
+(`Section2eInstallCloudTrailSecOpsApp`)|`Yes`|Choose No to skip installation of the app.
 |===
-.S3 configuration
+.2.2 S3 configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Create a CloudTrail S3 bucket
-(`Section2CloudTrailCreateBucket`)|`No`|Choose Yes to create a CloudTrail S3 bucket for CloudTrail logs.|CloudTrail logs S3 bucket name
-(`Section2CloudTrailLogsBucketName`)|`**__Blank string__**`|Required when flag is set to No. Provide an existing bucket name that has CloudTrail logs.
+(`Section2fCloudTrailCreateBucket`)|`No`|Choose Yes to create a CloudTrail S3 bucket for CloudTrail logs.|CloudTrail logs S3 bucket name
+(`Section2gCloudTrailLogsBucketName`)|`**__Blank string__**`|Required when flag is set to No. Provide an existing bucket name that has CloudTrail logs.
 |===
-.CloudTrail source configuration
+.2.3 CloudTrail source configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Create Sumo Logic CloudTrail logs source
-(`Section2CloudTrailCreateLogSource`)|`Yes`|Choose No to skip creation of a Sumo Logic CloudTrail log source.|Path expression for CloudTrail logs
-(`Section2CloudTrailBucketPathExpression`)|`AWSLogs/\*/CloudTrail/*`|Path expression must match the folder structure for CloudTrail logs (e.g., AWSLogs/\*/CloudTrail/*).|Sumo Logic CloudTrail logs source category name
-(`Section2CloudTrailLogsSourceCategoryName`)|`AWS/Cloudtrail/Logs`|Required when flag is set to No. Provide an existing source category name from Sumo Logic collecting CloudTrail logs. This is used for Threat Intel for AWS app installation also.
+(`Section2hCloudTrailCreateLogSource`)|`Yes`|Choose No to skip creation of a Sumo Logic CloudTrail log source.|Path expression for CloudTrail logs
+(`Section2iCloudTrailBucketPathExpression`)|`AWSLogs/*`|Path expression must match the folder structure for CloudTrail logs (e.g., AWSLogs/*/CloudTrail/*).|Sumo Logic CloudTrail logs source category name
+(`Section2jCloudTrailLogsSourceCategoryName`)|`aws/quickstart/cloudtrail/logs`|Required when flag is set to No. Provide an existing source category name from Sumo Logic collecting CloudTrail logs. This is used for Threat Intel for AWS app installation also.
 |===
-.GuardDuty app configuration
+.3.1 GuardDuty app configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Install Sumo Logic GuardDuty app
 (`Section3aInstallGuardDutyApps`)|`Both`|GuardDuty: Install Amazon GuardDuty app. GlobalGuardDutyApp: Install Global Intelligence for Amazon GuardDuty app. Both: Install both apps. Skip: Skip installation of apps.
 |===
-.GuardDuty log-source configuration
+.3.2 GuardDuty log-source configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Create Sumo Logic HTTP logs source
 (`Section3bGuardDutyCreateHttpLogsSource`)|`Yes`|Choose No to skip creation of a Sumo Logic HTTP log source to collect GuardDuty logs.|Sumo Logic HTTP logs source category name
 (`Section3cGuardDutyHttpLogsSourceCategoryName`)|`aws/quickstart/guardduty/logs`|Required when Guardduty HTTP LogSource is set to No. Provide an existing source category name from the GuardDuty logs. This is used for app installation.
 |===
-.VPC flow logs app configuration
+.4.1 VPC flow logs app configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Install Sumo Logic VPC flow logs app
 (`Section4aInstallVpcApps`)|`All`|VPC: Install Amazon VPC flow logs app in Sumo Logic. PCI_VPC: Install PCI compliance VPC flow app. CSMA_VPC: Install Amazon VPC Flow - Cloud Security Monitoring and Analytics app. All: Install both apps. Skip: Skip installation of apps.
 |===
-.VPC flow logs S3 configuration
+.4.2 VPC flow logs S3 configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Create VPC flow logs S3 bucket
 (`Section4bVpcCreateBucket`)|`No`|Choose Yes to create an S3 bucket for VPC flow logs.|VPC flow logs S3 bucket name
 (`Section4cVpcLogsBucketName`)|`**__Blank string__**`|Required when flag is set to No. Provide an existing bucket name that has VPC flow logs.
 |===
-.VPC S3 source configuration
+.4.3 VPC S3 source configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Create Sumo Logic S3 logs source
 (`Section4dVpcCreateS3Source`)|`Yes`|Choose No to skip creation of a Sumo Logic S3 log source.|Path expression for logs
 (`Section4eVpcBucketPathExpression`)|`VPC-FLOW-LOGS/*`|Path expression must match the folder structure for VPC flow logs (e.g., VPC-FLOW-LOGS/*).|Sumo Logic S3 logs source category name
-(`Section4fVpcLogsSourceCategoryName`)|`AWS/Vpc/Flow/Logs`|Required when flag is set to No. Provide an existing source category name from Sumo Logic collecting VPC flow logs. This is used for Threat Intel as well.
+(`Section4fVpcLogsSourceCategoryName`)|`aws/quickstart/vpc/flow/logs`|Required when flag is set to No. Provide an existing source category name from Sumo Logic collecting VPC flow logs. This is used for Threat Intel as well.
 |===
-.Sumo Logic Threat Intel for AWS Config
+.5.1 Sumo Logic Threat Intel for AWS Config
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Install Sumo Logic Threat Intel app
 (`Section5aInstallThreatIntelApp`)|`Yes`|Choose No to skip installation of the app.|Sumo Logic ELB category name
-(`Section5bElasticLoadBalancerSourceCategory`)|`\*elb*`|Provide an existing source category from Sumo Logic that has ELB classic logs.
+(`Section5bElasticLoadBalancerSourceCategory`)|`*elb*`|Provide an existing source category from Sumo Logic that has ELB classic logs.
 |===
-.Sumo Logic S3 Audit app configuration
+.6.1 Sumo Logic S3 Audit app configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Install Sumo Logic S3 Audit app
 (`Section6aInstallS3AuditApp`)|`Yes`|Choose No to skip installation of the app.
 |===
-.S3 Audit S3 configuration
+.6.2 S3 Audit S3 configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Create S3 Audit bucket
 (`Section6bS3AuditCreateBucket`)|`No`|Choose Yes to create an S3 bucket for S3 Audit logs.|S3 Audit logs bucket name
 (`Section6cS3AuditLogsBucketName`)|`**__Blank string__**`|Required when flag is set to No. Provide an existing S3 bucket that has audit logs.
 |===
-.Sumo Logic S3 Audit source configuration
+.6.3 Sumo Logic S3 Audit source configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Create Sumo Logic S3 Audit logs source
@@ -96,105 +96,103 @@
 (`Section6eS3AuditBucketPathExpression`)|`S3-AUDIT-LOGS/*`|Path expression must match the folder structure for S3 Audit logs (e.g., S3-AUDIT-LOGS/*).|Sumo Logic S3 Audit logs source category name
 (`Section6fS3AuditLogsSourceCategoryName`)|`aws/quickstart/s3/audit/logs`|Required when flag is set to No. Provide an existing source category name from Sumo Logic collecting S3 Audit logs. This is used for app installation.
 |===
-.AWS Security Hub app configuration
+.7.1 AWS Security Hub app configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Install Sumo Logic AWS Security Hub app
 (`Section7aInstallSecurityHubAuditApp`)|`Yes`|Choose No to skip installation of the app.|Enable Security Hub for the Region
-(`Section7bEnableSecurityHub`)|`No`|Choose Yes if Security Hub must be enabled for the Region.
+(`Section7bEnableSecurityHub`)|`Yes`|Choose Yes if Security Hub must be enabled for the Region.
 |===
-.AWS Security Hub S3 configuration
+.7.2 AWS Security Hub S3 configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Create Security Hub S3 bucket
 (`Section7cSecurityHubCreateBucket`)|`No`|Choose Yes to create an S3 bucket for Security Hub logs.|Security hub logs S3 bucket name
 (`Section7dSecurityHubLogsBucketName`)|`**__Blank string__**`|Required when flag is set to No. Provide an existing S3 bucket that has Security Hub logs.
 |===
-.Sumo Logic Security Hub S3 source configuration
+.7.3 Sumo Logic Security Hub S3 source configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Create Sumo Logic S3 logs source
 (`Section7eSecurityHubCreateS3Source`)|`Yes`|Choose No to skip creation of a Sumo Logic S3 logs source.|Path expression for Security Hub logs
-(`Section7fSecurityHubBucketPathExpression`)|`\*securityhub*/*`|Path expression must match the folder structure for Security Hub logs (e.g., \*securityhub*/*).|Sumo Logic S3 logs source category name
+(`Section7fSecurityHubBucketPathExpression`)|`*securityhub*/*`|Path expression must match the folder structure for Security Hub logs (e.g., *securityhub*/*).|Sumo Logic S3 logs source category name
 (`Section7gSecurityHubLogsSourceCategoryName`)|`aws/quickstart/securityhub/logs`|Required when flag is set to No. Provide an existing source category name from Sumo Logic collecting Security Hub logs. This is used for app installation.
 |===
-.Sumo Logic AWS WAF app configuration
+.8.1 Sumo Logic AWS WAF app configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Install Sumo Logic AWS WAF app
-(`Section8aInstallWafApp`)|`Yes`|Choose No to skip installation of the app.|Create a delivery stream for bucket
-(`Section8bCreateDeliveryStream`)|`No`|Choose Yes to create a Kinesis delivery stream.
+(`Section8aInstallWafApp`)|`Yes`|Choose No to skip installation of the app.
 |===
-.AWS WAF S3 configuration
+.8.2 AWS Kinesis Firehose S3 configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Create S3 bucket
-(`Section8cWafCreateBucket`)|`No`|Choose Yes to create an S3 bucket for AWS WAF logs.|WAF logs S3 bucket name
-(`Section8dWafLogsBucketName`)|`**__Blank string__**`|Required when flag is set to No. Provide an existing bucket name that has AWS WAF logs.
+(`Section8bWafCreateBucket`)|`No`|Choose Yes to create an S3 bucket for backup Kinesis Firehose.|WAF S3 bucket name for backup Kinesis Firehose
+(`Section8cWafLogsBucketName`)|`**__Blank string__**`|Required when flag is set to No. Provide an existing bucket name in your account
 |===
-.Sumo Logic AWS WAF S3 source configuration
+.8.3 Sumo Logic AWS WAF S3 source configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
-|Parameter label (name) |Default value|Description|Create Sumo Logic S3 logs source
-(`Section8eWafCreateS3Source`)|`Yes`|Choose No to skip creation of a Sumo Logic S3 log source.|Path expression for WAF logs
-(`Section8fWafBucketPathExpression`)|`WAF_LOGS/*`|Path expression must match the folder structure for WAF logs (e.g., WAF_LOGS/*).|Sumo Logic S3 logs source category name
-(`Section8gWafLogsSourceCategoryName`)|`aws/quickstart/waf/logs`|Required when flag is set to No. Provide an existing source category name from Sumo Logic collecting WAF logs. This is used for app installation.
+|Parameter label (name) |Default value|Description|Create a Kinesis Firehose Delivery Stream Source for WAF
+(`Section8dWafCreateDeliveryStreamSource`)|`Yes`|Yes - to create Kinesis Delivery Stream Source for WAF. No - to skip creation Kinesis Delivery Stream.|Sumo Logic AWS Kinesis Firehose Logs Source Category Name
+(`Section8eWafDeliveryStreamSourceCategoryName`)|`aws/quickstart/waf/logs`|Required when flag is set to No. Provide an existing source category name from Sumo Logic collecting WAF logs. This is used for app installation.
 |===
-.Sumo Logic AWS Config app configuration
+.9.1 Sumo Logic AWS Config app configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Install Sumo Logic AWS Config app
 (`Section9aInstallConfigApp`)|`Yes`|Choose No to skip installation of the app.
 |===
-.AWS Config Configuration
+.9.2 AWS Config Configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
-|Parameter label (name) |Default value|Description|Enable AWS Config for the Region
-(`Section9bConfigEnableConfig`)|`No`|Choose Yes to enable Config for the Region. Keep the default (No) if Config is already enabled.|Create SNS Topic for logs delivery
-(`Section9cConfigCreateSNSTopic`)|`No`|Choose Yes to create an SNS topic and attach it to AWS Config setting to deliver the logs. Keep the default (No) if Config logs are already delivered to an existing SNS topic.|Existing topic name where logs are delivered
-(`Section9dConfigExistingTopicName`)|`**__Blank string__**`|Required when flag is set to No. Provide an existing SNS topic from Config settings to stream configuration changes and notifications.
+|Parameter label (name) |Default value|Description|Create AWS S3 Bucket
+(`Section9bConfigCreateBucket`)|`No`|Yes - Create a new bucket in AWS S3|AWS S3 Bucket Name
+(`Section9cConfigLogsBucketName`)|`**__Blank string__**`|Provide a bucket name to receive configuration history and configuration snapshot files.
 |===
-.Sumo Logic AWS Config HTTP logs source configuration
+.9.3 Sumo Logic AWS Config HTTP logs source configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
-|Parameter label (name) |Default value|Description|Create Sumo Logic HTTP logs source
-(`Section9eConfigCreateHttpLogsSource`)|`Yes`|Choose No to skip creation of a Sumo Logic HTTP log source to collect Config logs.|Sumo Logic Amazon HTTP logs source category name
-(`Section9fConfigHttpLogsSourceCategoryName`)|`aws/quickstart/config/logs`|Required when flag is set to No. Provide an existing source category name from Sumo Logic collecting Config logs. This is used for app installation.
+|Parameter label (name) |Default value|Description|Create Sumo Logic Amazon S3 Logs Source
+(`Section9dConfigCreateS3LogsSource`)|`Yes`|Yes - to create Sumo Logic Amazon S3 Logs Source with provided bucket Name. No - to skip creation of the Sumo Logic Amazon S3 Log Source.|Path Expression for the logs
+(`Section9eConfigS3BucketLogsPathExpression`)|`AWSLogs/*/Config/*/`|Path expression must match one or more S3 objects. For example, ABC*.log or ABC.log|Sumo Logic Amazon S3 Logs Source Category Name
+(`Section9fConfigS3LogsSourceCategoryName`)|`aws/quickstart/config/logs`|Required when flag is set to No. Provide an existing source category name from Sumo Logic collecting Config logs. This is used for app installation.
 |===
-.Auto-enable logging configuration
+.10.1 Auto-enable logging configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Choose resource to auto-enable S3 logging
-(`Section91aEnableAutoLogging`)|`Skip`|S3: Enable S3 Audit logging for new S3 buckets. VPC: Enable VPC flow logs for new VPC, subnets, and network interfaces. Firewall: Enable Network Firewall logs for new firewall.|Auto-enable logging for existing AWS resources
-(`Section91bEnableLoggingForExistingResources`)|`No`|Choose Yes to enable logging for existing AWS resources.
+(`Section10aEnableAutoLogging`)|`Skip`|S3: Enable S3 Audit logging for new S3 buckets. VPC: Enable VPC flow logs for new VPC, subnets, and network interfaces. Firewall: Enable Network Firewall logs for new firewall.|Auto-enable logging for existing AWS resources
+(`Section10bEnableLoggingForExistingResources`)|`No`|Choose Yes to enable logging for existing AWS resources.
 |===
-.S3 Audit logging of auto-enable configuration
+.10.2 S3 Audit logging of auto-enable configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Bucket prefix to store S3 Audit logs
-(`Section91cS3LoggingBucketPrefix`)|`S3_AUDIT_LOGS/`|Provide a prefix for the S3 bucket for S3 Audit logs. The prefix should have a slash (/) at the end.|Regex expression to filter S3 buckets
-(`Section91dS3LoggingFilterExpression`)|`**__Blank string__**`|Provide a regular expression for matching S3 buckets (e.g., 'test|prod').
+(`Section10cS3LoggingBucketPrefix`)|`S3_AUDIT_LOGS/`|Provide a prefix for the S3 bucket for S3 Audit logs. The prefix should have a slash (/) at the end.|Regex expression to filter S3 buckets
+(`Section10dS3LoggingFilterExpression`)|`**__Blank string__**`|Provide a regular expression for matching S3 buckets (e.g., 'test|prod').
 |===
-.VPC flow logs auto-enable configuration
+.10.3 VPC flow logs auto-enable configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Bucket prefix to store VPC flow logs
-(`Section91eVPCLoggingBucketPrefix`)|`VPC_LOGS/`|Provide a prefix for the S3 bucket for VPC flow logs. The prefix should have a slash (/) at the end.|Regex expression to filter VPC resources
-(`Section91fVPCLoggingFilterExpression`)|`**__Blank string__**`|Provide a regular expression for matching VPC resources (e.g., 'VpcId': 't1.micro.\*?'\|'NetworkInterfaceId': 'Test.*?']\|'SubnetId': 'prod.*?'\|test\|prod').
+(`Section10eVPCLoggingBucketPrefix`)|`VPC_LOGS/`|Provide a prefix for the S3 bucket for VPC flow logs. The prefix should have a slash (/) at the end.|Regex expression to filter VPC resources
+(`Section10fVPCLoggingFilterExpression`)|`**__Blank string__**`|Provide a regular expression for matching VPC resources (e.g., 'VpcId': 't1.micro.*?'|'NetworkInterfaceId': 'Test.*?']|'SubnetId': 'prod.*?'|test|prod').
 |===
-.Firewall logs auto-enable configuration
+.10.4 Firewall logs auto-enable configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Regex expression to filter firewall resources
-(`Section91FireWallLoggingFilterExpression`)|`**__Blank string__**`|Provide a regular expression for matching firewall resources (e.g., 'FirewallName': 'firewall-example.*?').
+(`Section10FireWallLoggingFilterExpression`)|`**__Blank string__**`|Provide a regular expression for matching firewall resources (e.g., 'FirewallName': 'firewall-example.*?').
 |===
-.Network Firewall app configuration
+.11.1 Network Firewall app configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Install Sumo Logic AWS Network Firewall App
 (`Section11InstallNFWApp`)|`Yes`|Choose No to skip installation of the app.
 |===
-.Network Firewall configuration
+.11.2 Network Firewall configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Create a firewall
@@ -206,7 +204,7 @@
 (`Section11StatefulRule`)|`**__Blank string__**`|Skip if using an existing firewall policy. Enter a stateful rule. Example: pass tcp 10.20.20.0/24 45400:45500 <> 10.10.10.0/24 5203 (msg:"test";sid:1;rev:1;)| Create a default stateless rule group for network policy
 (`Section11StatelessRule`)|`80`|Skip if using an existing firewall policy. Enter an allowed port.
 |===
-.Network Firewall S3 configuration
+.11.3 Network Firewall S3 configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Create AWS S3 bucket
@@ -214,19 +212,20 @@
 (`Section11NFWLogsS3BucketName`)|`**__Blank string__**`|Required when flag is set to No. Provide an existing bucket name that has NFW logs.|AWS NFW logs S3 bucket prefix
 (`Section11NFWLogsNFWBucketPrefix`)|`NFW/`|S3 key prefix for Network Firewall logs. Bucket prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).
 |===
-.Network Firewall source configuration
+.11.4 Network Firewall source configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Create Sumo Logic Amazon S3 logs source
 (`Section11NFWCreateS3Source`)|`Yes`|Choose No to skip creation of a Sumo Logic Amazon S3 log source.|Path expression for the logs
-(`Section11NFWS3BucketLogsPathExpression`)|`\*AWSLogs/*/network-firewall/*`|Path expression must match one or more S3 objects. For example, ABC*.log or ABC.log|Sumo Logic Amazon S3 logs source category name
-(`Section11NFWS3SourceCategoryName`)|`AWS/NFW/Flow/Logs`|Existing - Change to an existing source category from Sumo Logic if Amazon S3 source is not created. New - Default will be used if Amazon S3 source is created.
+(`Section11NFWS3BucketLogsPathExpression`)|`NFW/*`|Path expression must match one or more S3 objects. For example, ABC*.log or ABC.log|Sumo Logic Amazon S3 logs source category name
+(`Section11NFWS3SourceCategoryName`)|`aws/quickstart/nfw/logs`|Existing - Change to an existing source category from Sumo Logic if Amazon S3 source is not created. New - Default will be used if Amazon S3 source is created.
 |===
 .AWS Quick Start configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Quick Start S3 bucket name
-(`QSS3BucketName`)|`aws-quickstart`|Name of the S3 bucket for your copy of the Quick Start assets. Keep the default name unless you are customizing the template. Changing the name updates code references to point to a new Quick Start location. This name can include numbers, lowercase letters, uppercase letters, and hyphens, but do not start or end with a hyphen (-). See https://aws-quickstart.github.io/option1.html.|Quick Start S3 bucket Region
+(`QSS3BucketName`)|`aws-ia`|Name of the S3 bucket for your copy of the Quick Start assets. Keep the default name unless you are customizing the template. Changing the name updates code references to point to a new Quick Start location. This name can include numbers, lowercase letters, uppercase letters, and hyphens, but do not start or end with a hyphen (-). See https://aws-quickstart.github.io/option1.html.|Quick Start S3 bucket Region
 (`QSS3BucketRegion`)|`us-east-1`|AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. Keep the default Region unless you are customizing the template. Changing this Region updates code references to point to a new Quick Start location. When using your own bucket, specify the Region. See https://aws-quickstart.github.io/option1.html.|Quick Start S3 key prefix
-(`QSS3KeyPrefix`)|`quickstart-sumo-logic-log-centralization/`|S3 key prefix that is used to simulate a directory for your copy of the Quick Start assets. Keep the default prefix unless you are customizing the template. Changing this prefix updates code references to point to a new Quick Start location. This prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slashes (/). End with a forward slash. See https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html and https://aws-quickstart.github.io/option1.html.
+(`QSS3KeyPrefix`)|`cfn-ps-sumo-logic-log-centralization/`|S3 key prefix that is used to simulate a directory for your copy of the Quick Start assets. Keep the default prefix unless you are customizing the template. Changing this prefix updates code references to point to a new Quick Start location. This prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slashes (/). End with a forward slash. See https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html and https://aws-quickstart.github.io/option1.html.|Quick Start Version
+(`QSVersion`)|`2`|Version of the Quick Start. Do not change.
 |===
