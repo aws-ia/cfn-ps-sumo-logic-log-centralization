@@ -118,19 +118,18 @@ Resources:
                   - s3:PutBucketLogging
                   - network-firewall:DescribeFirewall                      
                   - network-firewall:UpdateLoggingConfiguration
+                  - network-firewall:ListFirewalls                  
                 Resource:
                   - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*"
                   - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*"
                   - !Sub "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:*"
                   - !Sub "arn:${AWS::Partition}:ec2:${AWS::Region}::*"
                   - !Sub "arn:${AWS::Partition}:s3:::*"
-                  - !Sub "arn:${AWS::Partition}:network-firewall:${AWS::Region}:${AWS::AccountId}:firewall/*"
+                  - !Sub "arn:${AWS::Partition}:network-firewall:${AWS::Region}:${AWS::AccountId}:*/*"
               - Effect: Allow 
                 Action:
                   - ec2:DescribeVpcs
-                  - network-firewall:ListFirewalls
-                Resource: '*'
-
+                Resource: '*'             
   AwsS3LogsResourcesLambda:
     Metadata:
       cfn-lint:
