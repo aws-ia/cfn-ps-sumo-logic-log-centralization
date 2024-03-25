@@ -27,7 +27,33 @@ Metadata:
           - CreateBucket
           - BucketName
           - CreateTrail
-
+          - CloudTrailCreateBucket
+          - CloudTrailLogsBucketName
+          - VpcCreateBucket
+          - VpcLogsBucketName
+          - S3AuditCreateBucket
+          - S3AuditLogsBucketName
+          - SecurityHubCreateBucket
+          - SecurityHubLogsBucketName
+          - WafCreateBucket
+          - WafLogsBucketName
+          - ConfigCreateBucket
+          - ConfigLogsBucketName
+          - NFWCreateS3Bucket
+          - NFWLogsS3BucketName
+          - CloudTrailCreateLogSource
+          - CloudTrailBucketPathExpression
+          - VpcCreateS3Source
+          - VpcBucketPathExpression
+          - S3AuditCreateS3Source
+          - S3AuditBucketPathExpression
+          - SecurityHubCreateS3Source
+          - SecurityHubBucketPathExpression
+          - WafCreateDeliveryStreamSource
+          - ConfigCreateS3LogsSource
+          - ConfigS3BucketLogsPathExpression
+          - NFWCreateS3Source
+          - NFWS3BucketLogsPathExpression
       - Label:
           default: "AWS Quick Start configuration"
         Parameters:
@@ -59,10 +85,63 @@ Metadata:
         default: "AWS S3 Bucket Name"
       CreateTrail:
         default: "Create Trail for the provided Bucket"
+      CloudTrailCreateLogSource:
+        default: "Create Sumo Logic CloudTrail logs source"
+      CloudTrailBucketPathExpression:
+        default: "Path expression for CloudTrail logs"
+      VpcCreateS3Source:
+        default: "Create Sumo Logic VPC S3 logs source"
+      VpcBucketPathExpression:
+        default: "Path expression for VPC logs"
+      S3AuditCreateS3Source:
+        default: "Create Sumo Logic S3 Audit logs source"
+      S3AuditBucketPathExpression:
+        default: "Path expression for S3 Audit logs"
+      SecurityHubCreateS3Source:
+        default: "Create Sumo Logic Security Hub Audit logs source"
+      SecurityHubBucketPathExpression:
+        default: "Path expression for S3 Security Hub logs"
+      WafCreateDeliveryStreamSource:
+        default: "Create a Kinesis Firehose Delivery Stream Source for WAF"
+      ConfigCreateS3LogsSource:
+        default: "Create Sumo Logic Config Audit logs source"
+      ConfigS3BucketLogsPathExpression:
+        default: "Path expression for S3 Config logs"
+      NFWCreateS3Source:
+        default: "Create Sumo Logic Network Firewall Audit logs source"
+      NFWS3BucketLogsPathExpression:
+        default: "Path expression for S3 Network firewall logs"
 
+      CloudTrailCreateBucket:
+        default: "Create a CloudTrail S3 bucket"
+      CloudTrailLogsBucketName:
+        default: "CloudTrail logs S3 bucket name"
+      VpcCreateBucket:
+        default: "Create a VPC S3 bucket"
+      VpcLogsBucketName:
+        default: "VPC logs S3 bucket name"
+      S3AuditCreateBucket:
+        default: "Create a S3 Audit S3 bucket"
+      S3AuditLogsBucketName:
+        default: "S3 Audit logs S3 bucket name"
+      SecurityHubCreateBucket:
+        default: "Create a Security Hub S3 bucket"
+      SecurityHubLogsBucketName:
+        default: "Security Hub logs S3 bucket name"
+      WafCreateBucket:
+        default: "Create a WAF S3 bucket"
+      WafLogsBucketName:
+        default: "WAF logs S3 bucket name"
+      ConfigCreateBucket:
+        default: "Create a Config S3 bucket"
+      ConfigLogsBucketName:
+        default: "Config logs S3 bucket name"
+      NFWCreateS3Bucket:
+        default: "Create a Network Firewall S3 bucket"
+      NFWLogsS3BucketName:
+        default: "Network Firewall logs S3 bucket name"
       QSS3BucketName:
         default: "Quick Start S3 bucket name"
-
       QSS3KeyPrefix:
         default: "Quick Start S3 key prefix"
 
@@ -144,6 +223,149 @@ Parameters:
       - "Yes"
       - "No"
 
+  CloudTrailCreateLogSource:
+    Type: String
+    Description: "Choose No to skip creation of a Sumo Logic CloudTrail log source."
+    Default: "Yes"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  CloudTrailBucketPathExpression:
+    Type: String
+    Description: "Path expression for CloudTrail logs"
+  VpcCreateS3Source:
+    Type: String
+    Description: "Choose No to skip creation of a Sumo Logic S3 VPC log source."
+    Default: "Yes"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  VpcBucketPathExpression:
+    Type: String
+    Description: "Path expression for VPC logs"
+  S3AuditCreateS3Source:
+    Type: String
+    Description: "Choose No to skip creation of the Sumo Logic S3 Audit log source."
+    Default: "Yes"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  S3AuditBucketPathExpression:
+    Type: String
+    Description: "Path expression for S3 Audit logs"
+  SecurityHubCreateS3Source:
+    Type: String
+    Description: "Choose No to skip creation of a Sumo Logic S3 Security Hub logs source."
+    Default: "Yes"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  WafCreateDeliveryStreamSource:
+    Type: String
+    Description: "Yes - to create Kinesis Delivery Stream Source for WAF.
+                  No - to skip creation Kinesis Delivery Stream."
+    Default: 'Yes'
+    AllowedValues:
+      - 'Yes'
+      - 'No'  
+  SecurityHubBucketPathExpression:
+    Type: String
+    Description: "Path expression for S3 Security Hub logs"
+  ConfigCreateS3LogsSource:
+    Type: String
+    Description:
+      "Yes - to create Sumo Logic Amazon S3 Config Logs Source with provided bucket Name.
+      No - to skip creation of the Sumo Logic Amazon S3 Config Log Source."    
+    Default: "Yes"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  ConfigS3BucketLogsPathExpression:
+    Type: String  
+    Description: "Path expression for S3 Config logs"
+  NFWCreateS3Source:
+    Type: String
+    Description: "Choose No to skip creation of a Sumo Logic Amazon S3 Network Firewall log source."
+    Default: "Yes"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  NFWS3BucketLogsPathExpression:
+    Type: String
+    Description: "Path expression for S3 Network firewall logs"
+
+  CloudTrailCreateBucket:
+    Type: String
+    Description: "Choose Yes to create a CloudTrail S3 bucket for CloudTrail logs."
+    Default: "No"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  CloudTrailLogsBucketName:
+    Type: String
+    Description: "Bucket Name for CloudTrail."
+  VpcCreateBucket:
+    Type: String
+    Description: "Choose Yes to create an S3 bucket for VPC flow logs."
+    Default: "No"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  VpcLogsBucketName:
+    Type: String
+    Description: "Bucket Name for VPC ."
+  S3AuditCreateBucket:
+    Type: String
+    Description: "Choose Yes to create an S3 bucket for S3 Audit logs."
+    Default: "No"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  S3AuditLogsBucketName:
+    Type: String
+    Description: "Bucket Name for S3 Audit."
+  SecurityHubCreateBucket:
+    Type: String
+    Description: "Choose Yes to create an S3 bucket for Security Hub logs."
+    Default: "No"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  SecurityHubLogsBucketName:
+    Type: String
+    Description: "Bucket Name for Security Hub"
+  WafCreateBucket:
+    Type: String
+    Description: "Choose Yes to create an S3 bucket where Kinesis Data Firehose backs up your data"
+    Default: "No"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  WafLogsBucketName:
+    Type: String
+    Description: "Bucket Name for WAF"
+  ConfigCreateBucket:
+    Type: String
+    Description:
+      "Yes - Choose Yes to create an S3 bucket for Config logs."
+    Default: "No"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  ConfigLogsBucketName:
+    Type: String
+    Description: "Bucket Name for Config"
+  NFWCreateS3Bucket:
+    Type: String
+    Description: "Choose Yes to create an S3 bucket for Network Firewall logs."
+    Default: "No"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  NFWLogsS3BucketName:
+    Type: String
+    Description: "Bucket Name for Network Firewall"
+    
   QSS3BucketName:
     AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
     ConstraintDescription: "Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-)."
@@ -164,6 +386,34 @@ Conditions:
     - !Equals [!Ref QSS3BucketName, 'aws-ia']
     - !Equals [!Ref QSS3BucketName, 'sumologic-aws-security-solutions']
     - !Equals [!Ref QSS3BucketName, 'tcat-cfn-ps-sumo-logic-cloudsiem']
+
+  cloudtrail_validation_bucket: !And
+    - !Equals [!Ref CloudTrailCreateBucket, "No"]
+    - !Equals [!Ref CloudTrailCreateLogSource, "Yes"]
+  cloudtrail_validation_path_expression: !Equals [!Ref CloudTrailCreateLogSource, "Yes"]
+  vpc_validation_bucket: !And 
+    - !Equals [!Ref VpcCreateBucket, "No"]
+    - !Equals [!Ref VpcCreateS3Source, "Yes"]
+  vpc_validation_path_expression: !Equals [!Ref VpcCreateS3Source, "Yes"]  
+  s3audit_validation_bucket: !And
+    - !Equals [!Ref S3AuditCreateBucket, "No"]
+    - !Equals [!Ref S3AuditCreateS3Source, "Yes"]
+  s3audit_validation_path_expression: !Equals [!Ref S3AuditCreateS3Source, "Yes"]  
+  securityhub_validation_bucket: !And 
+    - !Equals [!Ref SecurityHubCreateBucket, "No"]
+    - !Equals [!Ref SecurityHubCreateS3Source, "Yes"]
+  securityhub_validation_path_expression: !Equals [!Ref SecurityHubCreateS3Source, "Yes"]
+  waf_validation_bucket: !And
+    - !Equals [!Ref WafCreateBucket, "No"]
+    - !Equals [!Ref WafCreateDeliveryStreamSource, "Yes"]
+  config_validation_bucket: !And 
+    - !Equals [!Ref ConfigCreateBucket, "No"]
+    - !Equals [!Ref ConfigCreateS3LogsSource, "Yes"]
+  config_validation_path_expression: !Equals [!Ref ConfigCreateS3LogsSource, "Yes"]
+  nfw_validation_bucket: !And
+    - !Equals [!Ref NFWCreateS3Bucket, "No"]
+    - !Equals [!Ref NFWCreateS3Source, "Yes"]
+  nfw_validation_path_expression: !Equals [!Ref NFWCreateS3Source, "Yes"]
 
   install_collector: !Equals [!Ref CreateCollector, "Yes"]
   create_target_s3_bucket: !Equals [!Ref CreateBucket, "Yes"]
@@ -207,7 +457,6 @@ Resources:
                   - s3:PutBucketLogging
                   - s3:PutBucketAcl
                   - s3:GetBucketAcl
-                  - ec2:DescribeVpcs
                   - ec2:DeleteFlowLogs
                   - ec2:CreateFlowLogs
                   - logs:CreateLogDelivery
@@ -233,6 +482,7 @@ Resources:
                   - config:StartConfigurationRecorder
                   - config:PutDeliveryChannel
                   - config:DeleteConfigurationRecorder 
+                  - ec2:DescribeVpcs                  
                 Resource: '*'
               - Effect: Allow
                 Action:
@@ -256,7 +506,7 @@ Resources:
                     iam:AWSServiceName:
                       - securityhub.amazonaws.com
                 Resource: !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/aws-service-role/securityhub.amazonaws.com/AWSServiceRoleForSecurityHub
-                                      
+
   SumoLogicLambdaHelper:
     Type: "AWS::Serverless::Function"
     Metadata:
@@ -297,6 +547,123 @@ Resources:
           - SumoLogicHelperRole
           - Arn
 
+  ValidationCloudTrailPathExpression:
+    Condition: cloudtrail_validation_path_expression
+    Type: Custom::AWSValidation
+    Properties:
+      ServiceToken: !GetAtt SumoLogicLambdaHelper.Arn
+      PARAMETER_NAME: "cloudtrail bucket path expression (Section2iCloudTrailBucketPathExpression)"
+      PARAMETER_VALUE: !Ref CloudTrailBucketPathExpression
+      PARAMETER_ALLOWED_PATTERN: '.+'
+
+  ValidationVpcPathExpression:
+    Condition: vpc_validation_path_expression
+    Type: Custom::AWSValidation
+    Properties:
+      ServiceToken: !GetAtt SumoLogicLambdaHelper.Arn
+      PARAMETER_NAME: "VPC bucket path expression (Section4eVpcBucketPathExpression)"
+      PARAMETER_VALUE: !Ref VpcBucketPathExpression
+      PARAMETER_ALLOWED_PATTERN: '.+'
+
+  ValidationS3AuditPathExpression:
+    Condition: s3audit_validation_path_expression
+    Type: Custom::AWSValidation
+    Properties:
+      ServiceToken: !GetAtt SumoLogicLambdaHelper.Arn
+      PARAMETER_NAME: "S3 Audit bucket path expression (Section6eS3AuditBucketPathExpression)"
+      PARAMETER_VALUE: !Ref S3AuditBucketPathExpression
+      PARAMETER_ALLOWED_PATTERN: '.+'
+
+  ValidationSecurityHubPathExpression:
+    Condition: securityhub_validation_path_expression
+    Type: Custom::AWSValidation
+    Properties:
+      ServiceToken: !GetAtt SumoLogicLambdaHelper.Arn
+      PARAMETER_NAME: "Security Hub bucket path expression (Section7fSecurityHubBucketPathExpression)"
+      PARAMETER_VALUE: !Ref SecurityHubBucketPathExpression
+      PARAMETER_ALLOWED_PATTERN: '.+'
+
+  ValidationConfigPathExpression:
+    Condition: config_validation_path_expression
+    Type: Custom::AWSValidation
+    Properties:
+      ServiceToken: !GetAtt SumoLogicLambdaHelper.Arn
+      PARAMETER_NAME: "Config bucket path expression (Section9eConfigS3BucketLogsPathExpression)"
+      PARAMETER_VALUE: !Ref ConfigS3BucketLogsPathExpression
+      PARAMETER_ALLOWED_PATTERN: '.+'
+
+  ValidationNFWPathExpression:
+    Condition: nfw_validation_path_expression
+    Type: Custom::AWSValidation
+    Properties:
+      ServiceToken: !GetAtt SumoLogicLambdaHelper.Arn
+      PARAMETER_NAME: "Network Firewall bucket path expression (Section11NFWS3BucketLogsPathExpression)"
+      PARAMETER_VALUE: !Ref NFWS3BucketLogsPathExpression
+      PARAMETER_ALLOWED_PATTERN: '.+'
+
+  ValidationCloudTrailBucket:
+    Condition: cloudtrail_validation_bucket
+    Type: Custom::AWSValidation
+    Properties:
+      ServiceToken: !GetAtt SumoLogicLambdaHelper.Arn
+      PARAMETER_NAME: "cloudtrail logs bucket name (Section2gCloudTrailLogsBucketName)"
+      PARAMETER_VALUE: !Ref CloudTrailLogsBucketName
+      PARAMETER_ALLOWED_PATTERN: '(?!(^xn--|.+-s3alias$))^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$'
+
+  ValidationVPCBucket:
+    Condition: vpc_validation_bucket
+    Type: Custom::AWSValidation
+    Properties:
+      ServiceToken: !GetAtt SumoLogicLambdaHelper.Arn
+      PARAMETER_NAME: "Section4cVpcLogsBucketName"
+      PARAMETER_VALUE: !Ref VpcLogsBucketName
+      PARAMETER_ALLOWED_PATTERN: '(?!(^xn--|.+-s3alias$))^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$'
+
+  ValidationS3AuditBucket:
+    Condition: s3audit_validation_bucket
+    Type: Custom::AWSValidation
+    Properties:
+      ServiceToken: !GetAtt SumoLogicLambdaHelper.Arn
+      PARAMETER_NAME: "Section6cS3AuditLogsBucketName"
+      PARAMETER_VALUE: !Ref S3AuditLogsBucketName
+      PARAMETER_ALLOWED_PATTERN: '(?!(^xn--|.+-s3alias$))^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$'
+
+  ValidationSecurityHubBucket:
+    Condition: securityhub_validation_bucket
+    Type: Custom::AWSValidation
+    Properties:
+      ServiceToken: !GetAtt SumoLogicLambdaHelper.Arn
+      PARAMETER_NAME: "Section7dSecurityHubLogsBucketName"
+      PARAMETER_VALUE: !Ref SecurityHubLogsBucketName
+      PARAMETER_ALLOWED_PATTERN: '(?!(^xn--|.+-s3alias$))^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$'
+
+  ValidationWAFBucket:
+    Condition: waf_validation_bucket
+    Type: Custom::AWSValidation
+    Properties:
+      ServiceToken: !GetAtt SumoLogicLambdaHelper.Arn
+      PARAMETER_NAME: "Section8cWafLogsBucketName"
+      PARAMETER_VALUE: !Ref WafLogsBucketName
+      PARAMETER_ALLOWED_PATTERN: '(?!(^xn--|.+-s3alias$))^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$'
+
+  ValidationConfigBucket:
+    Condition: config_validation_bucket
+    Type: Custom::AWSValidation
+    Properties:
+      ServiceToken: !GetAtt SumoLogicLambdaHelper.Arn
+      PARAMETER_NAME: "Section9cConfigLogsBucketName"
+      PARAMETER_VALUE: !Ref ConfigLogsBucketName
+      PARAMETER_ALLOWED_PATTERN: '(?!(^xn--|.+-s3alias$))^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$'
+
+  ValidationNetworkFirewallBucket:
+    Condition: nfw_validation_bucket
+    Type: Custom::AWSValidation
+    Properties:
+      ServiceToken: !GetAtt SumoLogicLambdaHelper.Arn
+      PARAMETER_NAME: "Section11NFWLogsS3BucketName"
+      PARAMETER_VALUE: !Ref NFWLogsS3BucketName
+      PARAMETER_ALLOWED_PATTERN: '(?!(^xn--|.+-s3alias$))^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$'
+
   SumoSourceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -316,13 +683,109 @@ Resources:
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
-              - Effect: Allow
+              - Sid: S3AllowGlobal
+                Effect: Allow
                 Action:
                   - s3:GetObject
                   - s3:GetObjectVersion
                   - s3:ListBucketVersions
                   - s3:ListBucket
-                Resource: !Sub "arn:${AWS::Partition}:s3:::*"
+                Resource: 
+                  - !Sub "arn:${AWS::Partition}:s3:::${BucketName}"
+                  - !Sub "arn:${AWS::Partition}:s3:::${BucketName}/*"
+
+              - !If 
+                - cloudtrail_validation_bucket
+                - Sid: S3AllowCloudTrailLogsBucket
+                  Effect: Allow
+                  Action:
+                    - s3:GetObject
+                    - s3:GetObjectVersion
+                    - s3:ListBucketVersions
+                    - s3:ListBucket
+                  Resource:                     
+                    - !Sub "arn:${AWS::Partition}:s3:::${CloudTrailLogsBucketName}"
+                    - !Sub "arn:${AWS::Partition}:s3:::${CloudTrailLogsBucketName}/*"
+                - !Ref AWS::NoValue
+              - !If 
+                - vpc_validation_bucket
+                - Sid: S3AllowVpcLogsBucket
+                  Effect: Allow
+                  Action:
+                    - s3:GetObject
+                    - s3:GetObjectVersion
+                    - s3:ListBucketVersions
+                    - s3:ListBucket
+                  Resource:
+                    - !Sub "arn:${AWS::Partition}:s3:::${VpcLogsBucketName}"
+                    - !Sub "arn:${AWS::Partition}:s3:::${VpcLogsBucketName}/*"
+                - !Ref AWS::NoValue
+              - !If 
+                - s3audit_validation_bucket
+                - Sid: S3AllowS3AuditLogsBucket
+                  Effect: Allow
+                  Action:
+                    - s3:GetObject
+                    - s3:GetObjectVersion
+                    - s3:ListBucketVersions
+                    - s3:ListBucket
+                  Resource:
+                    - !Sub "arn:${AWS::Partition}:s3:::${S3AuditLogsBucketName}"
+                    - !Sub "arn:${AWS::Partition}:s3:::${S3AuditLogsBucketName}/*"
+                - !Ref AWS::NoValue
+              - !If 
+                - securityhub_validation_bucket
+                - Sid: S3AllowSecurityHubLogsBucket
+                  Effect: Allow
+                  Action:
+                    - s3:GetObject
+                    - s3:GetObjectVersion
+                    - s3:ListBucketVersions
+                    - s3:ListBucket
+                  Resource:
+                    - !Sub "arn:${AWS::Partition}:s3:::${SecurityHubLogsBucketName}"
+                    - !Sub "arn:${AWS::Partition}:s3:::${SecurityHubLogsBucketName}/*"
+                - !Ref AWS::NoValue
+              - !If 
+                - waf_validation_bucket
+                - Sid: S3AllowWafLogsBucket
+                  Effect: Allow
+                  Action:
+                    - s3:GetObject
+                    - s3:GetObjectVersion
+                    - s3:ListBucketVersions
+                    - s3:ListBucket
+                  Resource:
+                    - !Sub "arn:${AWS::Partition}:s3:::${WafLogsBucketName}"
+                    - !Sub "arn:${AWS::Partition}:s3:::${WafLogsBucketName}/*"
+                - !Ref AWS::NoValue
+              - !If 
+                - config_validation_bucket
+                - Sid: S3AllowConfigLogsBucket
+                  Effect: Allow
+                  Action:
+                    - s3:GetObject
+                    - s3:GetObjectVersion
+                    - s3:ListBucketVersions
+                    - s3:ListBucket
+                  Resource:
+                    - !Sub "arn:${AWS::Partition}:s3:::${ConfigLogsBucketName}"
+                    - !Sub "arn:${AWS::Partition}:s3:::${ConfigLogsBucketName}/*"
+                - !Ref AWS::NoValue
+              - !If 
+                - nfw_validation_bucket
+                - Sid: S3AllowNFWLogsS3Bucket
+                  Effect: Allow
+                  Action:
+                    - s3:GetObject
+                    - s3:GetObjectVersion
+                    - s3:ListBucketVersions
+                    - s3:ListBucket
+                  Resource:
+                    - !Sub "arn:${AWS::Partition}:s3:::${NFWLogsS3BucketName}"
+                    - !Sub "arn:${AWS::Partition}:s3:::${NFWLogsS3BucketName}/*"
+                - !Ref AWS::NoValue
+
   SumoHostedCollector:
     Type: Custom::Collector
     Condition: install_collector

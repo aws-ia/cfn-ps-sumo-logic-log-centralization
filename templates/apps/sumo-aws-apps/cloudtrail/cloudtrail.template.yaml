@@ -215,7 +215,7 @@ Parameters:
   CloudTrailBucketPathExpression:
     Type: String
     Description: Path expression to match one or more S3 objects. For example, ABC*.log or ABC.log
-    Default: "*"
+    Default: "AWSLogs/*"
   CloudTrailLogsSourceName:
     Type: String
     Description: Change the CloudTrail Source name to be created else default name will be used.
@@ -265,6 +265,13 @@ Conditions:
     - !Condition create_sns_topic
   install_cloudtrail_logs_source:
     !Equals [!Ref CreateCloudTrailLogSource, "Yes"]
+  create_validation_logs_s3_bucket: !And
+    - !Condition do_not_use_parent_stack
+    - !Equals [!Ref CreateCloudTrailBucket, "No"]
+    - !Equals [!Ref CreateCloudTrailLogSource, "Yes"]
+  cloudtrail_validation_path_expression: !And
+    - !Condition do_not_use_parent_stack
+    - !Equals [!Ref CreateCloudTrailLogSource, "Yes"]
 
   create_sns_topic: !And
     - !Condition do_not_use_parent_stack
@@ -343,6 +350,24 @@ Resources:
           - SumoLogicHelperRole
           - Arn
 
+  ValidationCloudTrailBucket:
+    Condition: create_validation_logs_s3_bucket
+    Type: Custom::AWSValidation
+    Properties:
+      ServiceToken: !GetAtt SumoLogicHelperFunction.Arn
+      PARAMETER_NAME: "CloudTrailLogsBucketName"
+      PARAMETER_VALUE: !Ref CloudTrailLogsBucketName
+      PARAMETER_ALLOWED_PATTERN: '(?!(^xn--|.+-s3alias$))^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$'
+      
+  ValidationCloudTrailPathExpression:
+    Condition: cloudtrail_validation_path_expression
+    Type: Custom::AWSValidation
+    Properties:
+      ServiceToken: !GetAtt SumoLogicHelperFunction.Arn
+      PARAMETER_NAME: "cloudtrail bucket path expression (CloudTrailBucketPathExpression)"
+      PARAMETER_VALUE: !Ref CloudTrailBucketPathExpression
+      PARAMETER_ALLOWED_PATTERN: '.+'
+
   SumoRole:
     Type: AWS::IAM::Role
     Condition: do_not_use_parent_stack
@@ -370,7 +395,8 @@ Resources:
                   - s3:ListBucketVersions
                   - s3:ListBucket
                 Resource:
-                  - !Sub "arn:${AWS::Partition}:s3:::*"
+                  - !Sub "arn:${AWS::Partition}:s3:::${CloudTrailLogsBucketName}"
+                  - !Sub "arn:${AWS::Partition}:s3:::${CloudTrailLogsBucketName}/*"
 
   SumoHostedCollector:
     Type: Custom::Collector
@@ -458,6 +484,7 @@ Resources:
       SumoAccessID: !Ref SumoAccessID
       SumoAccessKey: !Ref SumoAccessKey
       SumoDeployment: !Ref SumoDeployment
+
   sumMonitoringAnalyticsApp:
     Type: Custom::App
     Condition: install_cloudtrail_monitoring_analytics_app

@@ -1045,6 +1045,33 @@ Resources:
                 - !Select
                   - 2
                   - !Split ["/", !Ref "AWS::StackId"]
+        CloudTrailCreateLogSource: !Ref Section2hCloudTrailCreateLogSource
+        VpcCreateS3Source: !Ref Section4dVpcCreateS3Source
+        S3AuditCreateS3Source: !Ref Section6dS3AuditCreateS3Source
+        SecurityHubCreateS3Source: !Ref Section7eSecurityHubCreateS3Source
+        WafCreateDeliveryStreamSource: !Ref Section8dWafCreateDeliveryStreamSource
+        ConfigCreateS3LogsSource: !Ref Section9dConfigCreateS3LogsSource
+        NFWCreateS3Source: !Ref Section11NFWCreateS3Source
+        CloudTrailBucketPathExpression: !Ref Section2iCloudTrailBucketPathExpression
+        VpcBucketPathExpression: !Ref Section4eVpcBucketPathExpression
+        S3AuditBucketPathExpression: !Ref Section6eS3AuditBucketPathExpression
+        SecurityHubBucketPathExpression: !Ref Section7fSecurityHubBucketPathExpression
+        ConfigS3BucketLogsPathExpression: !Ref Section9eConfigS3BucketLogsPathExpression
+        NFWS3BucketLogsPathExpression: !Ref Section11NFWS3BucketLogsPathExpression
+        CloudTrailCreateBucket: !Ref Section2fCloudTrailCreateBucket
+        VpcCreateBucket: !Ref Section4bVpcCreateBucket
+        S3AuditCreateBucket: !Ref Section6bS3AuditCreateBucket
+        SecurityHubCreateBucket: !Ref Section7cSecurityHubCreateBucket
+        WafCreateBucket: !Ref Section8bWafCreateBucket
+        ConfigCreateBucket: !Ref Section9bConfigCreateBucket
+        NFWCreateS3Bucket: !Ref Section11NFWCreateS3Bucket
+        CloudTrailLogsBucketName: !Ref Section2gCloudTrailLogsBucketName
+        VpcLogsBucketName: !Ref Section4cVpcLogsBucketName
+        S3AuditLogsBucketName: !Ref Section6cS3AuditLogsBucketName
+        SecurityHubLogsBucketName: !Ref Section7dSecurityHubLogsBucketName
+        WafLogsBucketName: !Ref Section8cWafLogsBucketName
+        ConfigLogsBucketName: !Ref Section9cConfigLogsBucketName
+        NFWLogsS3BucketName: !Ref Section11NFWLogsS3BucketName
         CreateTrail: !If [create_cloudtrail, "Yes", "No"]
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
@@ -1452,6 +1479,7 @@ Resources:
   SumoFireWallMacroStack:
     Type: AWS::CloudFormation::Stack
     Condition: call_nfw_stack
+    DependsOn: CreateCommonResources
     Properties:
       Tags:
         - Key: "version"
@@ -1622,7 +1650,6 @@ Resources:
                                         !If [call_guardduty_stack, !GetAtt SumoGuardDutyAppsStack.Outputs.QSS3BucketName,
                                           !If [call_cloudtrail_stack, !GetAtt SumoCloudTrailAppsStack.Outputs.QSS3BucketName, !Ref QSS3BucketName]]]]]]]]]]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-        QSVersion: !Ref QSVersion
 
   SumoAutoEnableFirewallAuditLogs:
     Type: AWS::CloudFormation::Stack

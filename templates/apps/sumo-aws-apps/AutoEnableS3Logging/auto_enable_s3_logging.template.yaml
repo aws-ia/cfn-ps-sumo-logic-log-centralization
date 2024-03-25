@@ -100,7 +100,6 @@ Resources:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
-                  - ec2:DescribeVpcs
                   - ec2:DeleteFlowLogs
                   - ec2:CreateFlowLogs
                   - ec2:DescribeFlowLogs
@@ -117,17 +116,20 @@ Resources:
                   - s3:GetBucketAcl
                   - s3:GetBucketLogging
                   - s3:PutBucketLogging
-                  - network-firewall:ListFirewalls
-                  - network-firewall:DescribeFirewall
+                  - network-firewall:DescribeFirewall                      
                   - network-firewall:UpdateLoggingConfiguration
+                  - network-firewall:ListFirewalls                  
                 Resource:
                   - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*"
                   - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*"
                   - !Sub "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:*"
                   - !Sub "arn:${AWS::Partition}:ec2:${AWS::Region}::*"
                   - !Sub "arn:${AWS::Partition}:s3:::*"
-                  - !Sub "arn:${AWS::Partition}:network-firewall:${AWS::Region}:${AWS::AccountId}:firewall/*"
-
+                  - !Sub "arn:${AWS::Partition}:network-firewall:${AWS::Region}:${AWS::AccountId}:*/*"
+              - Effect: Allow 
+                Action:
+                  - ec2:DescribeVpcs
+                Resource: '*'             
   AwsS3LogsResourcesLambda:
     Metadata:
       cfn-lint:
@@ -321,6 +323,7 @@ Resources:
       Filter: !Ref FilterExpression
       BucketPrefix: !Ref BucketPrefix
       AccountID: !Ref "AWS::AccountId"
+
   EnableFirewallLogsResources:
     Type: Custom::EnableS3LogsResources
     Condition: enable_logging_existing_firewall_resources

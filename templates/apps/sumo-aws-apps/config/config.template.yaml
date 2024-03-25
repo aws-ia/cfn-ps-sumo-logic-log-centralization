@@ -185,7 +185,7 @@ Parameters:
   S3BucketLogsPathExpression:
     Type: String
     Description: Path expression to match one or more S3 objects. For example, ABC*.log or ABC.log
-    Default: "*"
+    Default: "AWSLogs/*/Config/*/*"
 
   S3LogsSourceName:
     Type: String
@@ -232,7 +232,13 @@ Conditions:
   create_target_s3_bucket: !Or
     - !Equals [!Ref CreateS3Bucket, "Yes"]
     - !Condition do_not_use_parent_stack
-
+  create_validation_logs_s3_bucket: !And
+    - !Condition do_not_use_parent_stack
+    - !Equals [!Ref CreateS3Bucket, "No"]
+    - !Equals [!Ref CreateS3LogsSource, "Yes"]
+  config_validation_path_expression: !And
+    - !Condition do_not_use_parent_stack
+    - !Equals [!Ref CreateS3LogsSource, "Yes"]  
 
 Resources:
   SumoLogicHelperRole:
@@ -309,6 +315,24 @@ Resources:
           - SumoLogicHelperRole
           - Arn
 
+  ValidationLogsS3BucketBucket:
+    Condition: create_validation_logs_s3_bucket
+    Type: Custom::AWSValidation
+    Properties:
+      ServiceToken: !GetAtt SumoLogicHelperFunction.Arn
+      PARAMETER_NAME: "BucketName"
+      PARAMETER_VALUE: !Ref BucketName
+      PARAMETER_ALLOWED_PATTERN: '(?!(^xn--|.+-s3alias$))^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$'
+
+  ValidationConfigPathExpression:
+    Condition: config_validation_path_expression
+    Type: Custom::AWSValidation
+    Properties:
+      ServiceToken: !GetAtt SumoLogicHelperFunction.Arn
+      PARAMETER_NAME: "Config bucket path expression (S3BucketLogsPathExpression)"
+      PARAMETER_VALUE: !Ref S3BucketLogsPathExpression
+      PARAMETER_ALLOWED_PATTERN: '.+'
+
   SumoRole:
     Type: AWS::IAM::Role
     Condition: do_not_use_parent_stack
@@ -336,7 +360,8 @@ Resources:
                   - s3:ListBucketVersions
                   - s3:ListBucket
                 Resource:
-                  - !Sub arn:${AWS::Partition}:s3:::*
+                  - !Sub "arn:${AWS::Partition}:s3:::${BucketName}"
+                  - !Sub "arn:${AWS::Partition}:s3:::${BucketName}/*"
 
   ConfigRole:
     Type: AWS::IAM::Role
