@@ -1,0 +1,463 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: "Template to setup the AWS WAF app with AWS and Sumo Logic resources for AWS Quick Start Solution. (qs-1ut5kd9c1)"
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "Sumo Logic Deployment Configuration"
+        Parameters:
+          - SumoDeployment
+          - SumoAccessID
+          - SumoAccessKey
+          - RemoveSumoResourcesOnDeleteStack
+      - Label:
+          default: "App Details - Collector Configuration"
+        Parameters:
+          - InstallApp
+          - CollectorName
+
+      - Label:
+          default: "Kinesis Firehose Delivery Stream Configuration"
+        Parameters:
+          - CreateDeliveryStreamSource
+          - CreateS3Bucket
+          - LogsS3BucketName          
+          - DeliveryStreamName
+          - DeliveryStreamSourceName
+          - DeliveryStreamSourceCategoryName          
+
+      - Label:
+          default: "AWS Quick Start configuration"
+        Parameters:
+          - QSS3BucketName
+          - QSS3KeyPrefix
+
+      - Label:
+          default: "Local Parameters. Do Not Edit the values."
+        Parameters:
+          - ParentStackName
+
+    ParameterLabels:
+      SumoDeployment:
+        default: "Sumo Logic Deployment Name"
+      SumoAccessID:
+        default: "Sumo Logic Access ID"
+      SumoAccessKey:
+        default: "Sumo Logic Access Key"
+      RemoveSumoResourcesOnDeleteStack:
+        default: "Delete Sumo Logic Resources when stack is deleted"
+
+      InstallApp:
+        default: "Install Sumo Logic App"
+      CollectorName:
+        default: "Collector Name"
+
+      CreateS3Bucket:
+        default: "Create AWS S3 Bucket backup for the data that Kinesis Data Firehose delivers"
+      LogsS3BucketName:
+        default: "AWS S3 Bucket Backup Name"
+
+      CreateDeliveryStreamSource:
+        default: "Create a Kinesis Firehose Delivery Stream Source for WAF"
+      DeliveryStreamSourceName:
+        default: "Sumo Logic AWS Kinesis Firehose for Logs Source Name"          
+      DeliveryStreamName:
+        default: "Amazon Kinesis Data Firehose delivery stream name"
+      DeliveryStreamSourceCategoryName:
+        default: "Sumo Logic AWS Kinesis Firehose Logs Source Category Name"
+        
+      QSS3BucketName:
+        default: "Quick Start S3 bucket name"
+
+      QSS3KeyPrefix:
+        default: "Quick Start S3 key prefix"
+
+      ParentStackName:
+        default: "If Any, Name of parent Stack"
+
+Parameters:
+  SumoDeployment:
+    Type: String
+    AllowedValues:
+      - au
+      - ca
+      - de
+      - eu
+      - jp
+      - us2
+      - us1
+      - in
+      - fed
+    Description: "Enter au, ca, de, eu, jp, us2, in, fed or us1."
+  SumoAccessID:
+    Type: String
+    Description: "The Sumo Logic Access ID. Used for Sumo Logic API calls."
+    AllowedPattern: ".+"
+    ConstraintDescription: "Sumo Logic Access ID can not be empty."
+  SumoAccessKey:
+    Type: String
+    Description: "The Sumo Logic Access Key. Used for Sumo Logic API calls."
+    AllowedPattern: ".+"
+    ConstraintDescription: "Sumo Logic Access Key can not be empty."
+    NoEcho: true
+
+
+  RemoveSumoResourcesOnDeleteStack:
+    AllowedValues:
+      - true
+      - false
+    Default: true
+    Description:
+      "To delete collectors, sources and apps when the stack is deleted, set this parameter to true. Default is true.
+      Deletes the resources created by the stack. Deletion of updated resources will be skipped."
+    Type: String
+
+  InstallApp:
+    Type: String
+    Description:
+      "Yes -> To Install Sumo Logic App in Sumo Logic for AWS Quick Start Solution.
+      No -> Skip Installation of the app."
+    Default: "Yes"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  CollectorName:
+    Type: String
+    Description: Change the collector name to be created else default name will be used.
+    Default: AWS-Waf-Collector
+
+  CreateS3Bucket:
+    Type: String
+    Description: "Yes - Create a new S3 bucket in AWS S3.
+      No - Use an existing S3 bucket from AWS S3 which has WAF Logs."
+    Default: "Yes"
+    AllowedValues:
+      - "Yes"
+      - "No"
+  LogsS3BucketName:
+    Type: String
+    Description: "Existing Bucket Name - Provide value if the Flag is set to No.
+      New Bucket Name - Provide a unique Bucket Name if the flag is set to Yes."
+  CreateDeliveryStreamSource:
+    Type: String
+    Description: "Yes - to create Kinesis Delivery Stream Source for WAF.
+                  No - to skip creation Kinesis Delivery Stream."
+    Default: 'Yes'
+    AllowedValues:
+      - 'Yes'
+      - 'No'
+  DeliveryStreamName:
+    Type: String
+    Description: "Amazon Kinesis Data Firehose (Kinesis Data Firehose) delivery stream Name"
+  DeliveryStreamSourceName:
+    Type: String
+    Description: Change the Sumo Logic AWS Kinesis Firehose Source name to be created else default name will be used.
+    Default: AWS-Waf-Source  
+  DeliveryStreamSourceCategoryName:
+    Type: String
+    Description: "Existing - Change to an existing Source Category from Sumo Logic if AWS Kinesis Firehose Source is not created.
+                  New - Default will be used if AWS Kinesis Firehose Source is Created."
+    Default: AWS/WAF/Logs
+
+  QSS3BucketName:
+    AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
+    ConstraintDescription: "Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-)."
+    Default: "aws-ia"
+    Description: "S3 bucket name for the Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-)."
+    Type: "String"
+
+  QSS3KeyPrefix:
+    AllowedPattern: "^[0-9a-zA-Z-/]*$"
+    ConstraintDescription: "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/)."
+    Default: "cfn-ps-sumo-logic-log-centralization/"
+    Description: "S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/)."
+    Type: "String"
+
+  ParentStackName:
+    Type: String
+    Default: "ParentStackName"
+    Description: Parent Stack Name. Do Not Edit the value.
+
+Conditions:
+  do_not_use_parent_stack: !Equals [!Ref ParentStackName, "ParentStackName"]
+  UsingDefaultBucket: !Or 
+    - !Equals [!Ref QSS3BucketName, 'aws-ia']
+    - !Equals [!Ref QSS3BucketName, 'sumologic-aws-security-solutions']
+    - !Equals [!Ref QSS3BucketName, 'tcat-cfn-ps-sumo-logic-cloudsiem']
+
+  install_app: !Equals [!Ref InstallApp, "Yes"]
+  create_target_s3_bucket: !Equals [!Ref CreateS3Bucket, "Yes"]
+  create_delivery_stream_source: !Equals [!Ref CreateDeliveryStreamSource, "Yes"]
+  create_validation_logs_s3_bucket: !And
+    - !Condition do_not_use_parent_stack
+    - !Equals [!Ref CreateS3Bucket, "No"]
+    - !Equals [!Ref CreateDeliveryStreamSource, "Yes"]
+
+Resources:
+  SumoLogicHelperRole:
+    Type: AWS::IAM::Role
+    Condition: do_not_use_parent_stack
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: SumoPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource:
+                  - !Sub arn:${AWS::Partition}:logs:*:${AWS::AccountId}:log-group:*
+                  - !Sub arn:${AWS::Partition}:logs:*:${AWS::AccountId}:log-group:*:log-stream:*
+
+  SumoLogicHelperFunction:
+    Type: "AWS::Serverless::Function"
+    Condition: do_not_use_parent_stack
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W89
+            reason: Lambda functions should be deployed inside a VPC    
+      cfn-lint:
+        config:
+          ignore_checks:
+            - E3030 # Valid value for Runtime (python3.11)
+    Properties:
+      Handler: main.handler
+      Runtime: python3.11
+      CodeUri:
+        Bucket: !Sub
+          - "${S3Bucket}"
+          - S3Bucket:
+              !If [
+                UsingDefaultBucket,
+                !Sub "${QSS3BucketName}-${AWS::Region}",
+                !Ref QSS3BucketName,
+              ]
+        Key: !Sub "${QSS3KeyPrefix}templates/apps/sumo-aws-apps/sumologic-app-utils/sumo_app_utils.zip"
+      MemorySize: 128
+      Timeout: 900
+      DeadLetterQueue:
+        TargetArn: !Ref AWS::NoValue
+        Type: SQS
+      ReservedConcurrentExecutions: 4
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref AWS::NoValue
+        SubnetIds:
+          - !Ref AWS::NoValue
+      Role:
+        Fn::GetAtt:
+          - SumoLogicHelperRole
+          - Arn
+
+  ValidationLogsS3BucketBucket:
+    Condition: create_validation_logs_s3_bucket
+    Type: Custom::AWSValidation
+    Properties:
+      ServiceToken: !GetAtt SumoLogicHelperFunction.Arn
+      PARAMETER_NAME: "LogsS3BucketName"
+      PARAMETER_VALUE: !Ref LogsS3BucketName
+      PARAMETER_ALLOWED_PATTERN: '(?!(^xn--|.+-s3alias$))^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$'
+
+  TargetS3Bucket:
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W35
+            reason: S3 access logging not enabled
+          - id: W51
+            reason: S3 bucket should likely have a bucket policy
+          - id: W41
+            reason: S3 Bucket should have encryption option set            
+    Condition: create_target_s3_bucket
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref LogsS3BucketName
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: True
+        BlockPublicPolicy: True
+        IgnorePublicAcls: True
+        RestrictPublicBuckets: True
+      VersioningConfiguration:
+        Status: Enabled
+      LoggingConfiguration:
+        DestinationBucketName: !Ref AWS::NoValue
+        LogFilePrefix: !Ref AWS::NoValue
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+
+  SumoHostedCollector:
+    Type: Custom::Collector
+    Condition: create_delivery_stream_source
+    Properties:
+      ServiceToken: !If
+        - do_not_use_parent_stack
+        - !GetAtt
+          - SumoLogicHelperFunction
+          - Arn
+        - !ImportValue
+          "Fn::Sub": "${ParentStackName}-SumoLogicHelperFunctionARN"
+      Region: !Ref "AWS::Region"
+      CollectorType: Hosted
+      RemoveOnDeleteStack:
+        !If [
+          do_not_use_parent_stack,
+          !Ref RemoveSumoResourcesOnDeleteStack,
+          false,
+        ]
+      CollectorName: !Ref CollectorName
+      SumoAccessID: !Ref SumoAccessID
+      SumoAccessKey: !Ref SumoAccessKey
+      SumoDeployment: !Ref SumoDeployment
+
+  KinesisRole:
+    Condition: create_delivery_stream_source
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'ws-waf-logs-${AWS::Region}-${DeliveryStreamName}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: firehose.amazonaws.com
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                sts:ExternalId: !Ref AWS::AccountId
+      Path: "/"
+      Policies:
+        - PolicyName: "S3BucketPermissionPolicy"
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:AbortMultipartUpload
+                  - s3:GetBucketLocation
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - s3:ListBucketMultipartUploads
+                  - s3:PutObject
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:s3:::${LogsS3BucketName}'
+        - PolicyName: KinesisKinesisRolePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - kinesis:DescribeStream
+                  - kinesis:GetShardIterator
+                  - kinesis:GetRecords
+                  - kinesis:ListShards
+                  - firehose:PutRecord
+                  - firehose:PutRecordBatch
+                  - kinesis:PutRecord
+                  - kinesis:PutRecordBatch
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:kinesis:${AWS::Region}:${AWS::AccountId}:stream/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%'
+        - PolicyName: KinesisLogsRolePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:PutLogEvents
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/kinesisfirehose/aws-waf-logs-${AWS::Region}-${DeliveryStreamName}:log-stream:*'
+                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%:log-stream:*'
+
+
+  KinesisFirehoseDeliveryStream:
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W88
+            reason: Kinesis Firehose DeliveryStream of type DirectPut should specify SSE. 
+    Condition: create_delivery_stream_source
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamName: !Sub "aws-waf-logs-${DeliveryStreamName}"
+      DeliveryStreamType: "DirectPut"
+      HttpEndpointDestinationConfiguration:
+        RoleARN: !GetAtt KinesisRole.Arn
+        EndpointConfiguration:
+          Url: !GetAtt SumoDeliveryStreamSource.SUMO_ENDPOINT
+          Name: !Sub "sumologic-logs-endpoint-${ParentStackName}"
+        BufferingHints:
+          IntervalInSeconds: 60
+          SizeInMBs: 4
+        RetryOptions:
+          DurationInSeconds: 60
+        RequestConfiguration:
+          ContentEncoding: NONE
+        S3BackupMode: FailedDataOnly
+        S3Configuration:
+          BucketARN: !If
+            - create_target_s3_bucket
+            - !Ref TargetS3Bucket
+            - !Sub 'arn:aws:s3:::${LogsS3BucketName}'
+          CompressionFormat: UNCOMPRESSED
+          ErrorOutputPrefix: "SumoLogic-Kinesis-Failed-Logs/"
+          RoleARN: !GetAtt KinesisRole.Arn
+
+
+  SumoDeliveryStreamSource:
+    Type: Custom::KinesisLogSource
+    Condition: create_delivery_stream_source
+    Properties:
+      ServiceToken: !If
+        - do_not_use_parent_stack
+        - !GetAtt
+          - SumoLogicHelperFunction
+          - Arn
+        - !ImportValue
+          "Fn::Sub": "${ParentStackName}-SumoLogicHelperFunctionARN"
+      SourceName: !Ref DeliveryStreamSourceName
+      RemoveOnDeleteStack: !Ref RemoveSumoResourcesOnDeleteStack
+      SourceCategory: !Ref DeliveryStreamSourceCategoryName
+      CollectorId: !GetAtt SumoHostedCollector.COLLECTOR_ID
+      SumoAccessID: !Ref SumoAccessID
+      SumoAccessKey: !Ref SumoAccessKey
+      SumoDeployment: !Ref SumoDeployment
+
+
+  SumoApp:
+    Type: Custom::App
+    Condition: install_app
+    Properties:
+      ServiceToken: !If
+        - do_not_use_parent_stack
+        - !GetAtt
+          - SumoLogicHelperFunction
+          - Arn
+        - !ImportValue
+          "Fn::Sub": "${ParentStackName}-SumoLogicHelperFunctionARN"
+      Region: !Ref "AWS::Region"
+      AppName: "Amazon QuickStart - AWS WAF"
+      AppId: "87c2e6ca-a526-4745-af48-0c7225127b22"
+      RemoveOnDeleteStack: !Ref RemoveSumoResourcesOnDeleteStack
+      AppSources:
+        logsrc: !Sub "_sourceCategory=${DeliveryStreamSourceCategoryName}"
+      SumoAccessID: !Ref SumoAccessID
+      SumoAccessKey: !Ref SumoAccessKey
+      SumoDeployment: !Ref SumoDeployment
+
+Outputs:
+  QSS3BucketName:
+    Description: Quick Start S3 bucket name
+    Value: !Ref QSS3BucketName

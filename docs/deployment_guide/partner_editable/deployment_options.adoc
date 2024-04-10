@@ -23,3 +23,5 @@ security services listed under <<Specialized knowledge>> and you collect and ana
 from one or more of them in Sumo Logic. For this scenario, configure the auxiliary AWS
 services and resources to send data to Sumo Logic. This scenario is intended only for
 nonconfigured AWS security services and their corresponding Sumo Logic apps.
+
+Note: If you want to collect data from **AWS S3 bucket managed by Control Tower**, use the https://aws-ia.github.io/cfn-ps-sumo-logic-cloudsiem/[cfn-ps-sumo-logic-cloudsiem] solution
